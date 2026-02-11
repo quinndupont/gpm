@@ -1,0 +1,387 @@
+{
+  "creativity": [
+    {
+      "author": "John Milton",
+      "title": "On the Engraver of his Portrait.1",
+      "original_id": "027338720345"
+    },
+    {
+      "author": "George W. Doneghy",
+      "title": "Camping On The Cumberland.",
+      "original_id": "ce89da91f133"
+    },
+    {
+      "author": "Madison Julius Cawein",
+      "title": "Her Face.",
+      "original_id": "9977b368f689"
+    },
+    {
+      "author": "Edgar Allan Poe",
+      "title": "Elizabeth",
+      "original_id": "eb0cafb8b52b"
+    },
+    {
+      "author": "Algernon Charles Swinburne",
+      "title": "Three Weeks Old",
+      "original_id": "79ff0c1215f8"
+    },
+    {
+      "author": "Robert Burns",
+      "title": "Simmer's A Pleasant Time.",
+      "original_id": "61484a9f6e2a"
+    },
+    {
+      "author": "Rudyard Kipling",
+      "title": "The Four Points",
+      "original_id": "04ccebcbc622"
+    },
+    {
+      "author": "Francesco Petrarca (Petrarch)",
+      "title": "Sonnet VI.",
+      "original_id": "8ae81fa33f22"
+    },
+    {
+      "author": "HART CRANE",
+      "title": "from The Bridge: Southern Cross",
+      "original_id": "6eb366e1f2db"
+    },
+    {
+      "author": "Robert William Service",
+      "title": "Golden Days",
+      "original_id": "147e3014ddad"
+    },
+    {
+      "author": "Rose Hawthorne Lathrop",
+      "title": "Morning Song.",
+      "original_id": "5f8286e1fe4b"
+    },
+    {
+      "author": "William Wordsworth",
+      "title": "Remembrance Of Collins",
+      "original_id": "9cc21a65dff6"
+    },
+    {
+      "author": "Louisa May Alcott",
+      "title": "Brighter Shone The Golden Shadows",
+      "original_id": "ce865f4ad197"
+    },
+    {
+      "author": "Jean de La Fontaine",
+      "title": "The Rat And The Oyster",
+      "original_id": "cba38d20bc3a"
+    },
+    {
+      "author": "Francis Brett Young",
+      "title": "Scirocco",
+      "original_id": "2d7241afeefb"
+    }
+  ],
+  "quality": [
+    {
+      "author": "Susanna Moodie",
+      "title": "The Avenger Of Blood.",
+      "original_id": "f3a7422072d2"
+    },
+    {
+      "author": "Rose Hawthorne Lathrop",
+      "title": "One And One.",
+      "original_id": "8b637c4cee0a"
+    },
+    {
+      "author": "Johann Wolfgang von Goethe",
+      "title": "Joy.",
+      "original_id": "1e0679fc7961"
+    },
+    {
+      "author": "Samuel Griswold Goodrich",
+      "title": "Frontispiece",
+      "original_id": "d915cc7555de"
+    },
+    {
+      "author": "James Whitcomb Riley",
+      "title": "The Little Lady",
+      "original_id": "df388dc566ed"
+    },
+    {
+      "author": "John Greenleaf Whittier",
+      "title": "To My Old Schoolmaster",
+      "original_id": "9480620d0d65"
+    },
+    {
+      "author": "Archibald Lampman",
+      "title": "April In The Hills",
+      "original_id": "a20e900a4d64"
+    },
+    {
+      "author": "Vachel Lindsay",
+      "title": "The Trap",
+      "original_id": "6d7fb32dc788"
+    },
+    {
+      "author": "Herman Melville",
+      "title": "Chattanooga",
+      "original_id": "4dae8f2db693"
+    },
+    {
+      "author": "MARIANNE MOORE",
+      "title": "Black Earth",
+      "original_id": "d2df6adcd16f"
+    },
+    {
+      "author": "John Greenleaf Whittier",
+      "title": "Sweet Fern",
+      "original_id": "b055666aa6e4"
+    },
+    {
+      "author": "Thomas Gent",
+      "title": "Sonnet. On Seeing A Young Lady, I Had Previously Known, Confined In A Madhouse.",
+      "original_id": "755f74ab1571"
+    },
+    {
+      "author": "Alfred Edward Housman",
+      "title": "Now dreary dawns the eastern light,",
+      "original_id": "a33203dc4e16"
+    },
+    {
+      "author": "Michelangelo di Lodovico Buonarroti Simoni",
+      "title": "The Sonnets Of Tommaso Campanella - A Parable Of Wise Men And The World.",
+      "original_id": "5021ccade545"
+    },
+    {
+      "author": "William Schwenck Gilbert",
+      "title": "When I First Put This Uniform On.",
+      "original_id": "fae1d4b0c60a"
+    }
+  ],
+  "innovativeness": [
+    {
+      "author": "George MacDonald",
+      "title": "The Bonny, Bonny Dell",
+      "original_id": "0da1ebda8696"
+    },
+    {
+      "author": "Ella Wheeler Wilcox",
+      "title": "A Wish",
+      "original_id": "33f2862a46d4"
+    },
+    {
+      "author": "John Clare",
+      "title": "To Wordsworth",
+      "original_id": "09602c9680ce"
+    },
+    {
+      "author": "Madison Julius Cawein",
+      "title": "In The Mountains",
+      "original_id": "9e1967d7917d"
+    },
+    {
+      "author": "Freeman Edwin Miller",
+      "title": "If We But Knew.",
+      "original_id": "4d234fd59195"
+    },
+    {
+      "author": "Henry Kendall",
+      "title": "Lost in the Flood",
+      "original_id": "e9c634d9af90"
+    },
+    {
+      "author": "Robert Burns",
+      "title": "Address To The Toothache.",
+      "original_id": "aafb1692dfc8"
+    },
+    {
+      "author": "Archibald Lampman",
+      "title": "A Re-Assurance",
+      "original_id": "35fbdab6f4dc"
+    },
+    {
+      "author": "Francesco Petrarca (Petrarch)",
+      "title": "Sestina VII.",
+      "original_id": "b135ffa60498"
+    },
+    {
+      "author": "George Pope Morris",
+      "title": "The Land of Washington.",
+      "original_id": "30dcfd550bdc"
+    },
+    {
+      "author": "Henry Kendall",
+      "title": "The Waterfall",
+      "original_id": "9c40bbc735fe"
+    },
+    {
+      "author": "Eugene Field",
+      "title": "To John J. Knickerbocker, Jr.",
+      "original_id": "87fb30afda50"
+    },
+    {
+      "author": "Madison Julius Cawein",
+      "title": "A Maid Who Died Old",
+      "original_id": "648db5346499"
+    },
+    {
+      "author": "Edward Lear",
+      "title": "The Broom, The Shovel, The Poker, And The Tongs.",
+      "original_id": "63c928db8cf3"
+    },
+    {
+      "author": "Eugene Field",
+      "title": "The \"Ars Poetica\" Of Horace",
+      "original_id": "2a373e31217f"
+    }
+  ],
+  "similarity": [
+    {
+      "author": "Henry John Newbolt, Sir",
+      "title": "Songs of the Fleet - The Middle Watch",
+      "original_id": "318eaf7016d4"
+    },
+    {
+      "author": "William Arthur Dunkerley (John Oxenham)",
+      "title": "The King's High Way",
+      "original_id": "1fd529876399"
+    },
+    {
+      "author": "William F. Kirk",
+      "title": "Annie Laurie",
+      "original_id": "1c0cf1e30cef"
+    },
+    {
+      "author": "Ella Wheeler Wilcox",
+      "title": "Isaura.",
+      "original_id": "f45e3fbc4215"
+    },
+    {
+      "author": "Jean de La Fontaine",
+      "title": "The Lion Grown Old.",
+      "original_id": "531cce902cf9"
+    },
+    {
+      "author": "Laurence Hope (Adela Florence Cory Nicolson)",
+      "title": "Lines by Taj Mahomed",
+      "original_id": "5d8229350df4"
+    },
+    {
+      "author": "James Whitcomb Riley",
+      "title": "In Fervent Praise Of Picnics",
+      "original_id": "ab5fee77ee5d"
+    },
+    {
+      "author": "Joseph Horatio Chant",
+      "title": "Tread Softly",
+      "original_id": "5e283c5eb3aa"
+    },
+    {
+      "author": "Walter De La Mare",
+      "title": "Tillie",
+      "original_id": "4d1fd0ecb641"
+    },
+    {
+      "author": "Thomas Osborne Davis",
+      "title": "The West's Asleep.",
+      "original_id": "93f4136492fe"
+    },
+    {
+      "author": "Friedrich Schiller",
+      "title": "Pompeii And Herculaneum.",
+      "original_id": "9e553b64b278"
+    },
+    {
+      "author": "Robert Browning",
+      "title": "Popularity",
+      "original_id": "d837f7c266d6"
+    },
+    {
+      "author": "John Clare",
+      "title": "May",
+      "original_id": "19521ed55734"
+    },
+    {
+      "author": "Horatio Alger, Jr.",
+      "title": "The Dinner Table Talk.",
+      "original_id": "c3327906da1c"
+    },
+    {
+      "author": "Robert Fuller Murray",
+      "title": "The Delights Of Mathematics",
+      "original_id": "1a8e32a409dc"
+    }
+  ],
+  "poeticness": [
+    {
+      "author": "Christina Georgina Rossetti",
+      "title": "A Smile And A Sigh",
+      "original_id": "83a80e3928b9"
+    },
+    {
+      "author": "Edward Lear",
+      "title": "More Nonsense Limerick 42",
+      "original_id": "f6428043cd69"
+    },
+    {
+      "author": "Charles Kingsley",
+      "title": "The Knight's Return",
+      "original_id": "ef68e73f0826"
+    },
+    {
+      "author": "Robert Fuller Murray",
+      "title": "One Tear",
+      "original_id": "5c60684ad1e1"
+    },
+    {
+      "author": "Richard Le Gallienne",
+      "title": "Spirit Of Sadness",
+      "original_id": "5e77a86e659f"
+    },
+    {
+      "author": "John Clare",
+      "title": "I Love Thee, Sweet Mary.",
+      "original_id": "1b7f9650eccc"
+    },
+    {
+      "author": "James Kenneth Stephen",
+      "title": "Thought, A",
+      "original_id": "783bfae240b8"
+    },
+    {
+      "author": "Paul Cameron Brown",
+      "title": "Green Eye Shields",
+      "original_id": "7bbe7097be82"
+    },
+    {
+      "author": "Robert William Service",
+      "title": "The Other One",
+      "original_id": "dfeeed0dab75"
+    },
+    {
+      "author": "Edgar Lee Masters",
+      "title": "Marcia",
+      "original_id": "1d4500946bba"
+    },
+    {
+      "author": "Alexander Pope",
+      "title": "On A Fan Of The Author's Design",
+      "original_id": "c07b48bb0c94"
+    },
+    {
+      "author": "Adam Lindsay Gordon",
+      "title": "Ten Paces Off",
+      "original_id": "878704ea5b5b"
+    },
+    {
+      "author": "W. M. MacKeracher",
+      "title": "In Warehouse And Office.",
+      "original_id": "2427a9077fd9"
+    },
+    {
+      "author": "William Butler Yeats",
+      "title": "Stream And Sun At Glendalough",
+      "original_id": "9f6b375b842b"
+    },
+    {
+      "author": "Oliver Wendell Holmes",
+      "title": "The Opening Of The Piano",
+      "original_id": "435a2750b652"
+    }
+  ]
+}

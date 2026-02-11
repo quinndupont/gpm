@@ -1,0 +1,64 @@
+══════════════════════════════════════════════════════════════════════
+  PERFORMANCE BY MODEL
+══════════════════════════════════════════════════════════════════════
+
+  llama3.2:3b
+  ────────────────────────────────────────────────────────────
+  Total time: 1.0m
+  Avg per batch: 12.51s
+  Tokens generated: 2,852  |  Time per token: 11.98 ms
+  Est. full corpus (35,263 poems, 5 criteria): 40.9h
+
+  llama3.1:8b
+  ────────────────────────────────────────────────────────────
+  Total time: 2.0m
+  Avg per batch: 24.48s
+  Tokens generated: 2,235  |  Time per token: 23.53 ms
+  Est. full corpus (35,263 poems, 5 criteria): 79.9h
+
+  phi3:mini
+  ────────────────────────────────────────────────────────────
+  Total time: 1.9m
+  Avg per batch: 22.24s
+  Tokens generated: 4,667  |  Time per token: 15.14 ms
+  Est. full corpus (35,263 poems, 5 criteria): 72.6h
+
+  qwen3:8b
+  ────────────────────────────────────────────────────────────
+  Total time: 4.0m
+  Avg per batch: 47.59s
+  Tokens generated: 6,883  |  Time per token: 25.56 ms
+  Est. full corpus (35,263 poems, 5 criteria): 155.4h
+
+══════════════════════════════════════════════════════════════════════
+  NLP STATISTICS BY MODEL
+══════════════════════════════════════════════════════════════════════
+
+  llama3.2:3b
+  ────────────────────────────────────────────────────────────
+  Response length — chars: 779–3,400 (avg 2,051)
+  Response length — words: 156–640 (avg 360)
+  Extracted scores (1–5): avg 3.07  (n=14)
+
+  llama3.1:8b
+  ────────────────────────────────────────────────────────────
+  Response length — chars: 78–3,070 (avg 1,840)
+  Response length — words: 13–497 (avg 313)
+  Extracted scores (1–5): avg 2.58  (n=26)
+
+  phi3:mini
+  ────────────────────────────────────────────────────────────
+  Response length — chars: 879–6,068 (avg 3,671)
+  Response length — words: 178–860 (avg 565)
+  Extracted scores (1–5): avg 3.92  (n=12)
+
+  qwen3:8b
+  ────────────────────────────────────────────────────────────
+  Response length — chars: 673–5,281 (avg 2,310)
+  Response length — words: 104–776 (avg 344)
+
+══════════════════════════════════════════════════════════════════════
+  AGGREGATE
+══════════════════════════════════════════════════════════════════════
+  Total successful: 20  |  Avg chars: 2,468  |  Avg words: 396
+  Criteria: ['creativity', 'quality', 'innovativeness', 'similarity', 'poeticness']  |  Different poem batch per criterion

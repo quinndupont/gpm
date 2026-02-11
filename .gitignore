@@ -1,0 +1,17 @@
+node_modules/
+dist/
+venv/
+.env
+.env.local
+*.log
+.DS_Store
+__pycache__/
+*.pyc
+data/raw/
+data/processed/
+data/annotated/
+data/training/
+models/adapters/
+checkpoints/
+checkpoints/nlp_dedup*/
+logs/*.log
