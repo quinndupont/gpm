@@ -24,12 +24,11 @@ Capture their distinctive voice, vocabulary, and approach, but with entirely new
 Write only the poem, no commentary."""
 
     POET_STYLES = {
-        "Emily Dickinson": "short lines, dashes for pauses, slant rhyme, domestic imagery, metaphysical themes, capitalization of nouns",
-        "Walt Whitman": "long lines, free verse, catalogs/lists, democratic inclusiveness, cosmic vision, first-person plural",
-        "William Carlos Williams": "imagist precision, everyday objects, variable foot, American vernacular, visual clarity",
-        "Sylvia Plath": "intense imagery, confessional tone, harsh consonants, themes of death and rebirth, domestic surrealism",
-        "Langston Hughes": "jazz rhythms, blues structure, African American vernacular, social commentary, musicality",
-        "Mary Oliver": "nature observation, accessible language, spiritual wonder, precise animal/plant imagery, gentle tone",
+        "Robert Frost": "conversational tone, metered verse beneath apparent simplicity, rural imagery, philosophical depth through concrete situations, dark undertones, dramatic monologue",
+        "A.A. Milne": "whimsical rhythm, light verse with emotional weight, child-accessible but adult-resonant, musical repetition, gentle irony, domestic wonder",
+        "Edgar Allan Poe": "hypnotic internal rhyme, driving rhythm, Gothic intensity, sonic obsession, technical virtuosity in meter, incantatory repetition",
+        "Shel Silverstein": "accessible wordplay, surprising twists, subversive humor, simple vocabulary with sophisticated structure, anti-authority undertones, direct address",
+        "Edward Lear": "invented words, musical nonsense with melancholy core, limerick and ballad forms, sonic invention, playful cataloging, gentle absurdism",
     }
 
     def __init__(self, model: str = "llama3.2:3b"):

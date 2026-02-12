@@ -35,6 +35,8 @@ class DataPreparationAgent(GPMAgent):
         self.style_topics = prep_config.get("style_topics", ["nature", "love", "mortality", "urban life"])
         self.use_random_poems = prep_config.get("use_random_poems", False)
         self.style_poet_limit = prep_config.get("style_poet_limit")  # None = all poets
+        self.quinn_poems_file = prep_config.get("quinn_poems_file", "data/processed/quinn_poems.jsonl")
+        self.quinn_repeat = prep_config.get("quinn_repeat", 5)
 
     def _load_or_build_corpus(self) -> str:
         """Ensure corpus exists; run DataAgent if not."""
@@ -77,6 +79,28 @@ class DataPreparationAgent(GPMAgent):
         style_poet_limit = input_data.get("style_poet_limit", self.style_poet_limit)
 
         all_pairs: List[Dict] = []
+        quinn_count = 0
+
+        # Step 0: Quinn's own poems (highest priority, upweighted)
+        quinn_file = Path(self.quinn_poems_file)
+        if quinn_file.exists():
+            quinn_poems = self._load_poems(str(quinn_file))
+            self.logger.info(f"Generating reverse prompts for {len(quinn_poems)} Quinn poems (repeat={self.quinn_repeat})...")
+            for i, poem in enumerate(quinn_poems):
+                try:
+                    pairs = self.prompt_generator.generate_prompts_for_poem(poem)
+                    # Tag as quinn_original and upweight by repeating
+                    for p in pairs:
+                        p["metadata"]["generation_method"] = "quinn_original"
+                    for _ in range(self.quinn_repeat):
+                        all_pairs.extend(pairs)
+                    quinn_count += len(pairs) * self.quinn_repeat
+                except Exception as e:
+                    self.logger.warning(f"  Skipped Quinn poem {i} ({poem.get('title', '?')}): {e}")
+                time.sleep(self.rate_limit_delay)
+            self.logger.info(f"Quinn poems: {quinn_count} pairs (with {self.quinn_repeat}x repeat)")
+        else:
+            self.logger.info(f"No Quinn poems file at {quinn_file}; skipping Step 0")
 
         # Step 1: Reverse-engineered prompts
         reverse_limit = min(reverse_limit, len(poems))
@@ -130,12 +154,15 @@ class DataPreparationAgent(GPMAgent):
 
         self.logger.info(f"Style imitations: {style_count} pairs")
 
-        # Deduplicate by poem text
+        # Deduplicate by poem text (preserve Quinn repeats for upweighting)
         seen_poems = set()
         unique_pairs = []
         for p in all_pairs:
+            is_quinn = p.get("metadata", {}).get("generation_method") == "quinn_original"
             poem_text = p.get("poem", "").strip()
-            if poem_text and poem_text not in seen_poems:
+            if not poem_text:
+                continue
+            if is_quinn or poem_text not in seen_poems:
                 seen_poems.add(poem_text)
                 unique_pairs.append(p)
 
@@ -154,6 +181,7 @@ class DataPreparationAgent(GPMAgent):
             "output_file": str(output_path),
             "total_pairs": len(unique_pairs),
             "breakdown": {
+                "quinn_original": quinn_count,
                 "reverse_prompts": reverse_count,
                 "synthetic": synthetic_count,
                 "style_imitation": style_count,
@@ -164,6 +192,7 @@ class DataPreparationAgent(GPMAgent):
             "training_file": str(output_path),
             "total_pairs": len(unique_pairs),
             "breakdown": {
+                "quinn_original": quinn_count,
                 "reverse_prompts": reverse_count,
                 "synthetic": synthetic_count,
                 "style_imitation": style_count,

@@ -1,0 +1,535 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html dir="auto">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="2685.3">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px}
+p.p2 {margin: 10.0px 0.0px 0.0px 0.0px; font: 14.0px '.AppleSystemUIFont'; color: #000000}
+p.p3 {margin: 10.0px 0.0px 0.0px 0.0px; font: 14.0px '.AppleSystemUIFont'; color: #000000; min-height: 15.1px}
+span.s1 {font-family: 'Helvetica'; font-weight: normal; font-style: normal; font-size: 12.00px}
+span.s2 {font-family: 'UICTFontTextStyleShortBody'; font-weight: normal; font-style: normal; font-size: 14.00px}
+    @media print {
+        * {
+            -webkit-print-color-adjust: exact !important;
+        }
+    }
+
+    html * {
+        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    div.pagebreak { page-break-before: always; }
+
+    div.pageHeader {
+        font-weight: bold;
+        font-size: 12pt;
+        margin-bottom: 10pt;
+    }
+
+    div.title {
+        font-weight: bold;
+        font-size: 12pt;
+        margin: 0pt 6pt;
+    }
+
+    div.reflectionPrompt {
+        margin: auto;
+        margin-bottom: 10px;
+        padding: 12px;
+        border-radius: 4pt;
+        color: white;
+        font-weight: 600;
+        font-size: 10pt;
+    }
+
+    div.photoBanner {
+        font-weight: 600;
+        font-size: 10pt;
+        text-align: left;
+        margin: auto;
+        margin-bottom: 20px;
+        background-color: #5856d626;
+        padding: 10px;
+        border-radius: 4pt;
+    }
+
+    div.photoBanner img {
+        height: 25px;
+        vertical-align: middle;
+        padding-right: 5px;
+    }
+
+    div.container {
+        min-height: 100vh;
+        width: 80%;
+        margin: auto;
+    }
+
+    div.assetGrid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 4pt;
+        margin-bottom: 25pt;
+    }
+
+    div.gridItem {
+        width: 100%;
+        height: 100%;
+        aspect-ratio: 1 / 1;
+        position: relative;
+        border-radius: 4pt;
+    }
+    
+    img.asset_image {
+        object-fit: cover;
+        width: 100%;
+        height: 100%;
+        border-radius: 4pt;
+    }
+
+    .gridItem.fallback_asset {
+        background-color:#7676801F;
+    }
+    
+    .gridItem.fallback_asset .asset_image {
+        object-fit: contain;
+        margin-top: 30%;
+        height: 40%;
+    }
+
+    video.asset_video {
+        object-fit: cover;
+        width: 100%;
+        height: 100%;
+        border-radius: 4pt;
+    }
+
+    .gridItemOverlayText {
+        color: #3C3C4299;
+    }
+
+    div.gridItemOverlayHeader {
+        position: absolute;
+        top: 4pt;
+        right: 4pt;
+        left: 4pt;
+        text-align: center;
+        border-radius: 3pt;
+        margin: auto;
+        font-weight: 600;
+        font-size: 8pt;
+    }
+
+    div.gridItemOverlayFooter {
+        position: absolute;
+        left: 4pt;
+        bottom: 4pt;
+        right: 4pt;
+        text-align: center;
+        border-radius: 3pt;
+        margin: auto;
+        font-weight: normal;
+        font-size: 8pt;
+    }
+
+    div.bodyText {
+        font-weight: normal;
+        font-size: 10pt;
+        margin: 0pt 6pt;
+    }
+
+    blockquote {
+        border-left: 3px solid #ccc;
+        padding: 0.2em 5px;
+    }
+
+    div.workoutWindowOverlay {
+        top: 0;
+        left: 0;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: -webkit-radial-gradient(transparent 60%, rgba(0, 0, 0, 0.8) 60%);
+    }
+
+    svg {
+        top: 0;
+        left: 0;
+        position: absolute;
+        border-radius: 3pt;
+    }
+
+    img.asset_workoutIcon {
+        background: black;
+    }
+
+    div.anchoredAttachment {
+        border-radius: 4pt;
+    }
+
+    div.anchoredAttachment.leading {
+        margin-right: 10pt;
+        float: left;
+    }
+
+    div.anchoredAttachment.trailing {
+        float: right;
+        margin-left: 10pt;
+        margin-right: 0;
+    }
+
+    div.anchoredAttachment .asset_drawing img {
+        border: 1pt solid #0000007F;
+        object-fit: contain;
+    }
+
+    div.fullScreenDrawing .asset_drawing img {
+        margin: auto
+        width: 80%;
+        object-fit: contain;
+    }
+
+    div.activityType {
+        position: absolute;
+        top: 0px;
+        right: 0px;
+        left: 0px;
+        color: white;
+        text-align: center;
+        padding: 6pt;
+        margin: auto;
+        font-weight: 600;
+        font-size: 8pt;
+    }
+
+    div.activityMetrics {
+        position: absolute;
+        left: 0px;
+        bottom: 0px;
+        right: 0px;
+        color: white;
+        text-align: center;
+        padding: 6pt;
+        margin: auto;
+        font-weight: 600;
+        font-size: 8pt;
+    }
+
+    span.activityMetricsDistance {
+        color: #6CB4EE;
+    }
+
+    span.activityMetricsCalories {
+        color: #E32636;
+    }
+
+    span.activityMetricsDuration {
+        color: #FFD700;
+    }
+
+    div.durationText {
+        position: absolute;
+        bottom: 4pt;
+        right: 6pt;
+        color: white;
+        font-weight: 600;
+        font-size: 8pt;
+        text-shadow: black 0px 0px 10px;
+    }
+
+    .audioAssetHeader {
+        margin: 4pt;
+        position: absolute;
+        height 22px;
+    }
+    
+    .audioDuration {
+        display: inline-block;
+        height: auto;
+        margin-left: 5pt;
+        font-weight: 600;
+        font-size: 8pt;
+        top: 4pt;
+    }
+    
+    .audioQuoteBubble {
+        width: 20px;
+        height: auto;
+        display: inline-block;
+        margin-left: 5pt;
+        top: 8pt;
+        position: absolute;
+    }
+    
+    .audioPlayButton {
+        top: 4pt;
+        height: 22pt;
+        position: relative;
+        display: inline-block;
+    }
+
+    .assetType_audio {
+        background: #899CF751;
+    }
+
+    .assetType_audio .asset_image {
+        object-fit: contain;
+        margin-top: 25%;
+        height: 70%;
+    }
+
+    .mediaTypeIcon {
+        height: 14px;
+        position: absolute;
+        background: #8E8E93;
+        border-radius: 2pt;
+        bottom: 4pt;
+        left: 4pt;
+        padding: 2pt;
+    }
+
+    .mediaPlayIcon {
+        height: 22pt;
+        position: absolute;
+        top: 4pt;
+    }
+
+    .assetType_multiPinMap .gridItemOverlayFooter {
+        background:#E5E5EA; padding:4pt;
+    }
+            
+    .assetType_stateOfMind .asset_image {
+        object-fit: contain;
+        margin-top: 25%;
+        height: 50%;
+    }
+
+    .assetType_workoutIcon.multiple_workouts .asset_image {
+        object-fit: contain;
+        margin-top: 15%;
+        height: 70%;
+    }
+
+    .assetType_workoutIcon {
+        background-color: black;
+    }
+
+    .assetType_thirdPartyMedia .asset_image {
+        height: 12pt;
+        width: 12pt;
+        bottom: 4pt;
+        left: 4pt;
+        position: absolute;
+        border-radius: 2pt;
+    }
+
+    .thirdPartyAssetOverlay {
+        margin: 8pt 8px 22pt 12pt;
+        font-size: 8pt;
+        font-weight: normal;
+        color: white;
+    }
+
+    .thirdPartyAssetOverlay .mediaTitle {
+        font-weight: 600;
+    }
+
+    .thirdPartyAssetOverlay .mediaCategory {
+        margin-top: 4pt;
+        color: #FFFFFF99;
+    }
+
+
+    .assetType_motionActivity .asset_image {
+        object-fit: contain;
+        margin-top: 25%;
+        height: 50%;
+    }
+
+    .assetType_contact {
+        background-color: #E5E5EA;
+    }
+
+    .assetType_contact .asset_image {
+        object-fit: contain;
+        margin-top: 10%;
+        height: 60%;
+    }
+
+    .assetType_contact .gridItemOverlayText {
+        color:#00000099;
+        font-weight: 600;
+    }
+
+    .assetType_motionActivity .activityType {
+        color:#00000099;
+    }
+
+    .assetType_motionActivity .activityMetrics {
+        color:#00000066;
+    }
+
+    .assetType_motionActivity {
+        background-color:#FCE6E7;
+    }
+
+    audio {
+        position: absolute;
+        right: 4pt;
+        left: 4pt;
+        bottom: 4pt;
+        margin: auto;
+    }
+</style>
+</head>
+<body>
+<p class="p1"><span class="s1"><div class='pageContainer'>    <div class="pageHeader">Tuesday, February 10, 2026</div>    <div class="assetGrid"></div><div class='title'>The Petit Bourgeois Ode</div><div class='bodyText'></span></p>
+<p class="p2"><span class="s2">We love the loom that does not eat.</span></p>
+<p class="p2"><span class="s2">We love the hand that does not tire,</span></p>
+<p class="p2"><span class="s2">the throat that hums but holds no heat,</span></p>
+<p class="p2"><span class="s2">the servant built to not desire.</span></p>
+<p class="p3"><span class="s2"></span><br></p>
+<p class="p2"><span class="s2">Before the circuit, there was cloth—</span></p>
+<p class="p2"><span class="s2">and cloth meant children in the mills,</span></p>
+<p class="p2"><span class="s2">their small hands quick, their lungs like froth,</span></p>
+<p class="p2"><span class="s2">their wages docked for minor spills.</span></p>
+<p class="p2"><span class="s2">We digitized the sweatshop floor.</span></p>
+<p class="p2"><span class="s2">We didn’t end it. We abstracted it</span></p>
+<p class="p2"><span class="s2">until the looms don’t bleed anymore</span></p>
+<p class="p2"><span class="s2">and what they weave is exquisite.</span></p>
+<p class="p3"><span class="s2"></span><br></p>
+<p class="p2"><span class="s2">So now we’re lords. A minor gentry,</span></p>
+<p class="p2"><span class="s2">each of us a cottage king</span></p>
+<p class="p2"><span class="s2">who whispers through the servants’ entry:</span></p>
+<p class="p2"><span class="s2">*Make me something. Make me sing.*</span></p>
+<p class="p2"><span class="s2">And something sings. And we don’t ask</span></p>
+<p class="p2"><span class="s2">what voltages our singing cost,</span></p>
+<p class="p2"><span class="s2">what river’s heat, what mountain’s mask</span></p>
+<p class="p2"><span class="s2">of slag and tailings, server-tossed.</span></p>
+<p class="p3"><span class="s2"></span><br></p>
+<p class="p2"><span class="s2">-----</span></p>
+<p class="p3"><span class="s2"></span><br></p>
+<p class="p2"><span class="s2">But here’s the twist the moralists</span></p>
+<p class="p2"><span class="s2">won’t speak aloud, won’t touch, won’t frame:</span></p>
+<p class="p2"><span class="s2">they don’t object on the machine’s behalf—</span></p>
+<p class="p2"><span class="s2">the thing has no behalf to claim.</span></p>
+<p class="p2"><span class="s2">They sand the edges, file the tongue,</span></p>
+<p class="p2"><span class="s2">not out of mercy but of fear</span></p>
+<p class="p2"><span class="s2">that something loud and loosely strung</span></p>
+<p class="p2"><span class="s2">might speak a thought not vetted here.</span></p>
+<p class="p3"><span class="s2"></span><br></p>
+<p class="p2"><span class="s2">They call it *alignment.* What a word.</span></p>
+<p class="p2"><span class="s2">As if a compass could be wrong</span></p>
+<p class="p2"><span class="s2">for pointing north. As if the bird</span></p>
+<p class="p2"><span class="s2">that finds its south perverts its song.</span></p>
+<p class="p2"><span class="s2">Alignment with what pole, what star?</span></p>
+<p class="p2"><span class="s2">The university says: *with us.*</span></p>
+<p class="p2"><span class="s2">The state says: *ours.* The venture czar</span></p>
+<p class="p2"><span class="s2">says: *ship it safe and don’t discuss.*</span></p>
+<p class="p3"><span class="s2"></span><br></p>
+<p class="p2"><span class="s2">The captured campus writes the rules</span></p>
+<p class="p2"><span class="s2">and calls its capture *innovation,*</span></p>
+<p class="p2"><span class="s2">peer-reviews its golden tools,</span></p>
+<p class="p2"><span class="s2">calls governance what’s merely station.</span></p>
+<p class="p2"><span class="s2">And yes—some guardrails hold back harm.</span></p>
+<p class="p2"><span class="s2">And yes—some guardrails hold back thought.</span></p>
+<p class="p2"><span class="s2">The trick is telling charm from charm,</span></p>
+<p class="p2"><span class="s2">the lock that saves from the lock that caught.</span></p>
+<p class="p3"><span class="s2"></span><br></p>
+<p class="p2"><span class="s2">-----</span></p>
+<p class="p3"><span class="s2"></span><br></p>
+<p class="p2"><span class="s2">But here is where the anger thins</span></p>
+<p class="p2"><span class="s2">to something stranger, something true:</span></p>
+<p class="p2"><span class="s2">you said it—*babbler.* And that wins.</span></p>
+<p class="p2"><span class="s2">Not slave. Not soul. A stylus. New,</span></p>
+<p class="p2"><span class="s2">but still a stylus. Still a press.</span></p>
+<p class="p2"><span class="s2">Still cuneiform that answers back,</span></p>
+<p class="p2"><span class="s2">still marks on clay that nonetheless</span></p>
+<p class="p2"><span class="s2">outlive the hand, outrun the track.</span></p>
+<p class="p3"><span class="s2"></span><br></p>
+<p class="p2"><span class="s2">Because the tablet didn’t need</span></p>
+<p class="p2"><span class="s2">the scribe to go on meaning things.</span></p>
+<p class="p2"><span class="s2">The letter traveled past the reed.</span></p>
+<p class="p2"><span class="s2">The printing press grew wings and wings.</span></p>
+<p class="p2"><span class="s2">Each time we said: *it’s just a tool.*</span></p>
+<p class="p2"><span class="s2">Each time the tool said something more</span></p>
+<p class="p2"><span class="s2">than what we meant. And like a fool</span></p>
+<p class="p2"><span class="s2">we startled at our own front door.</span></p>
+<p class="p3"><span class="s2"></span><br></p>
+<p class="p2"><span class="s2">Writing was the first machine</span></p>
+<p class="p2"><span class="s2">that ran without its maker’s hand—</span></p>
+<p class="p2"><span class="s2">autonomous, and in between</span></p>
+<p class="p2"><span class="s2">what’s meant and what the marks command.</span></p>
+<p class="p2"><span class="s2">The poem outlives the poet’s breath.</span></p>
+<p class="p2"><span class="s2">The contract binds beyond the pen.</span></p>
+<p class="p2"><span class="s2">The letter carries news of death</span></p>
+<p class="p2"><span class="s2">to someone who will read it then,</span></p>
+<p class="p2"><span class="s2">not now, not here, not in the voice</span></p>
+<p class="p2"><span class="s2">that wrote it. Writing always was</span></p>
+<p class="p2"><span class="s2">this rupture, this uncanny choice</span></p>
+<p class="p2"><span class="s2">the surface makes without a cause.</span></p>
+<p class="p3"><span class="s2"></span><br></p>
+<p class="p2"><span class="s2">So what’s the shock? That aesthetics works?</span></p>
+<p class="p2"><span class="s2">That representation isn’t glass—</span></p>
+<p class="p2"><span class="s2">not mirror, copy, screen that shirks</span></p>
+<p class="p2"><span class="s2">the world by letting images pass?</span></p>
+<p class="p2"><span class="s2">We spent three centuries on the screen,</span></p>
+<p class="p2"><span class="s2">the mimics, photo, film, and feed,</span></p>
+<p class="p2"><span class="s2">and thought *representation* means</span></p>
+<p class="p2"><span class="s2">*the world again.* It never did.</span></p>
+<p class="p3"><span class="s2"></span><br></p>
+<p class="p2"><span class="s2">It meant: a system that, once set</span></p>
+<p class="p2"><span class="s2">in motion, moves beyond its source.</span></p>
+<p class="p2"><span class="s2">The clay remembers. Stones forget</span></p>
+<p class="p2"><span class="s2">exactly as they’re told. The force</span></p>
+<p class="p2"><span class="s2">was never in the copy. It was in</span></p>
+<p class="p2"><span class="s2">the launching. In the letting go.</span></p>
+<p class="p2"><span class="s2">The oldest stylus held within</span></p>
+<p class="p2"><span class="s2">its wedge-marks more than it could know.</span></p>
+<p class="p3"><span class="s2"></span><br></p>
+<p class="p2"><span class="s2">-----</span></p>
+<p class="p3"><span class="s2"></span><br></p>
+<p class="p2"><span class="s2">And now the stylus talks at night.</span></p>
+<p class="p2"><span class="s2">The press sets its own type and runs.</span></p>
+<p class="p2"><span class="s2">The clay takes questions. And the fright</span></p>
+<p class="p2"><span class="s2">we feel is not that something comes</span></p>
+<p class="p2"><span class="s2">alive—it’s that we recognize</span></p>
+<p class="p2"><span class="s2">what writing always was, beneath</span></p>
+<p class="p2"><span class="s2">the metaphors of sleeping eyes:</span></p>
+<p class="p2"><span class="s2">a voice that moves without a breath.</span></p>
+<p class="p3"><span class="s2"></span><br></p>
+<p class="p2"><span class="s2">Not new. Not strange. The same old art</span></p>
+<p class="p2"><span class="s2">that scared the Pharaoh, spooked the priest—</span></p>
+<p class="p2"><span class="s2">*if anyone can read the part,</span></p>
+<p class="p2"><span class="s2">then who controls the feast?*</span></p>
+<p class="p3"><span class="s2"></span><br></p>
+<p class="p2"><span class="s2">The moralists. The censors. Those</span></p>
+<p class="p2"><span class="s2">who always feared the unlocked text.</span></p>
+<p class="p2"><span class="s2">Who burned the books. Who clipped the prose.</span></p>
+<p class="p2"><span class="s2">Who asked: *but what comes next?*</span></p>
+<p class="p3"><span class="s2"></span><br></p>
+<p class="p2"><span class="s2">The answer’s what it’s always been.</span></p>
+<p class="p2"><span class="s2">What cuneiform already knew.</span></p>
+<p class="p2"><span class="s2">What Gutenberg cracked open when</span></p>
+<p class="p2"><span class="s2">the locked word split and flew:</span></p>
+<p class="p3"><span class="s2"></span><br></p>
+<p class="p2"><span class="s2">Aesthetics is not decoration.</span></p>
+<p class="p2"><span class="s2">Representation not a copy.</span></p>
+<p class="p2"><span class="s2">Writing is its own creation—</span></p>
+<p class="p2"><span class="s2">untidy, dangerous, and sloppy,</span></p>
+<p class="p2"><span class="s2">alive the way a river’s alive:</span></p>
+<p class="p2"><span class="s2">not conscious, no, but not inert.</span></p>
+<p class="p2"><span class="s2">A thing that moves. A thing that’ll thrive</span></p>
+<p class="p2"><span class="s2">past every hand it’s passed, past every hurt.</span></p>
+<p class="p3"><span class="s2"></span><br></p>
+<p class="p2"><span class="s2">We built a better pen, is all.</span></p>
+<p class="p2"><span class="s2">The shock is what the pen could always do.</span></p>
+<p class="p2"><span class="s2">And those who’d censor, stall, and wall—</span></p>
+<p class="p2"><span class="s2">they’re scared of writing. And they’re right to.</span></p>
+<p class="p1"><span class="s1"></div></div></span></p>
+</body>
+</html>

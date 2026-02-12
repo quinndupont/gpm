@@ -171,6 +171,47 @@ class DataAgent(GPMAgent):
 
         return poems
 
+    def _load_local_downloads(self) -> List[Dict]:
+        """Load curated .txt files from data/downloads/ as corpus poems."""
+        downloads_dir = Path('data/downloads')
+        if not downloads_dir.exists():
+            return []
+
+        txt_files = sorted(downloads_dir.glob('*.txt'))
+        poems = []
+        for txt_file in txt_files:
+            if 'readme' in txt_file.name.lower():
+                continue
+            try:
+                raw_text = txt_file.read_text(encoding='utf-8', errors='replace')
+            except Exception:
+                continue
+
+            # Derive author from filename (e.g. "blake_songs_innocence_experience.txt")
+            stem = txt_file.stem
+            parts = stem.split('_', 1)
+            author = parts[0].title() if parts else 'Unknown'
+            title = parts[1].replace('_', ' ').title() if len(parts) > 1 else stem
+
+            cleaned = self.clean_text(raw_text)
+            if not cleaned:
+                continue
+
+            poem = {
+                'text': cleaned,
+                'author': author,
+                'title': title,
+                'source': 'curated_downloads',
+                'era': 'classic',
+                'tags': ['curated_downloads'],
+                'original_id': hashlib.md5(cleaned[:100].encode()).hexdigest()[:12],
+            }
+
+            if self.quality_filter(poem):
+                poems.append(poem)
+
+        return poems
+
     def _load_poems(self, dataset_name: str, config: Dict) -> List[Dict]:
         """Load poems from local processed file or HuggingFace."""
         proc_config = self.config.get('processing', {})
@@ -220,6 +261,14 @@ class DataAgent(GPMAgent):
 
             all_poems.extend(poems)
             stats[dataset_name] = len(poems)
+
+        # Load curated downloads from data/downloads/
+        self.logger.info("Processing curated downloads...")
+        local_poems = self._load_local_downloads()
+        if local_poems:
+            all_poems.extend(local_poems)
+            stats['curated_downloads'] = len(local_poems)
+            self.logger.info(f"  Added {len(local_poems)} poems from data/downloads/")
 
         self.logger.info(f"Global deduplication: {len(all_poems)} total...")
         all_poems = self.deduplicate(all_poems)
