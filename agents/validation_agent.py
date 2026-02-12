@@ -1,7 +1,11 @@
+"""
+ValidationAgent: Filters and validates (prompt, poem) pairs for generator training.
+Removes low-quality, duplicate, or malformed poems.
+"""
 import json
 import re
 from pathlib import Path
-from typing import List, Dict
+from typing import List, Dict, Tuple
 
 from nlp_dedup import Deduper
 
@@ -10,105 +14,63 @@ from .base_agent import GPMAgent
 
 class ValidationAgent(GPMAgent):
     """
-    Filters and validates synthetic annotations
-    Removes low-quality, duplicate, or malformed analyses
+    Filters and validates (prompt, poem) pairs for poetry generator training.
     """
 
     def __init__(self, config: Dict):
-        super().__init__('validation_agent', config)
-        val_config = config.get('validation', config)
-        self.min_analysis_length = val_config.get('min_analysis_length', 200)
-        self.min_rating = val_config.get('min_rating', 2)
+        super().__init__("validation_agent", config)
+        val_config = config.get("validation", config)
+        self.min_poem_length = val_config.get("min_poem_length", 50)
+        self.min_lines = val_config.get("min_lines", 2)
+        self.check_repetition = val_config.get("check_repetition", True)
 
     def _has_repetition(self, text: str, threshold: int = 5) -> bool:
         """Detect if text has excessive repetition"""
-        sentences = re.split(r'[.!?]+', text)
+        lines = [l.strip().lower() for l in text.split("\n") if l.strip()]
         seen = {}
-        for sent in sentences:
-            normalized = sent.strip().lower()[:50]
-            if normalized:
-                seen[normalized] = seen.get(normalized, 0) + 1
-                if seen[normalized] > threshold:
+        for line in lines:
+            key = line[:80] if len(line) > 80 else line
+            if key:
+                seen[key] = seen.get(key, 0) + 1
+                if seen[key] > threshold:
                     return True
         return False
 
-    def validate_annotation(self, ann: Dict) -> tuple:
-        """Check if annotation meets quality standards"""
-        if ann.get('error'):
-            return False, f"Generation error: {ann['error']}"
+    def validate_pair(self, pair: Dict) -> Tuple[bool, str]:
+        """Check if (prompt, poem) pair meets quality standards"""
+        if pair.get("error"):
+            return False, f"Generation error: {pair['error']}"
 
-        # Support both processed format (analysis) and raw format (raw_response)
-        analysis = ann.get('analysis') or ann.get('raw_response', '')
+        prompt = pair.get("prompt", "").strip()
+        poem = pair.get("poem", "").strip()
 
-        # Check if this is a ranking task (has parsed_scores as array) vs analysis task
-        parsed_scores = ann.get('parsed_scores')
-        is_ranking_task = isinstance(parsed_scores, list) and len(parsed_scores) > 0
+        if not prompt:
+            return False, "Missing prompt"
+        if not poem:
+            return False, "Missing poem"
 
-        if is_ranking_task:
-            # Validation for ranking/comparative tasks
-            if not analysis:
-                return False, "Missing response"
+        if len(poem) < self.min_poem_length:
+            return False, f"Poem too short: {len(poem)} chars"
 
-            # For ranking tasks, just check that we have valid scores
-            if not parsed_scores:
-                return False, "No scores found in ranking task"
+        lines = [l for l in poem.split("\n") if l.strip()]
+        if len(lines) < self.min_lines:
+            return False, f"Poem has too few lines: {len(lines)}"
 
-            # Validate that scores are in valid range
-            for item in parsed_scores:
-                if isinstance(item, list) and len(item) >= 3:
-                    score = item[2]
-                    if not isinstance(score, int) or score < 1 or score > 5:
-                        return False, f"Invalid score in ranking: {score}"
-
-            return True, "passed"
-
-        # Validation for detailed analysis tasks
-        if len(analysis) < self.min_analysis_length:
-            return False, f"Analysis too short: {len(analysis)} chars"
-
-        word_count = len(analysis.split())
-        if word_count < 50:
-            return False, f"Insufficient analysis: {word_count} words"
-
-        if self._has_repetition(analysis):
+        if self.check_repetition and self._has_repetition(poem):
             return False, "Excessive repetition detected"
-
-        # Support both processed format (ratings) and raw format (parsed_scores)
-        ratings = ann.get('ratings') or ann.get('parsed_scores', {})
-        if isinstance(ratings, dict):
-            for key, val in ratings.items():
-                if isinstance(val, int) and (val < 1 or val > 5):
-                    return False, f"Invalid rating for {key}: {val}"
-
-        analysis_lower = analysis.lower()
-        has_content = any(
-            word in analysis_lower
-            for word in ['poem', 'verse', 'stanza', 'metaphor', 'image', 'theme', 'meter', 'rhyme']
-        )
-        if not has_content:
-            return False, "Analysis lacks poetic terminology"
 
         return True, "passed"
 
-    def deduplicate_analyses(self, annotations: List[Dict]) -> List[Dict]:
-        """Remove near-duplicate analyses using nlp_dedup (MinHash)."""
-        if not annotations:
-            return annotations
+    def deduplicate_poems(self, pairs: List[Dict]) -> List[Dict]:
+        """Remove near-duplicate poems using nlp_dedup (MinHash)."""
+        if not pairs:
+            return pairs
 
-        # Normalize field names before deduplication
-        # Support both 'analysis' and 'raw_response' fields
-        normalized = []
-        for ann in annotations:
-            norm_ann = ann.copy()
-            if 'raw_response' in ann and 'analysis' not in ann:
-                norm_ann['analysis'] = ann['raw_response']
-            normalized.append(norm_ann)
-
-        dedup_config = self.config.get('validation', {}).get('dedup', {})
+        dedup_config = self.config.get("validation", {}).get("dedup", {})
         deduper = Deduper(
-            split_method=dedup_config.get('split_method', 'word_ngram'),
-            ngram_size=dedup_config.get('ngram_size', 13),
-            similarity_threshold=dedup_config.get('similarity_threshold', 0.8),
+            split_method=dedup_config.get("split_method", "word_ngram"),
+            ngram_size=dedup_config.get("ngram_size", 13),
+            similarity_threshold=dedup_config.get("similarity_threshold", 0.8),
             store_corpus_to_disk=False,
             store_mask_to_disk=False,
             store_lsh_cache_to_disk=False,
@@ -117,71 +79,72 @@ class ValidationAgent(GPMAgent):
             verbose=False,
         )
         mask_gen = deduper.deduplicate(
-            corpus=normalized,
-            text_column='analysis',
-            output_dir='checkpoints/nlp_dedup_validation_tmp',
+            corpus=pairs,
+            text_column="poem",
+            output_dir="checkpoints/nlp_dedup_validation_tmp",
             overwrite=True,
-            num_docs=len(normalized),
+            num_docs=len(pairs),
         )
         mask = list(mask_gen)
-        # Return original annotations (not normalized) for the non-duplicates
-        return [annotations[i] for i, m in enumerate(mask) if not m['duplicate']]
+        return [pairs[i] for i, m in enumerate(mask) if not m["duplicate"]]
 
     def execute(self, input_data: Dict) -> Dict:
-        """Validate and filter annotations"""
-        input_file = input_data.get('annotations_file', 'data/annotated/gpm_annotations.jsonl')
-        output_file = Path('data/training/gpm_validated.jsonl')
+        """Validate and filter (prompt, poem) pairs"""
+        input_file = input_data.get(
+            "training_file", input_data.get("annotations_file", "data/gpm_generator_train.jsonl")
+        )
+        output_file = Path("data/training/gpm_validated.jsonl")
         output_file.parent.mkdir(parents=True, exist_ok=True)
 
-        annotations = []
+        pairs = []
         with open(input_file) as f:
             for line in f:
                 try:
-                    annotations.append(json.loads(line))
+                    pairs.append(json.loads(line))
                 except json.JSONDecodeError:
                     continue
 
-        self.logger.info(f"Loaded {len(annotations)} annotations for validation")
+        self.logger.info(f"Loaded {len(pairs)} pairs for validation")
 
         valid = []
         invalid = []
         reasons = {}
 
-        for ann in annotations:
-            is_valid, reason = self.validate_annotation(ann)
+        for pair in pairs:
+            is_valid, reason = self.validate_pair(pair)
             if is_valid:
-                valid.append(ann)
+                valid.append(pair)
             else:
-                invalid.append({**ann, 'failure_reason': reason})
+                invalid.append({**pair, "failure_reason": reason})
                 reasons[reason] = reasons.get(reason, 0) + 1
 
         self.logger.info(f"Valid: {len(valid)}, Invalid: {len(invalid)}")
         self.logger.info(f"Failure reasons: {reasons}")
 
-        valid = self.deduplicate_analyses(valid)
+        valid = self.deduplicate_poems(valid)
         self.logger.info(f"After deduplication: {len(valid)}")
 
-        with open(output_file, 'w') as f:
-            for ann in valid:
-                f.write(json.dumps(ann) + '\n')
+        with open(output_file, "w") as f:
+            for pair in valid:
+                f.write(json.dumps(pair) + "\n")
 
-        rejected_file = output_file.parent / 'gpm_rejected.jsonl'
-        with open(rejected_file, 'w') as f:
-            for ann in invalid:
-                f.write(json.dumps(ann) + '\n')
+        rejected_file = output_file.parent / "gpm_rejected.jsonl"
+        with open(rejected_file, "w") as f:
+            for pair in invalid:
+                f.write(json.dumps(pair) + "\n")
 
         self.save_state({
-            'status': 'completed',
-            'total_input': len(annotations),
-            'valid': len(valid),
-            'invalid': len(invalid),
-            'rejection_reasons': reasons,
-            'output_file': str(output_file)
+            "status": "completed",
+            "total_input": len(pairs),
+            "valid": len(valid),
+            "invalid": len(invalid),
+            "rejection_reasons": reasons,
+            "output_file": str(output_file),
         })
 
         return {
-            'validated_file': str(output_file),
-            'valid_count': len(valid),
-            'invalid_count': len(invalid),
-            'acceptance_rate': len(valid) / len(annotations) if annotations else 0
+            "validated_file": str(output_file),
+            "valid_count": len(valid),
+            "invalid_count": len(invalid),
+            "acceptance_rate": len(valid) / len(pairs) if pairs else 0,
         }

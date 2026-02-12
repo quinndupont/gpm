@@ -23,14 +23,13 @@ echo "Installing Python dependencies..."
 pip install -r requirements.txt
 
 # Create directories
-mkdir -p data/raw data/processed data/annotated data/training data/training/gpm_mlx
+mkdir -p data/raw data/processed data/training data/training/gpm_mlx
 mkdir -p models/base models/adapters
 mkdir -p logs checkpoints
-mkdir -p config/prompts
 
-# Pull Ollama model (optional - user can run manually)
+# Pull Ollama model (required for synthetic data generation)
 echo ""
-echo "To pull the annotation model, run:"
+echo "To pull the model for synthetic data generation, run:"
 echo "  ollama pull llama3.2:3b   # faster, ~2GB"
 echo "  # or: ollama pull llama3.2:8b   # better quality, ~5GB"
 echo ""

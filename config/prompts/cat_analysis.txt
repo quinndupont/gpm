@@ -1,3 +1,0 @@
-# CAT prompts moved to config/prompts/cat_criteria.yaml
-# Criteria: creativity, quality, innovativeness, similarity, poeticness
-# Format: ranked list "N. Author - Title : score" with forced 1-5 scale
