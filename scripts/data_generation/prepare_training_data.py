@@ -126,6 +126,19 @@ def collect_educator_examples(system: str) -> list[dict]:
         if q.strip() and lesson.strip():
             examples.append(to_educator_example(q, lesson, system))
 
+    # dialogues (T5): user=poem+critique+revised_poem, assistant=follow_up
+    for e in load_jsonl(EDUCATOR_TRAINING / "dialogues.jsonl"):
+        poem = poem_text(e.get("poem", {}))
+        critique = e.get("critique", "")
+        revised = e.get("revised_poem", "")
+        follow_up = e.get("follow_up", "")
+        if poem.strip() and critique.strip() and revised.strip() and follow_up.strip():
+            user = (
+                f"Original poem:\n---\n{poem}\n---\n\nYour critique:\n---\n{critique}\n---\n\n"
+                f"The student's revision:\n---\n{revised}\n---\n\nGive your follow-up: what improved, what still needs work."
+            )
+            examples.append(to_educator_example(user, follow_up, system))
+
     # autopsies: user=poem, assistant=autopsy
     for e in load_jsonl(ANNOTATED / "autopsies.jsonl"):
         poem = poem_text(e.get("poem", {}))
@@ -165,7 +178,7 @@ def main():
         if args.min_samples and len(educator) < args.min_samples:
             raise SystemExit(
                 f"Need at least {args.min_samples} educator examples (got {len(educator)}). "
-                + ("Run generate_critiques_seed, generate_comparisons, generate_revision_briefs first." if args.interim_educator else "Run generate_critiques_seed, generate_comparisons, generate_revision_briefs, generate_briefs, generate_lessons, generate_autopsies first.")
+                + ("Run generate_critiques_seed, generate_comparisons, generate_revision_briefs first." if args.interim_educator else "Run generate_critiques_seed, generate_comparisons, generate_revision_briefs, generate_briefs, generate_lessons, generate_dialogues, generate_autopsies first.")
             )
         random.shuffle(educator)
         n_val = max(1, len(educator) // 10) if len(educator) >= 2 else 0
