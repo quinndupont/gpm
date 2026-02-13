@@ -1,62 +1,119 @@
-# Good Poetry Model (GPM) — Poetry Generator
+# Poetry Chatbot — Educator + Poet (v3)
 
-Locally-trained poetry **generation** model. Takes writing prompts (theme, form, style) and produces original poems. Ollama + Llama 3.2 for synthetic data, MLX for fine-tuning. Optimized for Mac Mini M4 (24GB RAM).
+Two-model poetry system: **Educator** (mentor/critic) + **Poet** (generator). Cloud training on Modal, local inference via llama.cpp on Mac Mini M4. Training data via Claude API.
+
+See [poetry_chatbot_plan_v3.md](poetry_chatbot_plan_v3.md) for full spec.
+
+## Model choice
+
+**Base: Llama 3.1 14B Instruct** (`meta-llama/Llama-3.1-14B-Instruct`). Llama 3.2 has no 14B text model (only 1B/3B or 11B/90B vision). The plan requires capacity for voice; 3B struggles with subtle personality. 14B fits two Q4_K_M models (~8GB each) on 24GB Mac Mini.
 
 ## Setup
 
 ```bash
-./setup_gpm.sh
-source venv/bin/activate
-```
-
-Or manually:
-
-```bash
 pip install -r requirements.txt
-ollama pull llama3.2:3b
+# .env: ANTHROPIC_API_KEY, HF_TOKEN (accept Llama 3.1 license at huggingface.co)
+modal token set
+modal secret create huggingface-secret HF_TOKEN=your_token
 ```
+
+## Data prep
+
+Add raw poetry to `data/raw/good/` and `data/raw/bad/` (`.txt` or `.jsonl` with `text`/`poem` per line).
 
 ## Pipeline
 
-```bash
-# Full pipeline
-python orchestrator.py --phase full
+### 1. Data generation (Claude API)
 
-# Or run phases individually
-python orchestrator.py --phase data      # Build corpus from HuggingFace (~30 min)
-python orchestrator.py --phase prepare  # Generate prompt-poem pairs via Ollama (~8–12 hrs)
-python orchestrator.py --phase validate # Filter low-quality pairs (~15 min)
-python orchestrator.py --phase train    # MLX LoRA fine-tune (~3–4 hrs)
+| Script | Usage | Params |
+|--------|-------|--------|
+| `generate_critiques` | T1 workshop critiques | `--limit N`, `--output PATH`, `--model MODEL` |
+| `generate_briefs` | T2 generation briefs | `--input PATH`, `--limit N`, `--output PATH`, `--model MODEL` |
+| `generate_lessons` | T6 craft lessons | `--questions PATH`, `--limit N`, `--output PATH`, `--model MODEL` |
+| `generate_autopsies` | T4 cliché autopsies | `--limit N`, `--output PATH`, `--model MODEL` |
+| `generate_comparisons` | T3 comparative workshop | `--limit N`, `--output PATH`, `--model MODEL` |
+| `generate_dialogues` | T5 revision follow-ups | `--critiques PATH`, `--limit N`, `--output PATH`, `--model MODEL` |
+| `generate_poet_pairs` | Brief → poem pairs | `--briefs PATH`, `--limit N`, `--output PATH`, `--model MODEL` |
 
-# Resume after interruption
-python orchestrator.py --resume
-
-# Quick test (10 random poems, 5 synthetic, 2 style, 50 iters; trains to models/adapters/gpm_lora_test)
-python orchestrator.py --test
-```
-
-## Test
+Claude default: `claude-3-5-sonnet-20241022`.
 
 ```bash
-python test_gpm.py              # Generate villanelle (requires trained model)
-python test_trained_poetry.py   # Generate sonnet (requires trained model)
-python serve_gpm.py             # Ollama-compatible API on port 11435
+python scripts/data_generation/generate_briefs.py --limit 100
+python scripts/data_generation/generate_lessons.py --limit 50
+python scripts/data_generation/generate_critiques.py --limit 200
+# ... then autopsies, comparisons, dialogues, poet_pairs
 ```
+
+### 2. Prepare training data
+
+```bash
+python scripts/data_generation/prepare_training_data.py [--educator-only] [--poet-only] [--min-samples N] [--seed N]
+```
+
+Combines outputs into Llama 3 chat format. `--min-samples` caps dataset for quick test.
+
+### 3. Quality gate (optional)
+
+```bash
+python scripts/data_generation/quality_gate.py INPUT [--output PATH] [--reject-log PATH]
+```
+
+### 4. Upload to Modal
+
+```bash
+python scripts/modal/upload_data.py
+```
+
+Uploads `data/educator_training/{train,valid}.jsonl` and `data/poet_training/{train,valid}.jsonl` to `poetry-data` volume.
+
+### 5. Train + export (Modal)
+
+```bash
+# Educator
+modal run scripts/modal/train_educator.py [--num-epochs-override N]
+modal run scripts/modal/export_gguf.py
+
+# Poet
+modal run scripts/modal/train_poet.py [--num-epochs-override N]
+modal run scripts/modal/export_gguf.py poet
+
+# Or orchestrate both
+modal run scripts/modal/modal_app.py [--educator-only] [--poet-only] [--train-only] [--num-epochs N]
+```
+
+### 6. Download + inference
+
+```bash
+modal volume get poetry-gguf llama3.1-14b-educator-Q4_K_M.gguf models/
+modal volume get poetry-gguf llama3.1-14b-poet-Q4_K_M.gguf models/
+
+python scripts/inference/pipeline.py "Write a poem about winter light" [--config PATH]
+```
+
+## First test
+
+```bash
+./scripts/run_first_test.sh
+```
+
+Runs: 3 briefs + 3 lessons → prepare (5 samples) → upload → train (1 epoch) → export.
 
 ## Config
 
-[config/gpm_config.yaml](config/gpm_config.yaml):
-
-- **ollama**: model, temperature, rate_limit_delay
-- **data_preparation**: reverse_prompt_limit, synthetic_count, style_topics
-- **validation**: min_poem_length, min_lines, check_repetition
-- **training**: base_model, iterations, learning_rate, lora_rank, lora_alpha, max_seq_length (1024), eval_prompts
+| File | Purpose |
+|------|---------|
+| `config/educator_training.yaml` | QLoRA (r=64, α=128, 4 epochs, max_seq 1024) |
+| `config/poet_training.yaml` | QLoRA (r=64, α=128, 6 epochs, max_seq 512) |
+| `config/export_pipeline.yaml` | Merge + GGUF Q4_K_M |
+| `config/inference_config.yaml` | llama.cpp n_ctx, temperature, etc. |
 
 ## Structure
 
-- `agents/` — Data, DataPreparation, Validation, Training
-- `config/gpm_config.yaml` — Central config
-- `data/` — processed corpus → gpm_generator_train.jsonl → validated
-- `models/adapters/` — LoRA output
-
-Training uses ChatML format (system + user + assistant) with `--mask-prompt` so loss is computed only on the poem.
+```
+data/raw/{good,bad}/     # Poetry input
+data/annotated/          # Claude outputs (critiques, autopsies, comparisons)
+data/educator_training/  # train.jsonl, valid.jsonl
+data/poet_training/      # train.jsonl, valid.jsonl
+persona/                 # pedagogy_design_doc.md, persona_condensed.txt, anti_llm_isms.txt
+scripts/{data_generation,modal,eval,inference}/
+```

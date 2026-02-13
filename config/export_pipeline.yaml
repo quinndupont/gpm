@@ -1,0 +1,25 @@
+# Model Export Pipeline — S3.4
+# Merge LoRA → GGUF (Q4_K_M)
+
+merge:
+  load_precision: "bfloat16"
+  operation: "merge_and_unload"
+  output_path: "/vol/merged/{model_name}/"
+
+quantization:
+  intermediate_format: "f16"
+  primary_quant: "Q4_K_M"
+  fallback_quant: "Q5_K_M"
+  aggressive_quant: "Q3_K_M"
+  validation:
+    check_file_integrity: true
+    max_file_size_gb: 20
+    perplexity_test: true
+    max_perplexity_degradation: 0.05
+  cleanup:
+    remove_f16_intermediate: true
+    retain_merged_hf: false
+  output_path: "/vol/gguf/"
+
+naming: "{base_model}-{task}-{quant}.gguf"
+# Examples: llama3.1-14b-educator-Q4_K_M.gguf, llama3.1-14b-poet-Q4_K_M.gguf
