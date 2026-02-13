@@ -98,8 +98,8 @@ modal run scripts/modal/modal_app.py [--educator-only] [--poet-only] [--train-on
 ### 5. Download + inference
 
 ```bash
-modal volume get poetry-gguf qwen2.5-7b-educator-Q4_K_M.gguf models/
-modal volume get poetry-gguf qwen2.5-7b-poet-Q4_K_M.gguf models/
+modal volume get --force poetry-gguf qwen2.5-7b-educator-Q4_K_M.gguf models/
+modal volume get --force poetry-gguf qwen2.5-7b-poet-Q4_K_M.gguf models/
 
 python scripts/inference/pipeline.py "Write a poem about winter light" [--config PATH]
 ```

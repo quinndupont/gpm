@@ -36,8 +36,8 @@ if [[ "$SKIP_GEN" == true ]]; then
   run modal run scripts/modal/export_gguf.py::export_educator
   run modal run scripts/modal/export_gguf.py::export_poet
   mkdir -p models
-  modal volume get poetry-gguf qwen2.5-7b-educator-Q4_K_M.gguf models/ || true
-  modal volume get poetry-gguf qwen2.5-7b-poet-Q4_K_M.gguf models/ || true
+  modal volume get --force poetry-gguf qwen2.5-7b-educator-Q4_K_M.gguf models/ || true
+  modal volume get --force poetry-gguf qwen2.5-7b-poet-Q4_K_M.gguf models/ || true
   log "Done."
   exit 0
 fi
@@ -61,7 +61,7 @@ run modal run scripts/modal/export_gguf.py::export_educator_interim
 
 log "=== Step 6: Download interim educator ==="
 mkdir -p models
-modal volume get poetry-gguf qwen2.5-7b-educator-interim-Q4_K_M.gguf models/ || { log "Interim educator GGUF not found."; exit 1; }
+modal volume get --force poetry-gguf qwen2.5-7b-educator-interim-Q4_K_M.gguf models/ || { log "Interim educator GGUF not found."; exit 1; }
 
 log "=== Step 7: Local educator generates briefs, autopsies, lessons ==="
 run python3 scripts/data_generation/generate_with_local_educator.py --all --limit-briefs $BRIEFS --limit-lessons $LESSONS
@@ -84,7 +84,7 @@ run modal run scripts/modal/export_gguf.py::export_educator
 run modal run scripts/modal/export_gguf.py::export_poet
 
 log "=== Step 13: Download final models ==="
-modal volume get poetry-gguf qwen2.5-7b-educator-Q4_K_M.gguf models/ || { log "Educator GGUF not found."; exit 1; }
-modal volume get poetry-gguf qwen2.5-7b-poet-Q4_K_M.gguf models/ || { log "Poet GGUF not found."; exit 1; }
+modal volume get --force poetry-gguf qwen2.5-7b-educator-Q4_K_M.gguf models/ || { log "Educator GGUF not found."; exit 1; }
+modal volume get --force poetry-gguf qwen2.5-7b-poet-Q4_K_M.gguf models/ || { log "Poet GGUF not found."; exit 1; }
 
 log "Done. Test: python scripts/inference/pipeline.py \"Write a poem about winter light\""

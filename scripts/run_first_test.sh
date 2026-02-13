@@ -16,8 +16,8 @@ if [[ -f "$PREPARED" && -f data/poet_training/train.jsonl ]]; then
   run modal run scripts/modal/export_gguf.py::export_educator
   run modal run scripts/modal/export_gguf.py::export_poet
   mkdir -p models
-  modal volume get poetry-gguf qwen2.5-7b-educator-Q4_K_M.gguf models/ || true
-  modal volume get poetry-gguf qwen2.5-7b-poet-Q4_K_M.gguf models/ || true
+  modal volume get --force poetry-gguf qwen2.5-7b-educator-Q4_K_M.gguf models/ || true
+  modal volume get --force poetry-gguf qwen2.5-7b-poet-Q4_K_M.gguf models/ || true
 else
   log "=== Step 1: Hard tasks (Anthropic Opus) ==="
   run python3 scripts/data_generation/generate_critiques_seed.py --limit-bad 5 --limit-good 5
@@ -34,7 +34,7 @@ else
   log "=== Step 4: Export + download interim educator ==="
   run modal run scripts/modal/export_gguf.py::export_educator_interim
   mkdir -p models
-  modal volume get poetry-gguf qwen2.5-7b-educator-interim-Q4_K_M.gguf models/ || { log "Interim educator not found."; exit 1; }
+  modal volume get --force poetry-gguf qwen2.5-7b-educator-interim-Q4_K_M.gguf models/ || { log "Interim educator not found."; exit 1; }
 
   log "=== Step 5: Local educator generates briefs, autopsies, lessons ==="
   run python3 scripts/data_generation/generate_with_local_educator.py --all --limit-briefs 5 --limit-autopsies 5 --limit-lessons 5
@@ -53,8 +53,8 @@ else
   log "=== Step 9: Export + download final models ==="
   run modal run scripts/modal/export_gguf.py::export_educator
   run modal run scripts/modal/export_gguf.py::export_poet
-  modal volume get poetry-gguf qwen2.5-7b-educator-Q4_K_M.gguf models/ || true
-  modal volume get poetry-gguf qwen2.5-7b-poet-Q4_K_M.gguf models/ || true
+  modal volume get --force poetry-gguf qwen2.5-7b-educator-Q4_K_M.gguf models/ || true
+  modal volume get --force poetry-gguf qwen2.5-7b-poet-Q4_K_M.gguf models/ || true
 fi
 
 log "=== Test inference ==="

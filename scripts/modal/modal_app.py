@@ -40,7 +40,7 @@ def main():
                 check=True,
             )
 
-    print("Done. Download GGUF: modal volume get poetry-gguf <filename> ./models/")
+    print("Done. Download GGUF: modal volume get --force poetry-gguf <filename> ./models/")
 
 
 if __name__ == "__main__":
