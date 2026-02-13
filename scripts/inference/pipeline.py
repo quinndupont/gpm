@@ -11,6 +11,7 @@ CONFIG_PATH = ROOT / "config" / "inference_config.yaml"
 PERSONA_PATH = ROOT / "persona" / "educator_neutral.txt"
 PERSONA_FALLBACK = ROOT / "persona" / "persona_condensed.txt"
 BRIEF_CAP = 1200  # ~300 tokens for poet input
+REVISION_CTX_CAP = 2400  # draft + critique + brief for poet revision input
 
 
 def load_config(path: Path):
@@ -98,10 +99,27 @@ class PoetryPipeline:
             brief = brief[:BRIEF_CAP].rsplit("\n", 1)[0] + "\n\n[truncated]"
         return brief + "\n\nOutput ONLY the poem. Do not repeat the brief. Do not add commentary."
 
+    def _build_poet_revision_prompt(
+        self, draft: str, critique: str, revision_brief: str, user_input: str = ""
+    ) -> str:
+        user_ctx = ""
+        if user_input.strip():
+            user_ctx = f"\n\nPoet's additional direction:\n---\n{user_input.strip()}\n---\n\n"
+        ctx = (
+            f"Previous draft:\n---\n{draft}\n---\n\n"
+            f"Educator critique:\n---\n{critique}\n---\n\n"
+            f"Revision directions:\n---\n{revision_brief}\n---\n"
+            f"{user_ctx}"
+            "Revise the poem according to the critique and directions. Output ONLY the revised poem."
+        )
+        if len(ctx) > REVISION_CTX_CAP:
+            ctx = ctx[:REVISION_CTX_CAP].rsplit("\n", 1)[0] + "\n\n[truncated]"
+        return ctx
+
     def _poet_generate(self, prompt: str, is_revision: bool = False) -> str:
         temp = 0.75 if is_revision else 0.8
         self._load_models()
-        poet_prompt = self._build_poet_prompt(prompt)
+        poet_prompt = prompt if is_revision else self._build_poet_prompt(prompt)
         r = self.poet.create_chat_completion(
             messages=[
                 {
@@ -149,12 +167,41 @@ class PoetryPipeline:
             "If the poem has found its shape, say so — use 'this poem has found its shape.'"
         )
 
-    def _build_revision_brief_prompt(self, draft: str, critique: str, brief: str) -> str:
+    def _build_revision_brief_prompt(
+        self,
+        draft: str,
+        critique: str,
+        brief: str,
+        revision_history: list,
+        user_input: str = "",
+    ) -> str:
+        history_ctx = ""
+        prev = revision_history[:-1]  # exclude current (draft/critique passed separately)
+        if prev:
+            # Include last 2 revision cycles to stay within context
+            prev = prev[-2:] if len(prev) > 2 else prev
+            parts = [f"Draft:\n{h['draft']}\nYour critique:\n{h['critique']}" for h in prev]
+            history_ctx = (
+                "\n\nPrevious revision(s) and your critiques:\n---\n"
+                + "\n---\n".join(parts)
+                + "\n---\n\nThis is the current draft. Ensure your brief targets what still needs fixing."
+            )
+        user_ctx = ""
+        if user_input.strip():
+            user_ctx = (
+                f"\n\nPoet's additional direction (incorporate into your brief):\n---\n"
+                f"{user_input.strip()}\n---\n\n"
+            )
         return (
             f"Original brief:\n---\n{brief}\n---\n\n"
             f"Current draft:\n---\n{draft}\n---\n\n"
-            f"Your critique:\n---\n{critique}\n---\n\n"
-            "Construct a COMPACT revised generation brief (~300 tokens). Angle, clichés to avoid, imagery domain, form. No flourish."
+            f"Your critique:\n---\n{critique}\n---\n"
+            f"{history_ctx}"
+            f"{user_ctx}"
+            "Construct a COMPACT revised generation brief (~300 tokens). "
+            "Each critique point must map to a concrete revision direction. "
+            "The poet receives: this draft, your critique, and your brief — ensure your brief translates critique into actionable directions. "
+            "Angle, clichés to avoid, imagery domain, form. No flourish."
         )
 
     def _build_final_note_prompt(self, final_draft: str, brief: str) -> str:
@@ -170,6 +217,7 @@ class PoetryPipeline:
         user_request: str,
         max_revisions: int = None,
         verbose: bool = False,
+        interactive: bool = False,
     ) -> dict:
         revisions = max_revisions if max_revisions is not None else self.max_revisions
 
@@ -205,17 +253,27 @@ class PoetryPipeline:
                     print("\n  ✓ Educator approved — poem complete.\n", flush=True)
                 break
 
+            user_input = ""
+            if interactive:
+                raw = input("\nYour direction for revision (Enter to skip): ").strip()
+                user_input = raw
+
             if verbose:
                 print(f"→ Educator: building revision brief...", flush=True)
             revision_brief = self._educator_generate(
-                self._build_revision_brief_prompt(draft, critique, brief),
+                self._build_revision_brief_prompt(
+                    draft, critique, brief, revision_history[:-1], user_input
+                ),
                 task="revision_brief",
             )
             out("EDUCATOR", f"Revision brief → Poet", revision_brief)
 
             if verbose:
                 print(f"→ Poet: generating revision {i + 1}...", flush=True)
-            draft = self._poet_generate(revision_brief, is_revision=True)
+            revision_prompt = self._build_poet_revision_prompt(
+                draft, critique, revision_brief, user_input
+            )
+            draft = self._poet_generate(revision_prompt, is_revision=True)
             out("POET", f"Revision {i + 1} draft → Educator", draft)
 
         return {
@@ -242,7 +300,9 @@ def main():
 
     if args.request:
         max_rev = args.max_revisions if args.max_revisions is not None else pipeline.max_revisions
-        result = pipeline.generate(args.request, max_revisions=max_rev, verbose=verbose)
+        result = pipeline.generate(
+            args.request, max_revisions=max_rev, verbose=verbose, interactive=False
+        )
         print("\n" + "═" * 60 + "\nFINAL POEM\n" + "═" * 60 + "\n")
         print(result["final_poem"])
         return
@@ -260,7 +320,9 @@ def main():
             max_rev = r
     except ValueError:
         pass
-    result = pipeline.generate(request, max_revisions=max_rev, verbose=verbose)
+    result = pipeline.generate(
+        request, max_revisions=max_rev, verbose=verbose, interactive=True
+    )
     print("\n" + "═" * 60 + "\nFINAL POEM\n" + "═" * 60 + "\n")
     print(result["final_poem"])
 

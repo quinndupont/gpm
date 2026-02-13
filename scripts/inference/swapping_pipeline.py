@@ -78,7 +78,7 @@ class SwappingPipeline(PoetryPipeline):
     def _poet_generate(self, prompt: str, is_revision: bool = False) -> str:
         self._load("poet")
         temp = 0.75 if is_revision else 0.8
-        poet_prompt = self._build_poet_prompt(prompt)
+        poet_prompt = prompt if is_revision else self._build_poet_prompt(prompt)
         r = self.active_model.create_chat_completion(
             messages=[
                 {
