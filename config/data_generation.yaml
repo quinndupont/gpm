@@ -1,0 +1,16 @@
+# Data generation: Anthropic for hard tasks, local for easier
+# Hard tasks: critiques, comparisons, revision_briefs (Opus)
+# Easier: briefs, autopsies, lessons (Sonnet or local)
+
+quotas:
+  opus_max: 50
+  sonnet_max: 400
+
+local:
+  backend: ollama
+  model: qwen2.5:7b-instruct
+
+# Contrastive balancing: bad poems ~114, good ~34k
+# Bad: use in comparison + critique + autopsy (each 3x)
+good_critique_subsample: 200
+revision_brief_count: 50

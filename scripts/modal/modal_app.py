@@ -29,14 +29,14 @@ def main():
         extra = ["--num-epochs-override", str(args.num_epochs)] if args.num_epochs else []
         run_script("train_educator.py", extra)
         if not args.train_only:
-            run_script("export_gguf.py")  # defaults to educator
+            subprocess.run([sys.executable, "-m", "modal", "run", str(ROOT / "scripts" / "modal" / "export_gguf.py") + "::export_educator"], check=True)
 
     if run_poet:
         extra = ["--num-epochs-override", str(args.num_epochs)] if args.num_epochs else []
         run_script("train_poet.py", extra)
         if not args.train_only:
             subprocess.run(
-                [sys.executable, "-m", "modal", "run", str(ROOT / "scripts" / "modal" / "export_gguf.py"), "poet"],
+                [sys.executable, "-m", "modal", "run", str(ROOT / "scripts" / "modal" / "export_gguf.py") + "::export_poet"],
                 check=True,
             )
 

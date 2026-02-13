@@ -1,8 +1,7 @@
 # Poet Model Training — S3.3
-# Modal QLoRA fine-tune, 14B base
-# For 32B: use gpu_32b, rank=32, alpha=64
+# Modal QLoRA fine-tune, Qwen 2.5 7B base
 
-base_model: "meta-llama/Llama-3.1-14B-Instruct"
+base_model: "Qwen/Qwen2.5-7B-Instruct"
 model_loading:
   quantization: "nf4"
   compute_dtype: "bfloat16"

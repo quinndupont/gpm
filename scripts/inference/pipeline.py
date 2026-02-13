@@ -8,7 +8,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 CONFIG_PATH = ROOT / "config" / "inference_config.yaml"
-PERSONA_PATH = ROOT / "persona" / "persona_condensed.txt"
+PERSONA_PATH = ROOT / "persona" / "educator_neutral.txt"
+PERSONA_FALLBACK = ROOT / "persona" / "persona_condensed.txt"
+BRIEF_CAP = 1200  # ~300 tokens for poet input
 
 
 def load_config(path: Path):
@@ -23,12 +25,13 @@ class Config:
     def __init__(self, yaml_config: dict):
         edu = yaml_config.get("educator", {})
         poet = yaml_config.get("poet", {})
-        self.educator_model_path = edu.get("model_path", "./models/llama3.1-14b-educator-Q4_K_M.gguf")
+        self.educator_model_path = edu.get("model_path", "./models/qwen2.5-7b-educator-Q4_K_M.gguf")
         self.educator_ctx = edu.get("n_ctx", 4096)
-        self.poet_model_path = poet.get("model_path", "./models/llama3.1-14b-poet-Q4_K_M.gguf")
+        self.poet_model_path = poet.get("model_path", "./models/qwen2.5-7b-poet-Q4_K_M.gguf")
         self.poet_ctx = poet.get("n_ctx", 2048)
         self.max_revisions = yaml_config.get("max_revisions", 3)
-        self.educator_persona_condensed = PERSONA_PATH.read_text() if PERSONA_PATH.exists() else ""
+        p = PERSONA_PATH if PERSONA_PATH.exists() else PERSONA_FALLBACK
+        self.educator_persona_condensed = p.read_text().strip() if p.exists() else ""
         self.user_style_profile = None
 
 
@@ -86,26 +89,32 @@ class PoetryPipeline:
             **params,
             top_p=0.9,
             repeat_penalty=1.1,
-            stop=["<|eot_id|>", "</s>"],
+            stop=["<|im_end|>", "<|endoftext|>"],
         )
         return r["choices"][0]["message"]["content"]
+
+    def _build_poet_prompt(self, brief: str) -> str:
+        if len(brief) > BRIEF_CAP:
+            brief = brief[:BRIEF_CAP].rsplit("\n", 1)[0] + "\n\n[truncated]"
+        return brief + "\n\nOutput ONLY the poem. Do not repeat the brief. Do not add commentary."
 
     def _poet_generate(self, prompt: str, is_revision: bool = False) -> str:
         temp = 0.75 if is_revision else 0.8
         self._load_models()
+        poet_prompt = self._build_poet_prompt(prompt)
         r = self.poet.create_chat_completion(
             messages=[
                 {
                     "role": "system",
-                    "content": "You are a poet. Write with precision, musicality, and originality. Every word must earn its place.",
+                    "content": "You are a poet. You receive generation briefs and write poems. You never output instructions, critique, or analysis — only poems.",
                 },
-                {"role": "user", "content": prompt},
+                {"role": "user", "content": poet_prompt},
             ],
             temperature=temp,
             top_p=0.95,
             repeat_penalty=1.15,
             max_tokens=500,
-            stop=["<|eot_id|>", "</s>"],
+            stop=["<|im_end|>", "<|endoftext|>"],
         )
         return r["choices"][0]["message"]["content"]
 
@@ -116,18 +125,16 @@ class PoetryPipeline:
     def _build_brief_prompt(self, user_request: str) -> str:
         style_ctx = ""
         if self.user_profile:
-            style_ctx = f"\n\nThis poet's style profile:\n{self.user_profile}\nGuide toward this sensibility without mere imitation.\n"
+            style_ctx = f"\n\nThis poet's style profile:\n{self.user_profile}\n"
         return (
             f'A poet has asked for help. Their request:\n\n"{user_request}"\n\n'
-            "Construct a generation brief. Include:\n"
-            "- Your specific angle (not the obvious one)\n"
-            "- At least 8 specific clichés to avoid\n"
-            "- An unexpected imagery domain\n"
-            "- Form/structure guidance (argued)\n"
-            "- Sound/rhythm guidance\n"
-            "- Structural arc\n"
+            "Construct a COMPACT generation brief (~300 tokens max). Include:\n"
+            "- Angle (2-3 sentences, not the obvious approach)\n"
+            "- Clichés to avoid (5-6 specific phrases for this topic)\n"
+            "- Imagery domain (1-2 sentences, unexpected)\n"
+            "- Form guidance (1-2 sentences)\n"
             f"{style_ctx}"
-            "Write as you would — in your voice, about this specific poem."
+            "No rhetorical flourish. Actionable only."
         )
 
     def _build_critique_prompt(self, draft: str, brief: str, history: list) -> str:
@@ -147,7 +154,7 @@ class PoetryPipeline:
             f"Original brief:\n---\n{brief}\n---\n\n"
             f"Current draft:\n---\n{draft}\n---\n\n"
             f"Your critique:\n---\n{critique}\n---\n\n"
-            "Construct a revised generation brief that addresses your critique while preserving what's working."
+            "Construct a COMPACT revised generation brief (~300 tokens). Angle, clichés to avoid, imagery domain, form. No flourish."
         )
 
     def _build_final_note_prompt(self, final_draft: str, brief: str) -> str:
@@ -158,51 +165,104 @@ class PoetryPipeline:
             "Keep it to 3-5 sentences."
         )
 
-    def generate(self, user_request: str) -> dict:
+    def generate(
+        self,
+        user_request: str,
+        max_revisions: int = None,
+        verbose: bool = False,
+    ) -> dict:
+        revisions = max_revisions if max_revisions is not None else self.max_revisions
+
+        def out(agent: str, label: str, text: str):
+            if verbose:
+                sep = "─" * 60
+                body = text.strip() if text else "(no output)"
+                print(f"\n{sep}\n[{agent}] {label}\n{sep}\n{body}\n", flush=True)
+
+        if verbose:
+            print("\n→ Educator: generating brief...", flush=True)
         brief = self._educator_generate(self._build_brief_prompt(user_request), task="brief")
+        out("EDUCATOR", "Generation brief → Poet", brief)
+
+        if verbose:
+            print("→ Poet: generating initial draft...", flush=True)
         draft = self._poet_generate(brief)
+        out("POET", "Initial draft → Educator", draft)
+
         revision_history = []
-        for i in range(self.max_revisions):
+        for i in range(revisions):
+            if verbose:
+                print(f"→ Educator: critiquing (revision {i + 1})...", flush=True)
             critique = self._educator_generate(
                 self._build_critique_prompt(draft, brief, revision_history),
                 task="critique",
             )
             revision_history.append({"draft": draft, "critique": critique, "iteration": i})
+            out("EDUCATOR", f"Critique (revision {i + 1}) → Poet", critique)
+
             if self._educator_approves(critique):
+                if verbose:
+                    print("\n  ✓ Educator approved — poem complete.\n", flush=True)
                 break
+
+            if verbose:
+                print(f"→ Educator: building revision brief...", flush=True)
             revision_brief = self._educator_generate(
                 self._build_revision_brief_prompt(draft, critique, brief),
                 task="revision_brief",
             )
+            out("EDUCATOR", f"Revision brief → Poet", revision_brief)
+
+            if verbose:
+                print(f"→ Poet: generating revision {i + 1}...", flush=True)
             draft = self._poet_generate(revision_brief, is_revision=True)
-        final_note = self._educator_generate(
-            self._build_final_note_prompt(draft, brief),
-            task="final_note",
-        )
+            out("POET", f"Revision {i + 1} draft → Educator", draft)
+
         return {
             "final_poem": draft,
-            "educator_note": final_note,
             "generation_brief": brief,
             "revision_history": revision_history,
             "metadata": {
                 "revisions": len(revision_history),
-                "model_educator": "llama3.1-14b-educator-Q4_K_M",
-                "model_poet": "llama3.1-14b-poet-Q4_K_M",
+                "model_educator": "qwen2.5-7b-educator-Q4_K_M",
+                "model_poet": "qwen2.5-7b-poet-Q4_K_M",
             },
         }
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("request", type=str, help="User's poem request")
+    parser.add_argument("request", nargs="?", type=str, help="User's poem request (omit for interactive)")
     parser.add_argument("--config", type=Path, default=CONFIG_PATH)
+    parser.add_argument("--max-revisions", type=int, choices=[1, 2, 3, 4, 5], help="Max revisions (non-interactive)")
     args = parser.parse_args()
+
     pipeline = PoetryPipeline(args.config)
-    result = pipeline.generate(args.request)
-    print("FINAL POEM:\n")
+    verbose = True
+
+    if args.request:
+        max_rev = args.max_revisions if args.max_revisions is not None else pipeline.max_revisions
+        result = pipeline.generate(args.request, max_revisions=max_rev, verbose=verbose)
+        print("\n" + "═" * 60 + "\nFINAL POEM\n" + "═" * 60 + "\n")
+        print(result["final_poem"])
+        return
+
+    # Interactive mode (single run)
+    REV_OPTS = "1, 2, 3, 4, 5"
+    max_rev = 2
+    request = input("Your poem request: ").strip()
+    if not request:
+        return
+    rev_input = input(f"Max revisions [{REV_OPTS}] (Enter={max_rev}): ").strip() or str(max_rev)
+    try:
+        r = int(rev_input)
+        if 1 <= r <= 5:
+            max_rev = r
+    except ValueError:
+        pass
+    result = pipeline.generate(request, max_revisions=max_rev, verbose=verbose)
+    print("\n" + "═" * 60 + "\nFINAL POEM\n" + "═" * 60 + "\n")
     print(result["final_poem"])
-    print("\nEDUCATOR NOTE:\n")
-    print(result["educator_note"])
 
 
 if __name__ == "__main__":

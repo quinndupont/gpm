@@ -6,8 +6,12 @@ from pathlib import Path
 
 import modal
 
-ROOT = Path(__file__).resolve().parents[2]
-CONFIG_PATH = ROOT / "config" / "poet_training.yaml"
+# Config path: works when run from project root (local or Modal workspace)
+_CONFIG = Path("config/poet_training.yaml")
+if not _CONFIG.exists():
+    _p = Path(__file__).resolve()
+    _CONFIG = _p.parents[1] / "config" / "poet_training.yaml" if len(_p.parents) > 1 else _CONFIG
+
 VOLUME_NAME = "poetry-data"
 CHECKPOINT_VOLUME = "poetry-checkpoints"
 
@@ -24,7 +28,7 @@ image = (
         "accelerate>=0.28",
         "pyyaml>=6.0",
     )
-    .add_local_file(str(ROOT / "config" / "poet_training.yaml"), "/config/poet_training.yaml")
+    .add_local_file(str(_CONFIG), "/config/poet_training.yaml")
 )
 
 app = modal.App("poetry-poet-train")
@@ -47,9 +51,8 @@ def train_poet(num_epochs_override: int | None = None):
         AutoModelForCausalLM,
         AutoTokenizer,
         BitsAndBytesConfig,
-        TrainingArguments,
     )
-    from trl import SFTTrainer
+    from trl import SFTConfig, SFTTrainer
 
     cfg = yaml.safe_load(Path("/config/poet_training.yaml").read_text())
     model_cfg = cfg.get("model_loading", {})
@@ -57,7 +60,7 @@ def train_poet(num_epochs_override: int | None = None):
     train_cfg = cfg.get("training", {})
     ckpt_cfg = cfg.get("checkpointing", {})
 
-    base_model = cfg.get("base_model", "meta-llama/Llama-3.1-14B-Instruct")
+    base_model = cfg.get("base_model", "Qwen/Qwen2.5-7B-Instruct")
     num_epochs = num_epochs_override or train_cfg.get("num_epochs", 6)
     max_seq_len = train_cfg.get("max_seq_length", 512)
     save_path = Path(ckpt_cfg.get("save_path", "/vol/checkpoints/poet/"))
@@ -111,31 +114,32 @@ def train_poet(num_epochs_override: int | None = None):
     model = get_peft_model(model, lora_config)
 
     save_path.mkdir(parents=True, exist_ok=True)
-    training_args = TrainingArguments(
+    sft_config = SFTConfig(
         output_dir=str(save_path),
         per_device_train_batch_size=train_cfg.get("per_device_batch_size", 4),
         gradient_accumulation_steps=train_cfg.get("gradient_accumulation_steps", 4),
-        learning_rate=train_cfg.get("learning_rate", 2e-4),
+        learning_rate=float(train_cfg.get("learning_rate", 2e-4)),
         num_train_epochs=num_epochs,
         max_steps=-1,
-        warmup_ratio=train_cfg.get("warmup_ratio", 0.03),
-        weight_decay=train_cfg.get("weight_decay", 0.01),
+        warmup_ratio=float(train_cfg.get("warmup_ratio", 0.03)),
+        weight_decay=float(train_cfg.get("weight_decay", 0.01)),
         bf16=train_cfg.get("bf16", True),
         fp16=train_cfg.get("fp16", False),
         logging_steps=10,
         save_strategy="epoch",
         save_total_limit=ckpt_cfg.get("save_total_limit", 4),
         eval_strategy="epoch" if eval_dataset else "no",
+        max_length=max_seq_len,
+        dataset_text_field="messages",
+        packing=False,
     )
 
     trainer = SFTTrainer(
         model=model,
-        args=training_args,
+        args=sft_config,
         train_dataset=train_dataset,
         eval_dataset=eval_dataset,
-        dataset_text_field="messages",
-        max_seq_length=max_seq_len,
-        packing=False,
+        processing_class=tokenizer,
     )
     trainer.train()
     trainer.save_model(str(save_path / "final"))

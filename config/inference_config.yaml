@@ -2,8 +2,8 @@
 # llama.cpp Metal backend on Mac Mini M4
 
 educator:
-  model_path: "./models/llama3.1-14b-educator-Q4_K_M.gguf"
-  n_ctx: 4096
+  model_path: "./models/qwen2.5-7b-educator-Q4_K_M.gguf"
+  n_ctx: 32768
   n_threads: 8
   n_gpu_layers: -1
   use_mmap: true
@@ -13,20 +13,20 @@ educator:
     top_p: 0.9
     repeat_penalty: 1.1
     max_tokens: 800
-    stop: ["</s>", "<|eot_id|>"]
+    stop: ["<|im_end|>", "<|endoftext|>"]
   critique:
     temperature: 0.3
     top_p: 0.9
     repeat_penalty: 1.1
     max_tokens: 600
-    stop: ["</s>", "<|eot_id|>"]
+    stop: ["<|im_end|>", "<|endoftext|>"]
   final_note:
     temperature: 0.3
     max_tokens: 400
 
 poet:
-  model_path: "./models/llama3.1-14b-poet-Q4_K_M.gguf"
-  n_ctx: 2048
+  model_path: "./models/qwen2.5-7b-poet-Q4_K_M.gguf"
+  n_ctx: 32768
   n_threads: 8
   n_gpu_layers: -1
   use_mmap: true
@@ -35,7 +35,7 @@ poet:
     top_p: 0.95
     repeat_penalty: 1.15
     max_tokens: 500
-    stop: ["</s>", "<|eot_id|>"]
+    stop: ["<|im_end|>", "<|endoftext|>"]
   revision:
     temperature: 0.75
     top_p: 0.9
@@ -47,4 +47,4 @@ performance:
   sustained_throughput: ">=20 tokens/sec"
   model_load_time: "<30s per model"
 
-max_revisions: 3
+max_revisions: 2

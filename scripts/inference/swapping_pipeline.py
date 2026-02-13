@@ -7,7 +7,8 @@ import gc
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-PERSONA_PATH = ROOT / "persona" / "persona_condensed.txt"
+PERSONA_PATH = ROOT / "persona" / "educator_neutral.txt"
+PERSONA_FALLBACK = ROOT / "persona" / "persona_condensed.txt"
 
 from .pipeline import PoetryPipeline, Config
 
@@ -21,7 +22,8 @@ class SwappingPipeline(PoetryPipeline):
         self.config = Config(cfg)
         self.config.educator_model_path = str(ROOT / self.config.educator_model_path.lstrip("./"))
         self.config.poet_model_path = str(ROOT / self.config.poet_model_path.lstrip("./"))
-        self.config.educator_persona_condensed = PERSONA_PATH.read_text() if PERSONA_PATH.exists() else ""
+        p = PERSONA_PATH if PERSONA_PATH.exists() else PERSONA_FALLBACK
+        self.config.educator_persona_condensed = p.read_text().strip() if p.exists() else ""
         self.active_model = None
         self.active_role = None
         self.educator_system = self.config.educator_persona_condensed
@@ -69,25 +71,26 @@ class SwappingPipeline(PoetryPipeline):
             **params,
             top_p=0.9,
             repeat_penalty=1.1,
-            stop=["<|eot_id|>", "</s>"],
+            stop=["<|im_end|>", "<|endoftext|>"],
         )
         return r["choices"][0]["message"]["content"]
 
     def _poet_generate(self, prompt: str, is_revision: bool = False) -> str:
         self._load("poet")
         temp = 0.75 if is_revision else 0.8
+        poet_prompt = self._build_poet_prompt(prompt)
         r = self.active_model.create_chat_completion(
             messages=[
                 {
                     "role": "system",
-                    "content": "You are a poet. Write with precision, musicality, and originality. Every word must earn its place.",
+                    "content": "You are a poet. You receive generation briefs and write poems. You never output instructions, critique, or analysis — only poems.",
                 },
-                {"role": "user", "content": prompt},
+                {"role": "user", "content": poet_prompt},
             ],
             temperature=temp,
             top_p=0.95,
             repeat_penalty=1.15,
             max_tokens=500,
-            stop=["<|eot_id|>", "</s>"],
+            stop=["<|im_end|>", "<|endoftext|>"],
         )
         return r["choices"][0]["message"]["content"]

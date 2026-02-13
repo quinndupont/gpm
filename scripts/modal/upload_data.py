@@ -20,7 +20,7 @@ def main():
         (POET_TRAINING / "valid.jsonl", "poet_valid.jsonl"),
     ]
 
-    with vol.batch_upload() as batch:
+    with vol.batch_upload(force=True) as batch:
         for local, remote in files:
             if local.exists():
                 batch.put_file(str(local), remote)

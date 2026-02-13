@@ -1,6 +1,8 @@
 # Model Export Pipeline — S3.4
 # Merge LoRA → GGUF (Q4_K_M)
 
+base_model: "Qwen/Qwen2.5-7B-Instruct"
+
 merge:
   load_precision: "bfloat16"
   operation: "merge_and_unload"
@@ -22,4 +24,4 @@ quantization:
   output_path: "/vol/gguf/"
 
 naming: "{base_model}-{task}-{quant}.gguf"
-# Examples: llama3.1-14b-educator-Q4_K_M.gguf, llama3.1-14b-poet-Q4_K_M.gguf
+# Examples: qwen2.5-7b-educator-Q4_K_M.gguf, qwen2.5-7b-poet-Q4_K_M.gguf
