@@ -113,7 +113,7 @@ class PoetryPipeline:
             temperature=temp,
             top_p=0.95,
             repeat_penalty=1.15,
-            max_tokens=500,
+            max_tokens=4096,
             stop=["<|im_end|>", "<|endoftext|>"],
         )
         return r["choices"][0]["message"]["content"]

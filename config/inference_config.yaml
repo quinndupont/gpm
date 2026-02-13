@@ -34,13 +34,13 @@ poet:
     temperature: 0.8
     top_p: 0.95
     repeat_penalty: 1.15
-    max_tokens: 500
+    max_tokens: 4096
     stop: ["<|im_end|>", "<|endoftext|>"]
   revision:
     temperature: 0.75
     top_p: 0.9
     repeat_penalty: 1.1
-    max_tokens: 500
+    max_tokens: 4096
 
 performance:
   first_token_latency: "<100ms"
