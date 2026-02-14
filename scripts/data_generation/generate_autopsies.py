@@ -37,6 +37,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--limit", type=int, default=0)
     parser.add_argument("--output", type=Path, default=ANNOTATED / "autopsies.jsonl")
+    parser.add_argument("--replace", action="store_true", help="Overwrite output file (default: append)")
     parser.add_argument("--model", type=str, default=CLAUDE_SONNET_4_5)
     args = parser.parse_args()
 
@@ -47,7 +48,7 @@ def main():
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
 
-    with open(args.output, "w") as f:
+    with open(args.output, "w" if args.replace else "a") as f:
         for i, poem in enumerate(poems):
             text = poem_text(poem)
             if not text.strip():

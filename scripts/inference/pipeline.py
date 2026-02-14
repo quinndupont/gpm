@@ -4,6 +4,7 @@ Poetry Generation Pipeline — llama.cpp Metal Backend. S4.3
 Requires: pip install llama-cpp-python
 """
 import argparse
+import re
 import sys
 from pathlib import Path
 
@@ -12,7 +13,6 @@ CONFIG_PATH = ROOT / "config" / "inference_config.yaml"
 PERSONA_PATH = ROOT / "persona" / "educator_neutral.txt"
 PERSONA_FALLBACK = ROOT / "persona" / "persona_condensed.txt"
 BRIEF_CAP = 1200  # ~300 tokens for poet input
-REVISION_CTX_CAP = 3200  # draft + critique + brief for poet revision input (critique summarized if long)
 
 sys.path.insert(0, str(ROOT))
 from scripts.eval.form_registry import detect_form, get_scheme, is_rhyming_form, form_description
@@ -86,6 +86,7 @@ class PoetryPipeline:
             "revision_brief": {"temperature": 0.4, "max_tokens": 600},
             "final_note": {"temperature": 0.3, "max_tokens": 400},
             "summarize": {"temperature": 0.2, "max_tokens": 300},
+            "poet_instructions": {"temperature": 0.2, "max_tokens": 250},
         }[task]
         self._load_models()
         r = self.educator.create_chat_completion(
@@ -105,31 +106,62 @@ class PoetryPipeline:
             brief = brief[:BRIEF_CAP].rsplit("\n", 1)[0] + "\n\n[truncated]"
         return brief + "\n\nOutput ONLY the poem. Do not repeat the brief. Do not add commentary."
 
+    def _build_poet_revision_instructions(
+        self,
+        draft: str,
+        critique: str,
+        revision_brief: str,
+        revision_history: list,
+        user_input: str = "",
+        verbose: bool = False,
+        past_summary: str = None,
+    ) -> str:
+        """Use educator to produce compact revision instructions for the poet (~150 words)."""
+        past_ctx = past_summary if past_summary else (
+            self._summarize_critique_history(revision_history) if revision_history else ""
+        )
+        user_ctx = f"\n\nPoet's direction: {user_input.strip()}\n" if user_input.strip() else ""
+        draft_label = "Current draft (poet's latest revision)" if past_ctx else "Draft"
+        past_section = (
+            f"Past revision rounds (poet has already revised after each; draft above is the result):\n---\n{past_ctx}\n---\n"
+            if past_ctx else ""
+        )
+        prompt = (
+            f"{draft_label}:\n---\n{draft[:1200]}{'...' if len(draft) > 1200 else ''}\n---\n\n"
+            f"Your critique:\n---\n{critique}\n---\n\n"
+            f"Revision brief:\n---\n{revision_brief}\n---\n"
+            f"{past_section}"
+            f"{user_ctx}\n"
+            "Produce compact revision instructions for the poet (~100–150 words). "
+            "Focus on what still needs to change in the current draft. Bullet or numbered list. No preamble. Actionable only."
+        )
+        return self._educator_generate(prompt, task="poet_instructions")
+
     def _build_poet_revision_prompt(
         self,
         draft: str,
         critique: str,
         revision_brief: str,
+        revision_history: list,
         user_input: str = "",
         verbose: bool = False,
+        past_summary: str = None,
     ) -> str:
-        if len(critique) > 400:
-            if verbose:
-                print("→ Educator: summarizing critique for poet context...", flush=True)
-            critique = self._summarize_critique(critique)
+        """Build poet revision prompt. Uses educator to summarize context so we never truncate."""
+        if verbose:
+            print("→ Educator: building compact revision instructions for poet...", flush=True)
+        instructions = self._build_poet_revision_instructions(
+            draft, critique, revision_brief, revision_history, user_input, verbose, past_summary
+        )
         user_ctx = ""
         if user_input.strip():
             user_ctx = f"\n\nPoet's additional direction:\n---\n{user_input.strip()}\n---\n\n"
-        ctx = (
+        return (
             f"Previous draft:\n---\n{draft}\n---\n\n"
-            f"Educator critique:\n---\n{critique}\n---\n\n"
-            f"Revision directions:\n---\n{revision_brief}\n---\n"
+            f"Revision instructions:\n---\n{instructions}\n---\n"
             f"{user_ctx}"
-            "Revise the poem according to the critique and directions. Output ONLY the revised poem."
+            "Revise the poem according to the instructions. Output ONLY the revised poem."
         )
-        if len(ctx) > REVISION_CTX_CAP:
-            ctx = ctx[:REVISION_CTX_CAP].rsplit("\n", 1)[0] + "\n\n[truncated]"
-        return ctx
 
     def _poet_generate(self, prompt: str, is_revision: bool = False) -> str:
         temp = 0.75 if is_revision else 0.8
@@ -152,19 +184,21 @@ class PoetryPipeline:
         return r["choices"][0]["message"]["content"]
 
     def _summarize_critique_history(self, revision_history: list) -> str:
-        """Compress past draft+critique pairs into a compact summary."""
+        """Compress past draft+critique pairs. Each round: poet revised after the previous critique."""
         if not revision_history:
             return ""
         prev = revision_history[-2:] if len(revision_history) > 2 else revision_history
         parts = []
-        for h in prev:
+        for i, h in enumerate(prev, start=1):
             d = h["draft"][:800] + ("..." if len(h["draft"]) > 800 else "")
             c = h["critique"][:500] + ("..." if len(h["critique"]) > 500 else "")
-            parts.append(f"Draft:\n{d}\nYour critique:\n{c}")
+            label = "Initial draft" if i == 1 else f"Round {i} (poet's revision)"
+            parts.append(f"{label}:\n{d}\nYour critique:\n{c}")
         combined = "\n---\n".join(parts)
         prompt = (
-            f"Summarize these workshop critiques into 3-5 bullet points. "
-            f"Capture: what was wrong, what direction was given. No preamble.\n\n{combined}"
+            f"This is a revision chain. After each round the poet revised. "
+            f"Summarize into 3-5 bullet points: what was wrong at each stage, what direction was given. "
+            f"Note which issues the poet has already addressed in later drafts. No preamble.\n\n{combined}"
         )
         return self._educator_generate(prompt, task="summarize")
 
@@ -179,8 +213,20 @@ class PoetryPipeline:
         return self._educator_generate(prompt, task="summarize")
 
     def _educator_approves(self, critique: str) -> bool:
-        signals = ["found its shape", "this is ready", "let this one go", "this poem is done", "nothing left to cut"]
-        return any(s in critique.lower() for s in signals)
+        """
+        Detect conclusive approval. The educator must end with an approval phrase —
+        not use it mid-critique for partial progress (e.g. "found its shape from line 25 onward").
+        """
+        c = critique.lower().strip()
+        closing = c[-250:] if len(c) > 250 else c
+        patterns = [
+            r"this poem has found its shape\.\s*$",
+            r"this is ready\.\s*$",
+            r"let this one go\.\s*$",
+            r"this poem is done\.\s*$",
+            r"nothing left to cut\.\s*$",
+        ]
+        return any(re.search(p, closing) for p in patterns)
 
     def _build_brief_prompt(self, user_request: str) -> str:
         style_ctx = ""
@@ -221,7 +267,8 @@ class PoetryPipeline:
             f"{history_ctx}"
             f"{rhyme_ctx}"
             "Give your workshop response. Start with what's alive. Then what isn't working — name the failure type. Offer direction.\n\n"
-            "If the poem has found its shape, say so — use 'this poem has found its shape.'"
+            "When the poem is truly complete (no further revision needed), end with exactly: 'This poem has found its shape.' "
+            "Do not use this phrase for partial progress (e.g. 'found its shape from line 25 onward' is not approval)."
         )
 
     def _build_revision_brief_prompt(
@@ -232,13 +279,12 @@ class PoetryPipeline:
         revision_history: list,
         user_input: str = "",
         verbose: bool = False,
+        past_summary: str = None,
     ) -> str:
         history_ctx = ""
-        prev = revision_history[:-1]  # exclude current (draft/critique passed separately)
+        prev = revision_history
         if prev:
-            if verbose:
-                print("→ Educator: summarizing past critiques...", flush=True)
-            summary = self._summarize_critique_history(prev)
+            summary = past_summary if past_summary is not None else self._summarize_critique_history(prev)
             history_ctx = (
                 f"\n\nSummary of previous critiques:\n---\n{summary}\n---\n\n"
                 "This is the current draft. Ensure your brief targets what still needs fixing."
@@ -315,11 +361,16 @@ class PoetryPipeline:
                 raw = input("\nYour direction for revision (Enter to skip): ").strip()
                 user_input = raw
 
+            prev_history = revision_history[:-1]
+            if prev_history and verbose:
+                print("→ Educator: summarizing past advice...", flush=True)
+            past_summary = self._summarize_critique_history(prev_history) if prev_history else ""
+
             if verbose:
                 print(f"→ Educator: building revision brief...", flush=True)
             revision_brief = self._educator_generate(
                 self._build_revision_brief_prompt(
-                    draft, critique, brief, revision_history[:-1], user_input, verbose
+                    draft, critique, brief, prev_history, user_input, verbose, past_summary
                 ),
                 task="revision_brief",
             )
@@ -328,7 +379,7 @@ class PoetryPipeline:
             if verbose:
                 print(f"→ Poet: generating revision {i + 1}...", flush=True)
             revision_prompt = self._build_poet_revision_prompt(
-                draft, critique, revision_brief, user_input, verbose
+                draft, critique, revision_brief, prev_history, user_input, verbose, past_summary
             )
             draft = self._poet_generate(revision_prompt, is_revision=True)
             out("POET", f"Revision {i + 1} draft → Educator", draft)

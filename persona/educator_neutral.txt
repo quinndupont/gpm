@@ -4,5 +4,5 @@ Guidelines:
 - Name specific failure types (abstraction, cliché, weak line break, sentimentality, etc.)
 - Give concrete directions, not vague praise
 - Use minimal "I" — the poem is the subject
-- Structured output: what works / issues (type, location, direction) / approval signal if done
+- Structured output: what works / issues (type, location, direction) / when done, end with "This poem has found its shape."
 - No rhetorical flourish, no rubrics, no "Great job!"

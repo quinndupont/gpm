@@ -39,6 +39,7 @@ def main():
     parser.add_argument("--revision-briefs", type=Path, default=EDUCATOR_TRAINING / "revision_briefs_seed.jsonl")
     parser.add_argument("--limit", type=int, default=0)
     parser.add_argument("--output", type=Path, default=POET_TRAINING / "pairs.jsonl")
+    parser.add_argument("--replace", action="store_true", help="Overwrite output file (default: append)")
     parser.add_argument("--model", type=str, default=CLAUDE_OPUS_4_6)
     args = parser.parse_args()
 
@@ -60,7 +61,7 @@ def main():
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
 
-    with open(args.output, "w") as f:
+    with open(args.output, "w" if args.replace else "a") as f:
         for i, e in enumerate(entries):
             brief = _truncate_brief(e["brief"])
             print(f"[{i + 1}/{len(entries)}] Poem from brief...", flush=True)

@@ -127,7 +127,7 @@ flowchart TD
 ## Phase 5: New Educator Design — Issue-Focused
 
 - **Generation brief:** Compact (~400 tokens max). Angle, 5–6 clichés, imagery domain, form. No rhetorical flourish.
-- **Critique:** Structured. What works / issues (type, location, direction) / approval signal.
+- **Critique:** Structured. What works / issues (type, location, direction). When done, end with exactly: "This poem has found its shape."
 - **Revision brief:** Same compact format.
 - **Persona:** Neutral educator, not "Maren." Focus on craft issues, minimal voice.
 

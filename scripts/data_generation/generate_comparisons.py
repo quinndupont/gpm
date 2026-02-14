@@ -39,6 +39,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--limit", type=int, default=0, help="Max pairs (0=all bad poems)")
     parser.add_argument("--output", type=Path, default=ANNOTATED / "comparisons.jsonl")
+    parser.add_argument("--replace", action="store_true", help="Overwrite output file (default: append)")
     parser.add_argument("--seed", type=int, default=42)
     args = parser.parse_args()
 
@@ -59,7 +60,7 @@ def main():
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
 
-    with open(args.output, "w") as f:
+    with open(args.output, "w" if args.replace else "a") as f:
         for i, (poem_a, poem_b) in enumerate(pairs):
             text_a = poem_text(poem_a)
             text_b = poem_text(poem_b)

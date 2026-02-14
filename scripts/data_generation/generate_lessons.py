@@ -29,6 +29,7 @@ def main():
     parser.add_argument("--questions", type=Path, help="File with questions (one per line)")
     parser.add_argument("--limit", type=int, default=0)
     parser.add_argument("--output", type=Path, default=EDUCATOR_TRAINING / "lessons.jsonl")
+    parser.add_argument("--replace", action="store_true", help="Overwrite output file (default: append)")
     parser.add_argument("--model", type=str, default=CLAUDE_SONNET_4_5)
     args = parser.parse_args()
 
@@ -41,7 +42,7 @@ def main():
     system = get_educator_system_prompt()
     args.output.parent.mkdir(parents=True, exist_ok=True)
 
-    with open(args.output, "w") as f:
+    with open(args.output, "w" if args.replace else "a") as f:
         for i, q in enumerate(questions):
             print(f"[{i + 1}/{len(questions)}] Lesson: {q[:40]}...", flush=True)
             user_msg = LESSON_PROMPT.format(question=q)

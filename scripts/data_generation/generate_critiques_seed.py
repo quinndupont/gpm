@@ -29,7 +29,7 @@ CRITIQUE_PROMPT = """A student has brought this poem to workshop:
 Give your workshop response. Structure it as:
 1. What's alive — the specific moment where the poet's attention is on the page
 2. What isn't working — name the failure type (abstraction, cliché, weak line break, sentimentality, etc.), location, and direction
-3. If the poem has found its shape, say "this poem has found its shape."
+3. When the poem is truly complete (no further revision needed), end with exactly: "This poem has found its shape." Do not use this phrase for partial progress (e.g. "found its shape from line 25 onward" is not approval).
 
 Be specific. Offer concrete direction. No rubrics or scores."""
 
@@ -39,6 +39,7 @@ def main():
     parser.add_argument("--limit-bad", type=int, default=0, help="Max bad poems (0=all)")
     parser.add_argument("--limit-good", type=int, default=200, help="Max good poems to subsample")
     parser.add_argument("--output", type=Path, default=ANNOTATED / "critiques_seed.jsonl")
+    parser.add_argument("--replace", action="store_true", help="Overwrite output file (default: append)")
     parser.add_argument("--seed", type=int, default=42)
     args = parser.parse_args()
 
@@ -53,7 +54,7 @@ def main():
     poems = bad + good_subsample
     args.output.parent.mkdir(parents=True, exist_ok=True)
 
-    with open(args.output, "w") as f:
+    with open(args.output, "w" if args.replace else "a") as f:
         for i, poem in enumerate(poems):
             text = poem_text(poem)
             if not text.strip():

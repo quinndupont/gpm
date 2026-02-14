@@ -116,6 +116,7 @@ def main():
     parser.add_argument("--critique-model", type=str, default=CLAUDE_SONNET_4_5,
                         help="Model for critique narration (cheap)")
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--replace", action="store_true", help="Overwrite output files (default: append)")
     parser.add_argument("--forms", type=str, nargs="*", default=TARGET_FORMS,
                         help="Which forms to generate for")
     args = parser.parse_args()
@@ -133,8 +134,9 @@ def main():
     args.poet_output.parent.mkdir(parents=True, exist_ok=True)
     args.educator_output.parent.mkdir(parents=True, exist_ok=True)
 
-    poet_f = open(args.poet_output, "w")
-    edu_f = open(args.educator_output, "w")
+    mode = "w" if args.replace else "a"
+    poet_f = open(args.poet_output, mode)
+    edu_f = open(args.educator_output, mode)
 
     total = 0
     for form_name in args.forms:
