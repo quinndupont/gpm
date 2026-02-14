@@ -146,7 +146,22 @@ def collect_educator_examples(system: str) -> list[dict]:
         if poem.strip() and autopsy.strip():
             examples.append(to_educator_example(poem, autopsy, system))
 
+    # rhyme critiques: user=poem (with form context), assistant=rhyme-aware critique
+    for e in load_jsonl(EDUCATOR_TRAINING / "rhyme_critiques.jsonl"):
+        poem = e.get("poem", "")
+        critique = e.get("critique", "")
+        form = e.get("form", "")
+        scheme = e.get("expected_scheme", "")
+        if poem.strip() and critique.strip():
+            user = poem
+            if form and scheme:
+                user = f"[Form: {form}, scheme: {scheme}]\n\n{poem}"
+            examples.append(to_educator_example(user, critique, system))
+
     return examples
+
+
+POET_RHYME_SUFFIX = "\n\nWrite the poem. Output ONLY the poem — no title unless it's part of the poem, no commentary.\nFollow the specified form and rhyme scheme precisely."
 
 
 def collect_poet_examples() -> list[dict]:
@@ -157,6 +172,15 @@ def collect_poet_examples() -> list[dict]:
         if brief.strip() and poem.strip():
             user = brief + POET_USER_SUFFIX
             examples.append(to_poet_example(user, poem))
+
+    # rhyme pairs: brief with form constraint -> poem in that form
+    for e in load_jsonl(POET_TRAINING / "rhyme_pairs.jsonl"):
+        brief = e.get("brief", "")
+        poem = e.get("poem", "")
+        if brief.strip() and poem.strip():
+            user = brief + POET_RHYME_SUFFIX
+            examples.append(to_poet_example(user, poem))
+
     return examples
 
 
