@@ -5,21 +5,24 @@ FORMS = {
     "sonnet": {
         "rhyme_scheme": "ABAB CDCD EFEF GG",
         "line_count": 14,
+        "meter": "iambic pentameter",
         "variants": {
-            "petrarchan": {"rhyme_scheme": "ABBAABBA CDECDE", "line_count": 14},
-            "italian": {"rhyme_scheme": "ABBAABBA CDECDE", "line_count": 14},
-            "spenserian": {"rhyme_scheme": "ABAB BCBC CDCD EE", "line_count": 14},
-            "shakespearean": {"rhyme_scheme": "ABAB CDCD EFEF GG", "line_count": 14},
+            "petrarchan": {"rhyme_scheme": "ABBAABBA CDECDE", "line_count": 14, "meter": "iambic pentameter"},
+            "italian": {"rhyme_scheme": "ABBAABBA CDECDE", "line_count": 14, "meter": "iambic pentameter"},
+            "spenserian": {"rhyme_scheme": "ABAB BCBC CDCD EE", "line_count": 14, "meter": "iambic pentameter"},
+            "shakespearean": {"rhyme_scheme": "ABAB CDCD EFEF GG", "line_count": 14, "meter": "iambic pentameter"},
         },
     },
     "villanelle": {
         "rhyme_scheme": "ABA ABA ABA ABA ABA ABAA",
         "line_count": 19,
+        "meter": "iambic pentameter",
         "refrains": [1, 3],
     },
     "limerick": {
         "rhyme_scheme": "AABBA",
         "line_count": 5,
+        "meter": "anapestic",
     },
     "ghazal": {
         "rhyme_scheme": "AA BA CA DA EA",
@@ -32,11 +35,13 @@ FORMS = {
     "tercets": {
         "rhyme_scheme": "ABA BCB CDC DED",
         "repeating_unit": "ABA",
+        "meter": "iambic",
         "aliases": ["terza rima"],
     },
     "ballad": {
         "rhyme_scheme": "ABCB",
         "quatrain_form": True,
+        "meter": "iambic",
         "aliases": ["ballad stanza"],
     },
     "quatrain": {
@@ -46,16 +51,31 @@ FORMS = {
     "ottava_rima": {
         "rhyme_scheme": "ABABABCC",
         "line_count": 8,
+        "meter": "iambic pentameter",
         "aliases": ["ottava rima"],
     },
     "rhyme_royal": {
         "rhyme_scheme": "ABABBCC",
         "line_count": 7,
+        "meter": "iambic pentameter",
         "aliases": ["rhyme royal"],
     },
     "free_verse": {
         "rhyme_scheme": None,
     },
+}
+
+# Meter definitions: foot pattern + expected feet per line
+METERS = {
+    "iambic pentameter": {"foot": "01", "feet_per_line": 5},
+    "iambic tetrameter": {"foot": "01", "feet_per_line": 4},
+    "iambic trimeter": {"foot": "01", "feet_per_line": 3},
+    "iambic": {"foot": "01", "feet_per_line": None},  # any length
+    "trochaic": {"foot": "10", "feet_per_line": None},
+    "trochaic tetrameter": {"foot": "10", "feet_per_line": 4},
+    "anapestic": {"foot": "001", "feet_per_line": None},
+    "dactylic": {"foot": "100", "feet_per_line": None},
+    "spondaic": {"foot": "11", "feet_per_line": None},
 }
 
 # Forms where rhyming is expected
@@ -115,9 +135,31 @@ def get_line_count(form: str, variant: str | None = None) -> int | None:
     return spec.get("line_count")
 
 
+def get_meter(form: str, variant: str | None = None) -> str | None:
+    """Get the expected meter name for a form (e.g. 'iambic pentameter')."""
+    spec = FORMS.get(form)
+    if not spec:
+        return None
+    if variant and "variants" in spec:
+        v = spec["variants"].get(variant)
+        if v and "meter" in v:
+            return v["meter"]
+    return spec.get("meter")
+
+
+def get_meter_spec(meter_name: str) -> dict | None:
+    """Get the foot pattern and feet-per-line for a named meter."""
+    return METERS.get(meter_name)
+
+
 def is_rhyming_form(form: str) -> bool:
     """Return True if this form expects rhyming."""
     return form in RHYMING_FORMS
+
+
+def is_metered_form(form: str, variant: str | None = None) -> bool:
+    """Return True if this form expects a specific meter."""
+    return get_meter(form, variant) is not None
 
 
 def form_description(form: str, variant: str | None = None) -> str:
@@ -127,10 +169,13 @@ def form_description(form: str, variant: str | None = None) -> str:
         return ""
     scheme = get_scheme(form, variant)
     lc = get_line_count(form, variant)
+    meter = get_meter(form, variant)
     name = variant or form.replace("_", " ")
     parts = [name.title()]
     if lc:
         parts.append(f"{lc} lines")
+    if meter:
+        parts.append(meter)
     if scheme:
         parts.append(f"rhyme scheme {scheme}")
     return " — ".join(parts)

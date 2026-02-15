@@ -1,0 +1,143 @@
+# Curated base models for educator/poet training
+# Training: QLoRA NF4 on Modal A10G
+# Inference: GGUF on Mac M4 24GB
+#
+# Fit guidance:
+#   educator: Instruct models excel at critique, brief generation, structured output
+#   poet: General/creative models often produce less formulaic verse; instruct works too
+
+models:
+  # 7-9B: fit easily on A10G, two fit on M4 24GB at Q4/Q5
+  - hf_id: Qwen/Qwen2.5-7B-Instruct
+    short_name: qwen2.5-7b
+    param_b: 7
+    training_quant: nf4
+    inference_quants: [Q4_K_M, Q5_K_M]
+    recommended_inference_quant: Q4_K_M
+    educator_fit: recommended
+    educator_note: Strong instruct model; excellent for critique and structured briefs
+    poet_fit: good
+    poet_note: Good creative output; instruct tuning helps follow briefs
+
+  - hf_id: meta-llama/Llama-3.2-3B-Instruct
+    short_name: llama3.2-3b
+    param_b: 3
+    training_quant: nf4
+    inference_quants: [Q4_K_M, Q5_K_M]
+    recommended_inference_quant: Q5_K_M
+    educator_fit: good
+    educator_note: Compact; solid for educator if size-constrained
+    poet_fit: ok
+    poet_note: Smaller; may lack nuance for poetry
+
+  - hf_id: meta-llama/Llama-3.2-8B-Instruct
+    short_name: llama3.2-8b
+    param_b: 8
+    training_quant: nf4
+    inference_quants: [Q4_K_M, Q5_K_M]
+    recommended_inference_quant: Q4_K_M
+    educator_fit: recommended
+    educator_note: Strong instruct; good at analytical tasks
+    poet_fit: good
+    poet_note: Llama 3.2 has strong generative range
+
+  - hf_id: deepseek-ai/DeepSeek-V2-Lite-7B-Instruct
+    short_name: deepseek-v2-lite-7b
+    param_b: 7
+    training_quant: nf4
+    inference_quants: [Q4_K_M, Q5_K_M]
+    recommended_inference_quant: Q4_K_M
+    educator_fit: recommended
+    educator_note: Excellent reasoning; strong for critique and revision briefs
+    poet_fit: good
+    poet_note: Clear instruction-following for briefs
+
+  - hf_id: THUDM/glm-4-9b-chat-hf
+    short_name: glm4-9b
+    param_b: 9
+    training_quant: nf4
+    inference_quants: [Q4_K_M, Q5_K_M]
+    recommended_inference_quant: Q4_K_M
+    educator_fit: good
+    educator_note: Chat-tuned; capable for educator tasks
+    poet_fit: recommended
+    poet_note: Strong creative writing; less formulaic output
+
+  - hf_id: mistralai/Mistral-7B-Instruct-v0.3
+    short_name: mistral-7b
+    param_b: 7
+    training_quant: nf4
+    inference_quants: [Q4_K_M, Q5_K_M]
+    recommended_inference_quant: Q4_K_M
+    educator_fit: good
+    educator_note: Efficient instruct model; good for structured output
+    poet_fit: recommended
+    poet_note: Mistral excels at creative, varied generation
+
+  # 14-16B: A10G with smaller batch; two Q4_K_M fit on M4 24GB
+  - hf_id: Qwen/Qwen2.5-14B-Instruct
+    short_name: qwen2.5-14b
+    param_b: 14
+    training_quant: nf4
+    inference_quants: [Q4_K_M]
+    recommended_inference_quant: Q4_K_M
+    educator_fit: recommended
+    educator_note: Best educator fit; strong analytical and instruct capabilities
+    poet_fit: good
+    poet_note: More capacity for nuanced verse
+
+  - hf_id: meta-llama/Llama-3.1-14B-Instruct
+    short_name: llama3.1-14b
+    param_b: 14
+    training_quant: nf4
+    inference_quants: [Q4_K_M]
+    recommended_inference_quant: Q4_K_M
+    educator_fit: recommended
+    educator_note: Strong instruct; excellent for critique
+    poet_fit: recommended
+    poet_note: Llama 3.1 has strong creative range at 14B
+
+  - hf_id: deepseek-ai/DeepSeek-V2-Lite-16B-Instruct
+    short_name: deepseek-v2-lite-16b
+    param_b: 16
+    training_quant: nf4
+    inference_quants: [Q4_K_M]
+    recommended_inference_quant: Q4_K_M
+    educator_fit: recommended
+    educator_note: Top-tier reasoning for educator tasks
+    poet_fit: good
+    poet_note: Good instruction-following; capable verse
+
+  # 32B+: quantize for M4; single model or swap
+  - hf_id: Qwen/Qwen2.5-32B-Instruct
+    short_name: qwen2.5-32b
+    param_b: 32
+    training_quant: nf4
+    inference_quants: [Q4_K_M, Q3_K_M]
+    recommended_inference_quant: Q4_K_M
+    educator_fit: recommended
+    educator_note: Highest quality educator; needs swap for dual-model on 24GB
+    poet_fit: good
+    poet_note: Strong capacity; consider swap strategy
+
+  - hf_id: meta-llama/Llama-3.1-32B-Instruct
+    short_name: llama3.1-32b
+    param_b: 32
+    training_quant: nf4
+    inference_quants: [Q4_K_M, Q3_K_M]
+    recommended_inference_quant: Q4_K_M
+    educator_fit: recommended
+    educator_note: Best-in-class instruct; swap needed for 24GB
+    poet_fit: recommended
+    poet_note: Excellent creative output; swap for dual-model
+
+  - hf_id: mistralai/Mixtral-8x7B-Instruct-v0.1
+    short_name: mixtral-8x7b
+    param_b: 47
+    training_quant: nf4
+    inference_quants: [Q4_K_M, Q4_K_S, Q3_K_M]
+    recommended_inference_quant: Q4_K_S
+    educator_fit: good
+    educator_note: MoE; strong but tight on 24GB
+    poet_fit: recommended
+    poet_note: MoE diversity; strong creative variety

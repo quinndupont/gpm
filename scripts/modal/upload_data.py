@@ -6,6 +6,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 EDUCATOR_TRAINING = ROOT / "data" / "educator_training"
 POET_TRAINING = ROOT / "data" / "poet_training"
+RHYME_TRAINING = ROOT / "data" / "rhyme_training"
 
 VOLUME_NAME = "poetry-data"
 
@@ -18,6 +19,8 @@ def main():
         (EDUCATOR_TRAINING / "valid.jsonl", "educator_valid.jsonl"),
         (POET_TRAINING / "train.jsonl", "poet_train.jsonl"),
         (POET_TRAINING / "valid.jsonl", "poet_valid.jsonl"),
+        (RHYME_TRAINING / "train.jsonl", "rhyme_train.jsonl"),
+        (RHYME_TRAINING / "valid.jsonl", "rhyme_valid.jsonl"),
     ]
 
     with vol.batch_upload(force=True) as batch:

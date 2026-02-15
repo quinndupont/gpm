@@ -1,8 +1,6 @@
 # Poetry Chatbot — Educator + Poet (v3)
 
-Two-model poetry system: **Educator** (mentor/critic) + **Poet** (generator). Cloud training on Modal, local inference via llama.cpp on Mac Mini M4. Training data via Claude API.
-
-See [poetry_chatbot_plan_v3.md](poetry_chatbot_plan_v3.md) for full spec.
+Two-model poetry system: **Educator** (mentor/critic) + **Poet** (generator). Cloud training on Modal, local inference via llama.cpp (e.g. Mac). Training data via Claude API. See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for overview and [docs/DESIGN.md](docs/DESIGN.md) for full spec.
 
 ## Model choice
 
@@ -104,6 +102,8 @@ modal volume get --force poetry-gguf qwen2.5-7b-poet-Q4_K_M.gguf models/
 python scripts/inference/pipeline.py "Write a poem about winter light" [--config PATH]
 ```
 
+**Reference chat server:** Any client can call the educator via HTTP. Run `python serve_gpm.py [port]` (default 11435). `POST /api/chat` with JSON `{ "messages": [ {"role":"user","content":"..."} ] }` for streaming completion (application/x-ndjson).
+
 ## Full workflow
 
 ```bash
@@ -120,14 +120,21 @@ Runs: critiques_seed + comparisons + revision_briefs (Opus) → briefs + autopsi
 
 Runs: minimal data (5 bad + 5 good critiques, 5 comparisons, 5 revision briefs, 5 briefs, 5 autopsies, 5 lessons, 10 poet pairs) → prepare (`--min-samples 5`) → upload → train both (1 epoch) → export → inference. Skips if `train.jsonl` exists.
 
+## Optional: Rhyme-focused poet
+
+Train a poet with stronger rhyme/meter using curated poem pairs: `config/rhyme_training.yaml`, `scripts/data_generation/prepare_rhyme_training_data.py`, `scripts/modal/train_rhyme_poet.py`. Data lives in `data/rhyme_training/` (train.jsonl, valid.jsonl). Eval/selection: `scripts/eval/select_strong_rhyme_poems.py`, `scripts/eval/rhyme_analyzer.py`, `scripts/eval/meter_analyzer.py`.
+
 ## Config
 
 | File | Purpose |
 |------|---------|
 | `config/educator_training.yaml` | QLoRA (r=64, α=128, 4 epochs, max_seq 1024) |
 | `config/poet_training.yaml` | QLoRA (r=64, α=128, 6 epochs, max_seq 512) |
+| `config/rhyme_training.yaml` | Optional rhyme poet QLoRA / data mix |
 | `config/export_pipeline.yaml` | Merge + GGUF Q4_K_M |
 | `config/inference_config.yaml` | llama.cpp n_ctx, temperature, etc. |
+| `config/model_registry.yaml` | Base model registry and fit guidance |
+| `config/data_generation.yaml` | Data generation defaults |
 
 ## Structure
 
@@ -136,6 +143,14 @@ data/raw/{good,bad}/     # Poetry input
 data/annotated/          # Claude outputs (critiques, autopsies, comparisons)
 data/educator_training/  # train.jsonl, valid.jsonl
 data/poet_training/      # train.jsonl, valid.jsonl
+data/rhyme_training/     # optional rhyme poet data
 persona/                 # educator_neutral.txt, persona_condensed.txt
-scripts/{data_generation,modal,eval,inference}/
+adapters/                # optional LoRA adapters (e.g. poet_rhyme)
+config/                  # YAML configs
+scripts/{data_generation,modal,eval,inference,training}/
+serve_gpm.py             # Reference HTTP chat server (POST /api/chat)
 ```
+
+**Alternative inference:** If both models don’t fit in memory (e.g. 32B poet), use `scripts/inference/swapping_pipeline.py` to load one model at a time.
+
+**Eval:** `scripts/eval/` includes rhyme/meter analysis and form registry. `generation_quality.py` and `quant_preservation.py` are placeholders (not yet implemented).

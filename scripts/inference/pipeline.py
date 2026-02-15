@@ -15,8 +15,9 @@ PERSONA_FALLBACK = ROOT / "persona" / "persona_condensed.txt"
 BRIEF_CAP = 1200  # ~300 tokens for poet input
 
 sys.path.insert(0, str(ROOT))
-from scripts.eval.form_registry import detect_form, get_scheme, is_rhyming_form, form_description
+from scripts.eval.form_registry import detect_form, get_scheme, is_rhyming_form, is_metered_form, form_description
 from scripts.eval.rhyme_analyzer import analyze as analyze_rhyme, format_analysis_for_prompt
+from scripts.eval.meter_analyzer import analyze as analyze_meter, format_analysis_for_prompt as format_meter_for_prompt
 
 
 def load_config(path: Path):
@@ -249,23 +250,33 @@ class PoetryPipeline:
             prev = history[-1]
             history_ctx = f"\n\nPrevious draft and your critique:\n---\n{prev['draft']}\n---\nYour notes:\n{prev['critique']}\n\nThis is the revision.\n"
 
-        # If the brief specifies a rhyming form, run deterministic rhyme analysis
+        # If the brief specifies a formal form, run deterministic analysis
         # and inject the results so the educator has concrete data to work with.
-        rhyme_ctx = ""
+        form_ctx = ""
         detected = detect_form(brief)
-        if detected and is_rhyming_form(detected):
-            analysis = analyze_rhyme(draft, expected_form=detected)
-            rhyme_ctx = (
-                f"\n\nRhyme analysis (automated):\n---\n"
-                f"{format_analysis_for_prompt(analysis)}\n---\n\n"
-                "Address rhyme scheme adherence in your critique. "
-                "If the form's rhyme scheme is broken, name the specific lines and words.\n"
-            )
+        if detected:
+            form_parts = []
+            if is_rhyming_form(detected):
+                rhyme = analyze_rhyme(draft, expected_form=detected)
+                form_parts.append(
+                    f"Rhyme analysis (automated):\n{format_analysis_for_prompt(rhyme)}"
+                )
+            if is_metered_form(detected):
+                meter = analyze_meter(draft, expected_form=detected)
+                form_parts.append(
+                    f"Meter analysis (automated):\n{format_meter_for_prompt(meter)}"
+                )
+            if form_parts:
+                form_ctx = (
+                    "\n\n" + "\n\n".join(form_parts) + "\n\n"
+                    "Address form adherence in your critique — rhyme scheme and meter where applicable. "
+                    "Name specific lines and words.\n"
+                )
 
         return (
             f"Generation brief:\n---\n{brief}\n---\n\nDraft:\n---\n{draft}\n---\n"
             f"{history_ctx}"
-            f"{rhyme_ctx}"
+            f"{form_ctx}"
             "Give your workshop response. Start with what's alive. Then what isn't working — name the failure type. Offer direction.\n\n"
             "When the poem is truly complete (no further revision needed), end with exactly: 'This poem has found its shape.' "
             "Do not use this phrase for partial progress (e.g. 'found its shape from line 25 onward' is not approval)."
@@ -401,7 +412,13 @@ def main():
     parser.add_argument("request", nargs="?", type=str, help="User's poem request (omit for interactive)")
     parser.add_argument("--config", type=Path, default=CONFIG_PATH)
     parser.add_argument("--max-revisions", type=int, choices=[1, 2, 3, 4, 5], help="Max revisions (non-interactive)")
+    parser.add_argument("--train-rhyme", action="store_true", help="Local MLX rhyme fine-tune (strong_rhyme_poems + 20%% general)")
     args = parser.parse_args()
+
+    if args.train_rhyme:
+        import subprocess
+        subprocess.run([sys.executable, str(ROOT / "scripts" / "modal" / "modal_app.py"), "--train-rhyme"], cwd=str(ROOT), check=True)
+        return
 
     pipeline = PoetryPipeline(args.config)
     verbose = True

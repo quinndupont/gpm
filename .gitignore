@@ -17,6 +17,8 @@ data/educator_training/*
 !data/educator_training/.gitkeep
 data/poet_training/*
 !data/poet_training/.gitkeep
+data/rhyme_training/*
+!data/rhyme_training/.gitkeep
 data/cliche_db/*
 !data/cliche_db/.gitkeep
 data/training/

@@ -65,12 +65,13 @@ def _suffix_fallback(word: str) -> str:
     return w[-3:] if len(w) >= 3 else w
 
 
-def _rhyme_type(word_a: str, word_b: str) -> str:
+def _rhyme_type(word_a: str, word_b: str, strict: bool = False) -> str:
     """Classify rhyme between two words: 'perfect', 'slant', or 'none'.
 
     Perfect: identical rhyme suffix (stressed vowel onward).
     Slant: shared final consonant cluster with different vowel, OR same vowel
            with a single consonant difference (e.g. "time"/"mine").
+    strict=True: only CMU-verified perfect/identical count; no fallback, no slant.
     """
     if word_a == word_b:
         return "identical"
@@ -82,6 +83,8 @@ def _rhyme_type(word_a: str, word_b: str) -> str:
     if suffix_a is not None and suffix_b is not None:
         if suffix_a == suffix_b:
             return "perfect"
+        if strict:
+            return "none"
         parts_a = suffix_a.split()
         parts_b = suffix_b.split()
 
@@ -104,7 +107,10 @@ def _rhyme_type(word_a: str, word_b: str) -> str:
 
         return "none"
 
-    # Fallback: simple suffix matching for words not in CMU dict
+    # Fallback: simple suffix matching for words not in CMU dict.
+    # In strict mode, never count fallback — orthographic matches (-ing, -ed) are false positives.
+    if strict:
+        return "none"
     fa = _suffix_fallback(word_a)
     fb = _suffix_fallback(word_b)
     if fa == fb:
@@ -139,20 +145,19 @@ def _extract_lines(poem: str) -> list[str]:
 # Scheme detection
 # ---------------------------------------------------------------------------
 
-def _detect_scheme(end_words: list[str]) -> str:
-    """Detect the rhyme scheme from a list of end-words. Returns e.g. 'ABABCDCDEFEF'."""
+def _detect_scheme(end_words: list[str], strict: bool = False) -> str:
+    """Detect the rhyme scheme from a list of end-words. Returns e.g. 'ABABCDCDEFEF'.
+    strict=True: only CMU-verified perfect/identical rhymes count."""
     if not end_words:
         return ""
     labels: list[str] = []
-    word_to_label: dict[str, str] = {}
     next_label = 0
 
     for i, word in enumerate(end_words):
-        # Check if this word rhymes with any earlier word
         matched_label = None
         for j in range(i):
-            rt = _rhyme_type(word, end_words[j])
-            if rt in ("perfect", "slant", "identical"):
+            rt = _rhyme_type(word, end_words[j], strict=strict)
+            if rt in ("perfect", "slant", "identical") if not strict else rt in ("perfect", "identical"):
                 matched_label = labels[j]
                 break
         if matched_label is not None:
@@ -160,7 +165,6 @@ def _detect_scheme(end_words: list[str]) -> str:
         else:
             labels.append(chr(ord("A") + next_label))
             next_label += 1
-            # Cap at Z, then wrap to AA, AB, etc. (unlikely for poems)
             if next_label > 25:
                 next_label = 0
     return "".join(labels)
@@ -220,10 +224,13 @@ def analyze(
     indices, words = zip(*valid)
     words = list(words)
     detected_raw = _detect_scheme(words)
+    strict_detected_raw = _detect_scheme(words, strict=True)
 
-    # Build rhyme pairs
+    # Build rhyme pairs (permissive: perfect, slant, fallback)
     rhyme_pairs = []
+    strict_rhyme_pairs = []
     seen_pairs: set[tuple[int, int]] = set()
+    seen_strict: set[tuple[int, int]] = set()
     for i in range(len(words)):
         for j in range(i + 1, len(words)):
             rt = _rhyme_type(words[i], words[j])
@@ -234,6 +241,14 @@ def analyze(
                     "type": rt,
                     "lines": [indices[i] + 1, indices[j] + 1],
                 })
+            rt_strict = _rhyme_type(words[i], words[j], strict=True)
+            if rt_strict in ("perfect", "identical") and (i, j) not in seen_strict:
+                seen_strict.add((i, j))
+                strict_rhyme_pairs.append({
+                    "words": [words[i], words[j]],
+                    "type": rt_strict,
+                    "lines": [indices[i] + 1, indices[j] + 1],
+                })
 
     # Rhyme density: fraction of lines participating in at least one rhyme
     rhyming_lines = set()
@@ -241,6 +256,12 @@ def analyze(
         for ln in pair["lines"]:
             rhyming_lines.add(ln)
     density = len(rhyming_lines) / len(words) if words else 0.0
+
+    strict_rhyming_lines = set()
+    for pair in strict_rhyme_pairs:
+        for ln in pair["lines"]:
+            strict_rhyming_lines.add(ln)
+    strict_density = len(strict_rhyming_lines) / len(words) if words else 0.0
 
     # Expected scheme from form
     expected_scheme = None
@@ -283,11 +304,14 @@ def analyze(
 
     result = {
         "detected_scheme": _format_scheme(detected_raw),
+        "strict_detected_scheme": _format_scheme(strict_detected_raw),
         "expected_scheme": expected_scheme,
         "matches_form": matches_form,
         "deviations": deviations,
         "rhyme_pairs": rhyme_pairs,
+        "strict_rhyme_pairs": strict_rhyme_pairs,
         "rhyme_density": round(density, 2),
+        "strict_rhyme_density": round(strict_density, 2),
         "line_count": len(words),
         "end_words": words,
     }

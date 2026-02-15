@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""S6.3 Generation quality — cliché density, specificity, etc."""
+"""S6.3 Generation quality — cliché density, specificity. Placeholder: not yet implemented."""
 import argparse
 import json
 from pathlib import Path
@@ -13,8 +13,7 @@ def main():
     parser.add_argument("inputs", type=Path, nargs="+", help="JSONL with generated poems")
     parser.add_argument("--cliche-db", type=Path, default=CLICHE_DB)
     args = parser.parse_args()
-    # TODO: Load cliché DB, run poems through, count violations
-    # Pass: <1 phrase/image cliché per poem
+    # Intended: load cliché DB, run poems through, count violations. Pass: <1 cliché per poem.
     raise NotImplementedError("Requires populated cliché database")
 
 

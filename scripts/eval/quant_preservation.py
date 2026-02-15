@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""S6.2 Quantization voice preservation — R6.5."""
+"""S6.2 Quantization voice preservation. Placeholder: not yet implemented."""
 import argparse
 from pathlib import Path
 
@@ -12,8 +12,7 @@ def main():
     parser.add_argument("--gguf", type=Path, help="Quantized GGUF path")
     parser.add_argument("--eval-set", type=Path, help="Held-out JSONL")
     args = parser.parse_args()
-    # TODO: Compare perplexity FP16 vs GGUF on eval set
-    # Pass: <5% degradation
+    # Intended: compare perplexity FP16 vs GGUF on eval set. Pass: <5% degradation.
     raise NotImplementedError("Requires perplexity evaluation harness")
 
 

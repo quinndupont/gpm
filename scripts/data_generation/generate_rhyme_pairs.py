@@ -31,8 +31,13 @@ from scripts.eval.form_registry import (
     RHYMING_FORMS,
     form_description,
     get_scheme,
+    is_metered_form,
 )
 from scripts.eval.rhyme_analyzer import analyze, format_analysis_for_prompt
+from scripts.eval.meter_analyzer import (
+    analyze as analyze_meter,
+    format_analysis_for_prompt as format_meter_for_prompt,
+)
 
 # ---------------------------------------------------------------------------
 # Prompts
@@ -61,7 +66,7 @@ POET_PROMPT = """Generation brief:
 Write the poem. Output ONLY the poem — no title unless it's part of the poem, no commentary.
 Follow the specified form and rhyme scheme precisely."""
 
-CRITIQUE_PROMPT = """Here is a poem written in a specific form, along with an automated rhyme analysis.
+CRITIQUE_PROMPT = """Here is a poem written in a specific form, along with automated analysis.
 
 Poem:
 ---
@@ -71,9 +76,9 @@ Poem:
 Form requested: {form_name}
 Expected rhyme scheme: {expected_scheme}
 
-{rhyme_analysis}
+{analysis_block}
 
-Write a 3-5 sentence craft observation about how this poem handles (or fails to handle) its rhyme scheme. Be specific — name the words and lines. Note where rhymes land well and where they falter. If the scheme deviates, explain what breaks. No scores, no rubrics."""
+Write a 3-5 sentence craft observation about how this poem handles (or fails to handle) its form. Cover rhyme and meter where applicable. Be specific — name the words and lines. Note where rhymes land well, where meter holds or breaks for emphasis, and where control slips. No scores, no rubrics."""
 
 # ---------------------------------------------------------------------------
 # Topics — used when no external request source is available
@@ -177,9 +182,16 @@ def main():
             if not poem.strip():
                 continue
 
-            # Step C: Validate with rhyme analyzer
-            analysis = analyze(poem, expected_form=form_name)
-            analysis_text = format_analysis_for_prompt(analysis)
+            # Step C: Validate with rhyme and meter analyzers
+            rhyme_result = analyze(poem, expected_form=form_name)
+            analysis_parts = [format_analysis_for_prompt(rhyme_result)]
+
+            meter_result = None
+            if is_metered_form(form_name):
+                meter_result = analyze_meter(poem, expected_form=form_name)
+                analysis_parts.append(format_meter_for_prompt(meter_result))
+
+            analysis_block = "\n\n".join(analysis_parts)
 
             # Write poet pair regardless of validation (the model needs
             # to see the form constraint even if execution isn't perfect)
@@ -190,12 +202,12 @@ def main():
                 "form": form_name,
             }) + "\n")
 
-            # Step D: Generate educator critique informed by analyzer
+            # Step D: Generate educator critique informed by analyzers
             critique_msg = CRITIQUE_PROMPT.format(
                 poem=poem,
                 form_name=desc,
                 expected_scheme=scheme,
-                rhyme_analysis=analysis_text,
+                analysis_block=analysis_block,
             )
             try:
                 critique = call_claude(critique_msg, educator_system,
@@ -205,18 +217,30 @@ def main():
                 critique = ""
 
             if critique.strip():
-                edu_f.write(json.dumps({
+                edu_entry = {
                     "poem": poem,
                     "form": form_name,
                     "expected_scheme": scheme,
-                    "rhyme_analysis": analysis,
+                    "rhyme_analysis": rhyme_result,
                     "critique": critique,
-                }) + "\n")
+                }
+                if meter_result:
+                    edu_entry["meter_analysis"] = {
+                        "dominant_foot": meter_result.get("dominant_foot_name"),
+                        "consistency": meter_result.get("consistency"),
+                        "matches_meter": meter_result.get("matches_meter"),
+                        "variation_rate": meter_result.get("variation_rate"),
+                    }
+                edu_f.write(json.dumps(edu_entry) + "\n")
 
             total += 1
-            matches = analysis.get("matches_form")
+            matches = rhyme_result.get("matches_form")
             status = "pass" if matches else ("fail" if matches is False else "n/a")
-            print(f"  {label} Rhyme: {status} | density={analysis['rhyme_density']:.0%}",
+            meter_status = ""
+            if meter_result:
+                m = meter_result.get("matches_meter")
+                meter_status = f" | meter={'pass' if m else 'fail'} ({meter_result['consistency']:.0%})"
+            print(f"  {label} Rhyme: {status} | density={rhyme_result['rhyme_density']:.0%}{meter_status}",
                   flush=True)
 
     poet_f.close()

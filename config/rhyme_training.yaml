@@ -1,0 +1,38 @@
+# Rhyme-focused poet training — Modal QLoRA
+# 80% strong_rhyme_poems + 20% general (anti-collapse)
+
+base_model: "Qwen/Qwen2.5-7B-Instruct"
+model_loading:
+  quantization: "nf4"
+  compute_dtype: "bfloat16"
+  double_quant: true
+
+lora:
+  rank: 64
+  alpha: 128
+  dropout: 0.05
+  target_modules:
+    - q_proj
+    - k_proj
+    - v_proj
+    - o_proj
+    - gate_proj
+    - up_proj
+    - down_proj
+  bias: "none"
+  task_type: "CAUSAL_LM"
+
+training:
+  learning_rate: 2e-4
+  warmup_ratio: 0.03
+  num_epochs: 4
+  per_device_batch_size: 4
+  gradient_accumulation_steps: 4
+  max_seq_length: 512
+  weight_decay: 0.01
+  bf16: true
+
+checkpointing:
+  save_strategy: "epoch"
+  save_path: "/vol/checkpoints/poet_rhyme/"
+  save_total_limit: 2
