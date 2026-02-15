@@ -1,5 +1,5 @@
-# RevFlux model configs for comparison. Run: ollama pull <model> before use.
-# "gguf" = use inference_config.yaml (trained educator + poet)
+# RevFlux model configs for comparison. "gguf" = use inference_config.yaml (trained educator + poet).
+# Ollama models must match: ollama list
 models:
   - id: trained
     label: "Trained (GGUF)"
@@ -7,21 +7,31 @@ models:
     poet: gguf
 
   - id: qwen2.5-7b
-    label: "Vanilla qwen2.5:7b"
+    label: "Vanilla qwen2.5:7b-instruct"
     educator: ollama:qwen2.5:7b-instruct
     poet: ollama:qwen2.5:7b-instruct
 
+  - id: qwen3-8b
+    label: "Vanilla qwen3:8b"
+    educator: ollama:qwen3:8b
+    poet: ollama:qwen3:8b
+
+  - id: phi3-mini
+    label: "Vanilla phi3:mini"
+    educator: ollama:phi3:mini
+    poet: ollama:phi3:mini
+
+  - id: deepseek-coder-6.7b
+    label: "Vanilla deepseek-coder:6.7b"
+    educator: ollama:deepseek-coder:6.7b
+    poet: ollama:deepseek-coder:6.7b
+
+  - id: llama3.1-8b
+    label: "Vanilla llama3.1:8b"
+    educator: ollama:llama3.1:8b
+    poet: ollama:llama3.1:8b
+
   - id: llama3.2-3b
     label: "Vanilla llama3.2:3b"
-    educator: ollama:llama3.2:3b-instruct
-    poet: ollama:llama3.2:3b-instruct
-
-  - id: mistral-7b
-    label: "Vanilla mistral:7b"
-    educator: ollama:mistral:7b-instruct
-    poet: ollama:mistral:7b-instruct
-
-  - id: phi3
-    label: "Vanilla phi3"
-    educator: ollama:phi3:medium
-    poet: ollama:phi3:medium
+    educator: ollama:llama3.2:3b
+    poet: ollama:llama3.2:3b
