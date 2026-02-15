@@ -43,7 +43,12 @@ class Config:
 
 
 class PoetryPipeline:
-    def __init__(self, config_path: Path = None):
+    def __init__(
+        self,
+        config_path: Path = None,
+        educator_model_override: str = None,
+        poet_model_override: str = None,
+    ):
         path = config_path or CONFIG_PATH
         cfg = load_config(path)
         # Resolve paths relative to project root
@@ -55,30 +60,56 @@ class PoetryPipeline:
         self.educator_system = self.config.educator_persona_condensed
         self.max_revisions = self.config.max_revisions
         self.user_profile = self.config.user_style_profile
+        self.educator_model_override = educator_model_override
+        self.poet_model_override = poet_model_override
+
+    def _ollama_chat(
+        self,
+        model: str,
+        system: str,
+        user: str,
+        temperature: float = 0.4,
+        max_tokens: int = 800,
+        top_p: float = 0.9,
+        repeat_penalty: float = 1.1,
+    ) -> str:
+        """Call Ollama. model is the Ollama model name (e.g. qwen2.5:7b-instruct)."""
+        try:
+            from ollama import chat
+        except ImportError:
+            raise ImportError("pip install ollama. Run: ollama pull " + model)
+        messages = [{"role": "system", "content": system}, {"role": "user", "content": user}]
+        opts = {"temperature": temperature, "num_predict": max_tokens, "top_p": top_p, "repeat_penalty": repeat_penalty}
+        r = chat(model=model, messages=messages, options=opts)
+        if hasattr(r, "message"):
+            return getattr(r.message, "content", "") or ""
+        return r.get("message", {}).get("content", "") or ""
 
     def _load_models(self):
-        if self.educator is not None:
-            return
         try:
             from llama_cpp import Llama
         except ImportError:
             raise ImportError("pip install llama-cpp-python")
-        self.educator = Llama(
-            model_path=self.config.educator_model_path,
-            n_ctx=self.config.educator_ctx,
-            n_gpu_layers=-1,
-            n_threads=8,
-            use_mmap=True,
-            verbose=False,
-        )
-        self.poet = Llama(
-            model_path=self.config.poet_model_path,
-            n_ctx=self.config.poet_ctx,
-            n_gpu_layers=-1,
-            n_threads=8,
-            use_mmap=True,
-            verbose=False,
-        )
+        use_edu_gguf = not (self.educator_model_override and self.educator_model_override.startswith("ollama:"))
+        use_poet_gguf = not (self.poet_model_override and self.poet_model_override.startswith("ollama:"))
+        if use_edu_gguf and self.educator is None:
+            self.educator = Llama(
+                model_path=self.config.educator_model_path,
+                n_ctx=self.config.educator_ctx,
+                n_gpu_layers=-1,
+                n_threads=8,
+                use_mmap=True,
+                verbose=False,
+            )
+        if use_poet_gguf and self.poet is None:
+            self.poet = Llama(
+                model_path=self.config.poet_model_path,
+                n_ctx=self.config.poet_ctx,
+                n_gpu_layers=-1,
+                n_threads=8,
+                use_mmap=True,
+                verbose=False,
+            )
 
     def _educator_generate(self, prompt: str, task: str = "critique") -> str:
         params = {
@@ -89,6 +120,12 @@ class PoetryPipeline:
             "summarize": {"temperature": 0.2, "max_tokens": 300},
             "poet_instructions": {"temperature": 0.2, "max_tokens": 250},
         }[task]
+        if self.educator_model_override and self.educator_model_override.startswith("ollama:"):
+            model = self.educator_model_override[7:]  # strip "ollama:"
+            return self._ollama_chat(
+                model, self.educator_system, prompt,
+                temperature=params["temperature"], max_tokens=params["max_tokens"],
+            )
         self._load_models()
         r = self.educator.create_chat_completion(
             messages=[
@@ -166,16 +203,17 @@ class PoetryPipeline:
 
     def _poet_generate(self, prompt: str, is_revision: bool = False) -> str:
         temp = 0.75 if is_revision else 0.8
-        self._load_models()
         poet_prompt = prompt if is_revision else self._build_poet_prompt(prompt)
+        system = "You are a poet. You receive generation briefs and write poems. You never output instructions, critique, or analysis — only poems."
+        if self.poet_model_override and self.poet_model_override.startswith("ollama:"):
+            model = self.poet_model_override[7:]
+            return self._ollama_chat(
+                model, system, poet_prompt,
+                temperature=temp, max_tokens=4096, top_p=0.95, repeat_penalty=1.15,
+            )
+        self._load_models()
         r = self.poet.create_chat_completion(
-            messages=[
-                {
-                    "role": "system",
-                    "content": "You are a poet. You receive generation briefs and write poems. You never output instructions, critique, or analysis — only poems.",
-                },
-                {"role": "user", "content": poet_prompt},
-            ],
+            messages=[{"role": "system", "content": system}, {"role": "user", "content": poet_prompt}],
             temperature=temp,
             top_p=0.95,
             repeat_penalty=1.15,
@@ -352,6 +390,7 @@ class PoetryPipeline:
         out("POET", "Initial draft → Educator", draft)
 
         revision_history = []
+        approved_at_round = None
         for i in range(revisions):
             if verbose:
                 print(f"→ Educator: critiquing (revision {i + 1})...", flush=True)
@@ -363,6 +402,7 @@ class PoetryPipeline:
             out("EDUCATOR", f"Critique (revision {i + 1}) → Poet", critique)
 
             if self._educator_approves(critique):
+                approved_at_round = len(revision_history)  # 1-indexed
                 if verbose:
                     print("\n  ✓ Educator approved — poem complete.\n", flush=True)
                 break
@@ -395,14 +435,18 @@ class PoetryPipeline:
             draft = self._poet_generate(revision_prompt, is_revision=True)
             out("POET", f"Revision {i + 1} draft → Educator", draft)
 
+        edu_name = self.educator_model_override or "qwen2.5-7b-educator-Q4_K_M"
+        poet_name = self.poet_model_override or "qwen2.5-7b-poet-Q4_K_M"
         return {
             "final_poem": draft,
             "generation_brief": brief,
             "revision_history": revision_history,
             "metadata": {
                 "revisions": len(revision_history),
-                "model_educator": "qwen2.5-7b-educator-Q4_K_M",
-                "model_poet": "qwen2.5-7b-poet-Q4_K_M",
+                "approved": approved_at_round is not None,
+                "approved_at_round": approved_at_round,
+                "model_educator": edu_name,
+                "model_poet": poet_name,
             },
         }
 

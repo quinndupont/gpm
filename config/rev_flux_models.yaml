@@ -1,0 +1,27 @@
+# RevFlux model configs for comparison. Run: ollama pull <model> before use.
+# "gguf" = use inference_config.yaml (trained educator + poet)
+models:
+  - id: trained
+    label: "Trained (GGUF)"
+    educator: gguf
+    poet: gguf
+
+  - id: qwen2.5-7b
+    label: "Vanilla qwen2.5:7b"
+    educator: ollama:qwen2.5:7b-instruct
+    poet: ollama:qwen2.5:7b-instruct
+
+  - id: llama3.2-3b
+    label: "Vanilla llama3.2:3b"
+    educator: ollama:llama3.2:3b-instruct
+    poet: ollama:llama3.2:3b-instruct
+
+  - id: mistral-7b
+    label: "Vanilla mistral:7b"
+    educator: ollama:mistral:7b-instruct
+    poet: ollama:mistral:7b-instruct
+
+  - id: phi3
+    label: "Vanilla phi3"
+    educator: ollama:phi3:medium
+    poet: ollama:phi3:medium

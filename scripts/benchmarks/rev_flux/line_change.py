@@ -72,3 +72,71 @@ def aggregate_line_changes(rounds: list[list[float]]) -> list[float]:
     for r in rounds:
         out.extend(r)
     return out
+
+
+def line_stability_indices(
+    revision_history: list[dict],
+    threshold: float = 5.0,
+) -> list[int]:
+    """
+    For each line in the final draft, count how many revision rounds it stayed
+    unchanged (change_pct < threshold). Higher = more stable.
+    """
+    rounds = revision_round_changes(revision_history)
+    if not revision_history:
+        return []
+    final_lines = _lines(revision_history[-1]["draft"])
+    n_lines = len(final_lines)
+    stability = [0] * n_lines
+    for r in rounds:
+        if not r:
+            continue
+        for i in range(min(len(r), n_lines)):
+            if r[i] < threshold:
+                stability[i] += 1
+    return stability
+
+
+def stanza_structure(draft: str) -> list[list[str]]:
+    """
+    Split poem into stanzas by blank lines. Returns list of stanzas, each a list of lines.
+    """
+    stanzas: list[list[str]] = []
+    current: list[str] = []
+    for ln in draft.strip().splitlines():
+        if ln.strip():
+            current.append(ln.strip())
+        elif current:
+            stanzas.append(current)
+            current = []
+    if current:
+        stanzas.append(current)
+    return stanzas
+
+
+def stanza_change_map(
+    revision_history: list[dict],
+) -> tuple[list[list[str]], list[float]]:
+    """
+    Returns (stanzas, mean_change_per_stanza). Stanzas from final draft.
+    Mean change is average of per-line change % for lines in that stanza,
+    using the last revision round (prev draft -> final).
+    """
+    rounds = revision_round_changes(revision_history)
+    if not revision_history:
+        return [], []
+    stanzas = stanza_structure(revision_history[-1]["draft"])
+    # Use last round with data: change from prev draft to final
+    last_round = next((r for r in reversed(rounds) if r), [])
+    if not last_round:
+        return stanzas, [0.0] * len(stanzas)
+    pos = 0
+    stanza_means = []
+    for s in stanzas:
+        n = len(s)
+        if n > 0 and pos + n <= len(last_round):
+            stanza_means.append(sum(last_round[pos : pos + n]) / n)
+        else:
+            stanza_means.append(sum(last_round[pos:]) / max(len(last_round[pos:]), 1) if pos < len(last_round) else 0.0)
+        pos += n
+    return stanzas, stanza_means

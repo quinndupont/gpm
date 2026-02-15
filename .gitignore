@@ -19,8 +19,6 @@ data/poet_training/*
 !data/poet_training/.gitkeep
 data/rhyme_training/*
 !data/rhyme_training/.gitkeep
-data/cliche_db/*
-!data/cliche_db/.gitkeep
 data/training/
 models/adapters/
 models/*.gguf

@@ -1390,11 +1390,6 @@ poetry-chatbot/
 │   │   ├── tier1_exemplary/          # Curated good poetry
 │   │   ├── tier2_competent/          # General published poetry
 │   │   └── tier3_amateur/            # Bad poetry for contrast
-│   ├── cliche_db/                    # Topic-indexed cliché database
-│   │   ├── grief.json
-│   │   ├── love.json
-│   │   ├── nature.json
-│   │   └── ...
 │   ├── annotated/                    # Claude's raw analysis output
 │   ├── educator_training/            # Quality-gated training data
 │   │   ├── train.jsonl
@@ -1422,9 +1417,7 @@ poetry-chatbot/
 │   │   ├── export_gguf.py            # Modal function: merge + quantize
 │   │   └── modal_app.py              # Modal app orchestration
 │   ├── eval/
-│   │   ├── voice_consistency.py      # S6.1 tests
-│   │   ├── quant_preservation.py     # S6.2 tests
-│   │   └── generation_quality.py     # S6.3 tests
+│   │   └── voice_consistency.py      # S6.1 tests
 │   └── inference/
 │       ├── pipeline.py               # PoetryPipeline class
 │       ├── swapping_pipeline.py       # Option C swap strategy
