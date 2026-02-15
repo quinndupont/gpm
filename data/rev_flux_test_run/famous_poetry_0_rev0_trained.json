@@ -1,0 +1,24 @@
+{
+  "user_request": "Write a poem about a traveler at a fork in a yellow wood who chooses the less-traveled path.",
+  "category": "famous_poetry",
+  "prompt_idx": 0,
+  "max_revisions": 0,
+  "model_id": "trained",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "# The Yellow Fork\n\nThe map was simple, drawn in pencil blue,\ntwo lines converging where the birches thin\u2014\nthe kind of choice that asks you stop and choose,\nthat asks the soul to open like a gate.\n\nHe'd traveled far. His boots were worn smooth bare,\nthe leather broken where it touched the ground.\nA backpack hung heavy with what he'd kept:\na canteen, a knife, a letter in his pocket\nfolded once more than he could count\u2014the last\nword faded yellow at the seam.\n\nOne path was clearer: packed with others' tread,\neach footprint pressed like money on a face.\nThe other wound through\u4e1b",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "qwen2.5-7b-poet-Q4_K_M",
+    "perf_total_sec": 10.73,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

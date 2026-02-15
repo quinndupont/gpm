@@ -1,0 +1,20 @@
+{
+  "user_request": "Write a Shakespearean sonnet comparing a lover to a summer day.",
+  "form": "sonnet",
+  "variant": "shakespearean",
+  "prompt_idx": 1,
+  "model_id": "trained",
+  "max_revisions": 0,
+  "final_poem": "My love is like the summer's flattering day,\nWhen Phoebus paints the skies his amber fire\nAnd every thing that lives doth take its gay\nNew life at his sweet influence. But, oh!  (refrain)\n\nThe gentle wind which from these lips does blow\nIs fresher than the air that summer requires;\nThis kiss did make the morning that it showed\nMore welcome to my heart than that it dries. (return)\n\nYet summer, warm and long, often too much\nHis force spends late; and then we feel the gale\nOf autumns coming with his gathering clouds,\nWhich chide against our love when we have most.  (refrain)\n\nBut love like morning keeps his beauties still\u2014\nNor faints to give more light, but rather will.\n(continue)",
+  "rhyme_analysis": {
+    "strict_rhyme_density": 0.27,
+    "rhyme_density": 0.47,
+    "matches_form": false,
+    "deviations_count": 6,
+    "strict_rhyme_pairs": 2,
+    "rhyme_pairs": 4,
+    "line_count": 15,
+    "detected_scheme": "ABAC DEFC GHIC JHK",
+    "expected_scheme": "ABAB CDCD EFEF GG"
+  }
+}

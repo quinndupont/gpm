@@ -1,0 +1,24 @@
+{
+  "user_request": "A poem on time.",
+  "category": "short_generic",
+  "prompt_idx": 6,
+  "max_revisions": 0,
+  "model_id": "trained",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "## The Long Hours\n\nTime is the kind of leak\nthat widens under water,\nnot splintering wood but stretching\nthe fabric of what happened\ninto a thing with no edges,\nno place to stand on.\n\nI watched my grandmother fold\na newspaper the way some people\nfold money \u2014 not for storage\nbut because the crease\nwas cheaper than the paper it took,\neach press reducing her palm\nto something almost architectural,\nalmost without thickness.\n\nThat was forty years ago.\nThe folds are still there, exact,\nthe way a dog remembers\nthe sound of a door it left behind\nin another country. Time\ndoesn't erase. It just\nrearranges what's left\ninto a smaller room.\n\nI tell my children about the 7:14 train\nthat used to pull through town before darkness \u2014\nhow I remember watching for it\nfrom the window of a building\nwhere nothing changed, where the woman on the third floor\nleft milk out on the sill every morning\nand never once worried about the trains.\n\nThey listen. They believe me up to a point.\nAfter thirteen years old, children\nbegin to calibrate your truth\nagainst what they can verify,\nand that calibration is itself\na kind of time \u2014 gradual, domestic,\nthe way a body learns to settle\ninto a chair that isn't quite right.\n\nBut here's the thing: I still hear\nthe 7:14. It runs through the building.\nIt rumbles under the sill where there is now\nonly milk gone stale and no one\nleft watching.\n\nTime, if you could hold it,\nwould feel like the woman's worry \u2014\nsmall, specific, impossible to prove\nto anyone but yourself,\nand even then, just mostly.\n\nI keep meaning to write down\nexactly what I wanted to say about this.\nBut the words float away\nthe way a clock loses its weight\nwhen you open it, and then\nyou hear the hour from inside\nthe mechanism, precise\nas something that never changed.",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "qwen2.5-7b-poet-Q4_K_M",
+    "perf_total_sec": 10.97,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

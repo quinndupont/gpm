@@ -1,0 +1,303 @@
+{
+  "user_request": "A poem for Valentine's Day about true love lasting forever.",
+  "category": "cliche",
+  "prompt_idx": 0,
+  "max_revisions": 1,
+  "model_id": "trained",
+  "revisions_actual": 1,
+  "change_pcts": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    83.33333333333333,
+    78.04878048780488,
+    78.04878048780488,
+    73.33333333333333,
+    79.48717948717949,
+    87.87878787878788,
+    78.78787878787878,
+    83.78378378378379,
+    80.95238095238095,
+    72.72727272727273,
+    76.3157894736842,
+    82.5,
+    82.5,
+    75.0,
+    80.0,
+    84.61538461538461,
+    84.61538461538461,
+    80.48780487804878,
+    86.84210526315789,
+    71.05263157894737,
+    81.08108108108108,
+    76.19047619047619,
+    82.14285714285714,
+    74.28571428571429,
+    72.97297297297297,
+    80.0,
+    72.09302325581395,
+    82.3529411764706,
+    75.0,
+    80.95238095238095,
+    74.4186046511628,
+    82.5,
+    80.48780487804878,
+    68.57142857142857,
+    84.375,
+    81.08108108108108,
+    68.29268292682927,
+    80.0,
+    78.04878048780488,
+    81.63265306122449,
+    73.52941176470588
+  ],
+  "per_round_changes": [
+    [],
+    [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      83.33333333333333,
+      78.04878048780488,
+      78.04878048780488,
+      73.33333333333333,
+      79.48717948717949,
+      87.87878787878788,
+      78.78787878787878,
+      83.78378378378379,
+      80.95238095238095,
+      72.72727272727273,
+      76.3157894736842,
+      82.5,
+      82.5,
+      75.0,
+      80.0,
+      84.61538461538461,
+      84.61538461538461,
+      80.48780487804878,
+      86.84210526315789,
+      71.05263157894737,
+      81.08108108108108,
+      76.19047619047619,
+      82.14285714285714,
+      74.28571428571429,
+      72.97297297297297,
+      80.0,
+      72.09302325581395,
+      82.3529411764706,
+      75.0,
+      80.95238095238095,
+      74.4186046511628,
+      82.5,
+      80.48780487804878,
+      68.57142857142857,
+      84.375,
+      81.08108108108108,
+      68.29268292682927,
+      80.0,
+      78.04878048780488,
+      81.63265306122449,
+      73.52941176470588
+    ]
+  ],
+  "revised_lines_per_round": [
+    [],
+    [
+      [
+        5,
+        83.33333333333333
+      ],
+      [
+        6,
+        78.04878048780488
+      ],
+      [
+        7,
+        78.04878048780488
+      ],
+      [
+        8,
+        73.33333333333333
+      ],
+      [
+        9,
+        79.48717948717949
+      ],
+      [
+        10,
+        87.87878787878788
+      ],
+      [
+        11,
+        78.78787878787878
+      ],
+      [
+        12,
+        83.78378378378379
+      ],
+      [
+        13,
+        80.95238095238095
+      ],
+      [
+        14,
+        72.72727272727273
+      ],
+      [
+        15,
+        76.3157894736842
+      ],
+      [
+        16,
+        82.5
+      ],
+      [
+        17,
+        82.5
+      ],
+      [
+        18,
+        75.0
+      ],
+      [
+        19,
+        80.0
+      ],
+      [
+        20,
+        84.61538461538461
+      ],
+      [
+        21,
+        84.61538461538461
+      ],
+      [
+        22,
+        80.48780487804878
+      ],
+      [
+        23,
+        86.84210526315789
+      ],
+      [
+        24,
+        71.05263157894737
+      ],
+      [
+        25,
+        81.08108108108108
+      ],
+      [
+        26,
+        76.19047619047619
+      ],
+      [
+        27,
+        82.14285714285714
+      ],
+      [
+        28,
+        74.28571428571429
+      ],
+      [
+        29,
+        72.97297297297297
+      ],
+      [
+        30,
+        80.0
+      ],
+      [
+        31,
+        72.09302325581395
+      ],
+      [
+        32,
+        82.3529411764706
+      ],
+      [
+        33,
+        75.0
+      ],
+      [
+        34,
+        80.95238095238095
+      ],
+      [
+        35,
+        74.4186046511628
+      ],
+      [
+        36,
+        82.5
+      ],
+      [
+        37,
+        80.48780487804878
+      ],
+      [
+        38,
+        68.57142857142857
+      ],
+      [
+        39,
+        84.375
+      ],
+      [
+        40,
+        81.08108108108108
+      ],
+      [
+        41,
+        68.29268292682927
+      ],
+      [
+        42,
+        80.0
+      ],
+      [
+        43,
+        78.04878048780488
+      ],
+      [
+        44,
+        81.63265306122449
+      ],
+      [
+        45,
+        73.52941176470588
+      ]
+    ]
+  ],
+  "lines_changed_per_round": [
+    0,
+    41
+  ],
+  "revision_history": [
+    {
+      "draft": "You left the kitchen faucet running low,\njust a thread of water finding the sink's\nsquare throat. I stood behind you in the hall\nand heard it\u2014knew what you were doing\nwithout you having to turn around.\n\nThe refrigerator hummed its low, blue eye.\nI could have gone back. I could have said\n*see?* and meant it, pointed at the glass\nstill warm from milk you'd poured for someone\nnot yet awake. But I didn't go.\n\nFrom the window, February pressed\nits pale face against the glass\u2014\nnot stormy, not clear, just that gray\ncontagion we call morning when no one\nhas disturbed the house yet. The blinds\nheld their slats steady. Somewhere\na dog barked through a floorboard,\nand I thought of how you close your eyes\nat night to block the ceiling.\n\nI made toast.\nNot for you\u2014I make toast. But this time\nyou were first in the kitchen, buttered\ndown the middle, and when I came in\nyou were already chewing, quiet,\nthe way you do at 2 AM when everything\nhas settled into its shape. The toast\nwent brown on the edges. You said nothing.\nNeither did I.\n\nAll night the bed held two weights.\nMine was familiar. Yours\u2014though soft,\nthough reduced to just the curve of jaw\nand breath drawn slow through closed teeth\u2014\nwas almost stranger, the way a cup\nyou set down too hard leaves its ring\non counter or table, unchanged but marked.\n\nSpring crept under the windows like someone\npressing their face to glass. The blinds\nbuzzed faintly now with heat. You shifted\nin your sleep and pressed one thumb\ninto my ribs, not meaning it,\nand I let you because that's how long\nyou've been here\u2014less notice than a yawn,\na glass set down, the faucet turned\nto half from where you stood\nstill listening to whatever\nhad drawn you into it.",
+      "critique": "## Workshop Response\n\n### What's Alive\n\nThe poem earns its quiet through specific, unromanticized domestic detail. \"A dog barked through a floorboard\" \u2014 that's precise and strange enough to land. The toast is buttered down the middle: a gesture so ordinary it reads like a character trait, not an effect.\n\nThe bed passage \u2014 \"all night the bed held two weights / Mine was familiar. Yours\u2014though soft, / though reduced to just the curve of jaw / and breath drawn slow through closed teeth\" \u2014 works because it stays in physical sensation rather than emotional summary. The closing image of thumb pressing into ribs \"not meaning it\" and being let be: that's true tenderness delivered without any label.\n\nThe line \"I made toast. Not for you\u2014I make toast.\" is devastatingly understated. It does enormous work \u2014 establishing routine, complicity, the fact that someone has been making this breakfast every morning whether or not anyone asked. That's the poem's strongest structural move: narrative information conveyed as habit rather than declaration.\n\nThe refrain of small domestic gestures (the kitchen faucet, the toast, the thumb) builds without repeating \u2014 each one shifts context slightly so they accumulate rather than echo.\n\n### What Isn't Working\n\n**Sentimentality / sentiment suppresses.** The poem earns its feeling but in a few places it holds back too far into understatement that becomes sentimental by omission. \"Nothing had changed\" appears as a line, and the closing yawn-as-comfort are doing emotional work the poem hasn't built toward through image.\n\n**Direction:** Consider whether \"nothing had changed\" can be cut or replaced with something more physical \u2014 what *did* change? The body knows everything that shifts in a relationship. Let the reader feel the shift without naming it.\n\n**Weak line breaks (lines 13\u201320).** \"All night the bed held two weights.\" is strong. \"Mine was familiar. Yours\u2014though soft, / though reduced to just the curve of jaw / and breath drawn slow through closed teeth\u2014 / was almost stranger\" \u2014 this collapses under its own weight. The enjambment from \"familiar\" into the list of body parts doesn't find purchase; it stalls. \"Though soft, / though reduced\" is filler. Cut or rebuild.\n\n**Direction:** Re-break lines 17\u201320 so each line lands on a single concrete sensory detail \u2014 what the speaker *sees* in the bed, what the breath does, where the teeth are. The body needs to be more present here.\n\n**Clich\u00e9 proximity.** \"Contagion we call morning\" is close to clich\u00e9 by association. Morning-as-contamination is a well-worn figure. It survives because it's deployed ironically (nothing is stormy or clear \u2014 just gray), but it still tips toward greeting-card language.\n\n**Direction:** Replace with something stranger and more particular. What does this specific",
+      "iteration": 0
+    },
+    {
+      "draft": "You left the kitchen faucet running low,\njust a thread of water finding the sink's\nsquare throat. I stood behind you in the hall\nand heard it\u2014knew what you were doing\nwithout you having to turn around.\n\nFrom the window, February pressed\nits pale face against the glass,\nnot stormy, not clear, just that gray\ncontagion we call morning when no one\nhas disturbed the house yet. Light bled\nthrough your lower eyelids, thin\nas a bruise spreading under skin.\n\nI could have said *see?* but went\nto the toaster instead\u2014bread sliced thick,\nbutter pooled down the middle of each slice,\nthe way you like it. The toast crisped\non both sides. You were already chewing,\nquiet, the jawbone working slow,\nthe lower teeth holding the rim.\n\nThe blinds buzzed faintly now with heat.\nYou shifted in your sleep and pressed\none thumb into my ribs, not meaning it\u2014\njust pressure, the way cold holds without\ntightening its grip. I let you because\nthat's how long you've been here:\nless notice than a toast going brown,\na glass set down, the faucet turned\nto half from where you stood\nstill listening to whatever\nhad drawn you into it.\n\nGray light pressed the blind slats flat.\nOne dog barked through the floorboards\u2014\nthe kind of sound that belongs\nto no room and therefore every one\u2014and I\nwatched your jawbone work, watched how\nyour breath came in slow draws\nthrough closed teeth, each exhalation\na small deflation. The toast cooled\non its plate between us.\n\nThe bed held two pressures: mine\nfamiliar as a old shoe, yours\nthe soft persistence of a glass\nset down too hard, leaving its ring\non counter or table\u2014unchanged but marked.\nFebruary pressed its pale face against the glass.\nI could have turned. I made toast.",
+      "critique": null,
+      "iteration": "final"
+    }
+  ],
+  "final_poem": "You left the kitchen faucet running low,\njust a thread of water finding the sink's\nsquare throat. I stood behind you in the hall\nand heard it\u2014knew what you were doing\nwithout you having to turn around.\n\nFrom the window, February pressed\nits pale face against the glass,\nnot stormy, not clear, just that gray\ncontagion we call morning when no one\nhas disturbed the house yet. Light bled\nthrough your lower eyelids, thin\nas a bruise spreading under skin.\n\nI could have said *see?* but went\nto the toaster instead\u2014bread sliced thick,\nbutter pooled down the middle of each slice,\nthe way you like it. The toast crisped\non both sides. You were already chewing,\nquiet, the jawbone working slow,\nthe lower teeth holding the rim.\n\nThe blinds buzzed faintly now with heat.\nYou shifted in your sleep and pressed\none thumb into my ribs, not meaning it\u2014\njust pressure, the way cold holds without\ntightening its grip. I let you because\nthat's how long you've been here:\nless notice than a toast going brown,\na glass set down, the faucet turned\nto half from where you stood\nstill listening to whatever\nhad drawn you into it.\n\nGray light pressed the blind slats flat.\nOne dog barked through the floorboards\u2014\nthe kind of sound that belongs\nto no room and therefore every one\u2014and I\nwatched your jawbone work, watched how\nyour breath came in slow draws\nthrough closed teeth, each exhalation\na small deflation. The toast cooled\non its plate between us.\n\nThe bed held two pressures: mine\nfamiliar as a old shoe, yours\nthe soft persistence of a glass\nset down too hard, leaving its ring\non counter or table\u2014unchanged but marked.\nFebruary pressed its pale face against the glass.\nI could have turned. I made toast.",
+  "metadata": {
+    "revisions": 1,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "qwen2.5-7b-educator-Q4_K_M",
+    "model_poet": "qwen2.5-7b-poet-Q4_K_M",
+    "perf_total_sec": 73.68,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

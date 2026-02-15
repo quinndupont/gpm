@@ -1,0 +1,24 @@
+{
+  "user_request": "A Christmas poem about the magic of the season and family togetherness.",
+  "category": "cliche",
+  "prompt_idx": 3,
+  "max_revisions": 0,
+  "model_id": "trained",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "# The Gift We Carry\n\nUnder the oak, where we used to slide\ninto each other's laps and laugh,\nthe snow has come again\u2014its silent ride,\nits softest blanket over everything.\n\nI watch my daughters build a wall\nof blocks between us, fortifying\nsome kingdom yet unnamed. They stand\nand knock it down together, both laughing,\n\nstill small enough that I can hear\ntheir bones doing what bones do\nwhen no one is afraid\u2014their hum\nlike the low string of some ancient harp.\n\nMerry Christmas, Dad,\nyou'd say if you could\u2014\nyour voice would find us through the tree,\nwould settle in the chimney like smoke\n\nand stay. But I keep lighting it.\nThe fire eats the paper fast,\nthen takes the card itself, then yours,\nthen anything you left behind,\n\nwhich was why I put your name on the list\nthis year. The ornament lit up green\u2014\nthat little light, that stupid light,\nthe simplest thing in the room\n\nand also the most true. It keeps\ngoing off by itself sometimes at night,\nmid-blink, and when it does the house\nis filled with what I can only call\n\nyour presence. I don't mind. The girls\ndon't mind. We let it stay\u2014this warmth\nthat has no source we can see.\n\nOutside, a cardinal hits the window hard,\nloss of direction or just practice\u2014\nit flies back, red-blazing through the glass,\nstays there, stunned, then rights itself\n\nand is gone. The crack it left\nis like a word misspoken in another language:\nmeaning full, meaning strange, meaning\nsomething between us we'll have to translate.\n\nI carry you inside my chest\nthe way a nut carries its whole world\u2014\npressed shut, kept quiet, with everywhere\nit's going already mapped\n\nthrough every pore. The girls are five and three.\nThey don't know what I'm carrying.\nBut they know the chair is softer now,\nthey know the table holds more chairs,\n\nand that alone is how traditions start:\nnot remembering correctly, but keeping room.\n\nCome home for Christmas, Uncle.\nThe door's been open since October.\nThere's room by the fire. There's room\nto be silly, to argue, to sit\n\nin silence while the tree does its work\u2014\nthat small green engine churning out\nthe one bright thing a house can make on its own,\nthat stupid light keeping faith\n\nwith every bird that knocks. We'll feed it.\nWe'll sing the songs we sang when you were ours,\nthough now they sound like something else entirely,\nlike an old key turned in a new lock\u2014\n\nand that is magic, and it happens\nevery year because we keep doing this,\nbecause the house keeps darkening,\nbecause the snow keeps falling\n\non the things we left outside.",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "qwen2.5-7b-poet-Q4_K_M",
+    "perf_total_sec": 15.55,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

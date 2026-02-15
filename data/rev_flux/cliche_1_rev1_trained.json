@@ -1,0 +1,165 @@
+{
+  "user_request": "A Mother's Day poem about how a mother's love is unconditional.",
+  "category": "cliche",
+  "prompt_idx": 1,
+  "max_revisions": 1,
+  "model_id": "trained",
+  "revisions_actual": 1,
+  "change_pcts": [
+    38.297872340425535,
+    25.58139534883721,
+    12.76595744680851,
+    33.333333333333336,
+    0.0,
+    0.0,
+    22.916666666666668,
+    65.9090909090909,
+    77.08333333333333,
+    78.57142857142857,
+    70.45454545454545,
+    75.92592592592592,
+    75.0,
+    66.66666666666667,
+    84.375,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0
+  ],
+  "per_round_changes": [
+    [],
+    [
+      38.297872340425535,
+      25.58139534883721,
+      12.76595744680851,
+      33.333333333333336,
+      0.0,
+      0.0,
+      22.916666666666668,
+      65.9090909090909,
+      77.08333333333333,
+      78.57142857142857,
+      70.45454545454545,
+      75.92592592592592,
+      75.0,
+      66.66666666666667,
+      84.375,
+      100.0,
+      100.0,
+      100.0,
+      100.0,
+      100.0,
+      100.0
+    ]
+  ],
+  "revised_lines_per_round": [
+    [],
+    [
+      [
+        0,
+        38.297872340425535
+      ],
+      [
+        1,
+        25.58139534883721
+      ],
+      [
+        2,
+        12.76595744680851
+      ],
+      [
+        3,
+        33.333333333333336
+      ],
+      [
+        6,
+        22.916666666666668
+      ],
+      [
+        7,
+        65.9090909090909
+      ],
+      [
+        8,
+        77.08333333333333
+      ],
+      [
+        9,
+        78.57142857142857
+      ],
+      [
+        10,
+        70.45454545454545
+      ],
+      [
+        11,
+        75.92592592592592
+      ],
+      [
+        12,
+        75.0
+      ],
+      [
+        13,
+        66.66666666666667
+      ],
+      [
+        14,
+        84.375
+      ],
+      [
+        15,
+        100.0
+      ],
+      [
+        16,
+        100.0
+      ],
+      [
+        17,
+        100.0
+      ],
+      [
+        18,
+        100.0
+      ],
+      [
+        19,
+        100.0
+      ],
+      [
+        20,
+        100.0
+      ]
+    ]
+  ],
+  "lines_changed_per_round": [
+    0,
+    19
+  ],
+  "revision_history": [
+    {
+      "draft": "She swats the clock twice, eleven zones behind,\nthe kitchen faucet runs in its slow circle.\nMilk in a cup left out since dinner. Steam\ncurls off the toast she forgot to set.\n\nHer daughter on the line, voice cracked,\ntalking to someone else about the fire\nshe thinks has started somewhere under the sink.\n*Hear that? No,* says the other end.\n\nShe smells it now \u2014 something sweet and burning,\nthe kind of smoke that lives in insulation\nwhere no one looks. The phone dies.\nHer hands are shaking but she doesn't call.\n\nInstead she stands at the counter, glass still full,\nand watches how the milk has darkened\ninto a juice she never made.",
+      "critique": "## Workshop Response\n\n### What's Alive\n\nThe structural move is the poem's strongest feature: a phone call that cuts both ways \u2014 the daughter thinks someone else is there, but in fact the mother can't hear. That reversal is genuinely surprising and earns its place. The milk darkening into something like juice is specific, visual, and strange enough to land as an image.\n\nThe line \"watches how the milk has darkened\" works because it's doing two things simultaneously \u2014 tracking a physical change and symbolizing something else without announcing itself. That's real craft.\n\n### What Isn't Working\n\n**Rhyme dependency strangling the poem (structural failure).** The rhyme scheme is driving nearly every word choice, which means the poem keeps landing on expected rhymes rather than on meaning. This is the central problem:\n\n- **\"twice / circle\" (lines 1\u20132):** \"circle\" feels forced into place \u2014 it's there for the rhyme with \"behind.\" The phrase \"in its slow circle\" is decorative and vague.\n- **\"cracked / darkened\" (lines 3\u20134):** \"darkened\" is doing double duty \u2014 literal milk, symbolic fire \u2014 but that ambiguity comes from the rhyme, not from the image's inherent weight. Same with:\n- **\"call / full\" (lines 12\u201313):** \"full\" rhymes neatly but says nothing precise. The glass should be more than just \"still full.\" What kind of milk? How much?\n- **\"end / darkened\" (line 8):** This word appears twice in close proximity because the rhyme demanded it.\n- **\"burning / dying\" (lines 7\u201312):** Smoke and phone both get \"dying,\" which is doing nothing except satisfying the A-E rhymes.\n\n**Direction:** Strip all rhyme. Rewrite the poem in unrhymed short lines first, then see if any rhyme returns naturally without distorting meaning. Rhyme should be a bonus, not a master.\n\n**Weak line breaks (lines 7\u20138).** \"The phone dies\" is isolated with no tension or surprise \u2014 it just stops. The reader expects something more dramatic given the context of a daughter in danger. Direction: what happens when the phone goes dead? That's where the real scene lives.\n\n**Line 14 (\"Instead she stands at the counter, glass still full\")** \u2014 \"still\" is doing nothing. Either cut it or make the glass do something specific and surprising.\n\n**Clich\u00e9:** \"Milk in a cup left out since dinner\" leans toward domestic routine that risks being generic. What kind of milk? Is this a habit or does it matter?\n\nThe fire/smoke imagery has real potential, but right now the poem is letting rhyme dictate everything and the result reads as a template exercise rather than a lived moment.",
+      "iteration": 0
+    },
+    {
+      "draft": "She swats the clock twice, the time in Mumbai\nthe kitchen faucet performing its slow arc.\nSkim milk in a cup left out since dinner. Steam\ncurls off the toast she meant to set but didn't.\n\nHer daughter on the line, voice cracked,\ntalking to someone else about the fire\nshe thinks has started somewhere behind the wall\nbetween the bathroom and the sleeping girls.\n*Hear that? No,* says the other end.\n\nShe smells it now \u2014 caramel and newsprint,\nthe kind of smoke that calls from fiberglass\nwhere no one looks. The call recovers, stutters, dies.\nHer hands are shaking but she peels an orange\n\nand holds the rind against her lip like a cigarette\nshe doesn't smoke. From the back\nthe girls shift in their sleep, their breathing\na subduction plate adjusting beneath the house.\n\nInstead of calling, she stands at the counter\nwith the orange, and watches how the skim milk,\nthat specific yellow, has darkened \u2014 thickened\ninto something almost like a bruise.",
+      "critique": null,
+      "iteration": "final"
+    }
+  ],
+  "final_poem": "She swats the clock twice, the time in Mumbai\nthe kitchen faucet performing its slow arc.\nSkim milk in a cup left out since dinner. Steam\ncurls off the toast she meant to set but didn't.\n\nHer daughter on the line, voice cracked,\ntalking to someone else about the fire\nshe thinks has started somewhere behind the wall\nbetween the bathroom and the sleeping girls.\n*Hear that? No,* says the other end.\n\nShe smells it now \u2014 caramel and newsprint,\nthe kind of smoke that calls from fiberglass\nwhere no one looks. The call recovers, stutters, dies.\nHer hands are shaking but she peels an orange\n\nand holds the rind against her lip like a cigarette\nshe doesn't smoke. From the back\nthe girls shift in their sleep, their breathing\na subduction plate adjusting beneath the house.\n\nInstead of calling, she stands at the counter\nwith the orange, and watches how the skim milk,\nthat specific yellow, has darkened \u2014 thickened\ninto something almost like a bruise.",
+  "metadata": {
+    "revisions": 1,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "qwen2.5-7b-educator-Q4_K_M",
+    "model_poet": "qwen2.5-7b-poet-Q4_K_M",
+    "perf_total_sec": 60.89,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

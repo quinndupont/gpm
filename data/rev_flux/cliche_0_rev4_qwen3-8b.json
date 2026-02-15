@@ -1,0 +1,85 @@
+{
+  "user_request": "A poem for Valentine's Day about true love lasting forever.",
+  "category": "cliche",
+  "prompt_idx": 0,
+  "max_revisions": 4,
+  "model_id": "qwen3-8b",
+  "revisions_actual": 4,
+  "change_pcts": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    21.428571428571427,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    22.727272727272727,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    22.22222222222222,
+    0.0,
+    0.0,
+    8.108108108108109,
+    0.0,
+    0.0,
+    57.89473684210526,
+    5.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    28.205128205128204
+  ],
+  "revision_history": [
+    {
+      "draft": "Layers of limestone remember  \nthe river\u2019s teeth gnawing at the cliff\u2019s spine\u2014  \na slow unraveling, a slow becoming.  \n\nFossilized moments glint in the dark,  \ntheir edges smoothed by centuries of rain.  \nWe are the fractures where light  \ninsists on bending,  \na star\u2019s collapse, a supernova\u2019s breath\u2014  \nthe same dust now orbits the void.  \n\nTime grinds its own axis,  \nand we, its stubborn sediment,  \nare shaped by the weight of what  \nremains after the tide has fled.  \n\nThe earth keeps turning,  \nits wounds crusted with constellations.",
+      "critique": "**What\u2019s alive:**  \nThe poem\u2019s core metaphor\u2014love as geological time\u2014works through sedimentary layers, fossilized moments, and celestial decay. The enjambment (\u201ca star\u2019s collapse, a supernova\u2019s breath\u2014 / the same dust now orbits the void\u201d) stretches the idea of endurance through fragmentation. The closing image of \u201c",
+      "iteration": 0
+    },
+    {
+      "draft": "Layers of limestone remember  \nthe river\u2019s teeth gnawing at the cliff\u2019s spine\u2014  \na slow unraveling, a slow becoming.  \n\nFossilized moments glint in the dark,  \ntheir edges smoothed by centuries of rain.  \nWe are the fractures where light  \ninsists on bending,  \na star\u2019s collapse, a supernova\u2019s breath\u2014  \nthe same dust now orbits the void.  \n\nTime grinds its own axis,  \nand we, its stubborn sediment,  \nare shaped by the weight of what  \nremains after the tide has fled.  \n\nThe earth keeps turning,  \nits wounds crusted with constellations.",
+      "critique": "**What\u2019s alive:**  \nThe poem\u2019s core metaphor\u2014love as geological time\u2014works through sedimentary layers, fossilized moments, and celestial decay. The enjambment (\u201ca star\u2019s collapse, a supernova\u2019s breath\u2014 / the same dust now orbits the void\u201d) stretches the idea of endurance",
+      "iteration": 1
+    },
+    {
+      "draft": "Layers of limestone whisper  \nthe river\u2019s teeth gnawing at the cliff\u2019s spine\u2014  \na slow unraveling, a slow becoming.  \n\nFossilized moments glint in the dark,  \ntheir edges smoothed by centuries of rain.  \nWe are the fractures where light  \ninsists on bending,  \na star\u2019s collapse, a supernova\u2019s breath\u2014  \nthe same dust now orbits the void\u2019s embrace.  \n\nTime grinds its own axis,  \nand we, its stubborn sediment,  \nare shaped by the weight of what  \nremains after the tide has fled.  \n\nThe earth keeps turning,  \nits wounds crusted with constellations.",
+      "critique": "**What\u2019s alive:**  \nThe poem\u2019s core metaphor\u2014love as geological time\u2014works through sedimentary layers, fossilized moments, and celestial decay. The enjambment (\u201ca star\u2019s collapse, a supern, a supernova\u2019s breath\u2014 / the same dust now orbits the void\u201d) stretches the idea of endurance. The abrupt line breaks and free verse structure mimic time\u2019s irregularity, and the closing image of \u201cwounds crusted with constellations\u201d ties the geological to the cosmic.  \n\n**Issues:**  \n- **Abstraction**: \u201cthe void\u2019s embrace\u201d softens the poem\u2019s edge; \u201cembrace\u201d risks sentimentality, diluting the geological rigor. Replace with a concrete, unromanticized image (e.g., \u201cthe void\u2019s pull\u201d or \u201cthe void\u2019s gravity",
+      "iteration": 2
+    },
+    {
+      "draft": "Layers of limestone murmur  \nthe river\u2019s teeth gnawing at the cliff\u2019s spine\u2014  \na slow unraveling, a slow becoming.  \n\nFossilized moments gleam in the dark,  \ntheir edges smoothed by centuries of rain.  \nWe are the fractures where light  \ndares to bend,  \na star\u2019s collapse, supernova\u2019s breath\u2014  \nthe same dust now orbits the void\u2019s embrace.  \n\nTime grinds its own axis,  \nand we, its stubborn sediment,  \nare shaped by the weight of what  \nremains after the tide has fled.  \n\nThe earth keeps turning,  \nits scars stitched with constellations.",
+      "critique": "**What\u2019s alive:**  \nThe poem\u2019s core metaphor\u2014love as geological time\u2014works through sedimentary layers, fossilized moments, and celestial decay. The enjaringment (\u201c",
+      "iteration": 3
+    }
+  ],
+  "final_poem": "Layers of limestone murmur,  \nthe river\u2019s teeth gnawing at the cliff\u2019s spine\u2014  \na slow unraveling, a slow becoming.  \n\nFossilized moments gleam in the dark,  \ntheir edges smoothed by centuries of rain.  \nWe are the fractures where light  \ndares to bend,  \na star\u2019s collapse, supernova\u2019s breath\u2014  \nthe same dust now orbits the void\u2019s embrace.  \n\nTime grinds its own axis,  \nand we, its stubborn sediment,  \nare shaped by the weight of what  \nremains after the tide has fled.  \n\nThe earth keeps turning,  \nits scars stitched with constellations.",
+  "metadata": {
+    "revisions": 4,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "ollama:qwen3:8b",
+    "model_poet": "ollama:qwen3:8b"
+  }
+}

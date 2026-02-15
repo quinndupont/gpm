@@ -1,0 +1,24 @@
+{
+  "user_request": "A Father's Day poem about a dad being a hero and role model.",
+  "category": "cliche",
+  "prompt_idx": 5,
+  "max_revisions": 0,
+  "model_id": "trained",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "# My Dad, the Quiet Hero\n\nOn weekdays he'd drive me to school\nin that familiar hummer of his,\nthen wave from the curb like it meant\neverything\u2014or nothing at all.\n\nBut something it did. I watched him lock the car,\ncross the parking lot with his hands full,\nopen every door for no one,\nthe small courtesies he practiced blind.\n\nWeekends he was under the truck\nchanging filters, grease on his knuckles,\nfixing whatever a house asks of you:\na wobbly table, a faucet that bled.\n\nI never heard him name it. A hero\ndoesn't have to. He just does the thing\nthat keeps the kitchen lit, that fixes\nthe gate so the bike can find its circle again.\n\nHe didn't save a child in flood or fire.\nNo epic rescue worth retelling.\n\nWhat he did: every Monday morning,\nhe met my mother's eyes across the table\nand held still for what must have been\na small, fierce, beautiful negotiation\u2014proof\nthat even grown men practice peace\nin rooms where they're allowed to sit.\n\nI'm learning. And I'm learning from him\nthe way a dog learns: by watching,\nby trying the thing that brought a reward.\n\nOn this day, Father's Day, which feels\nlike a made-up holiday except for the truth it carries\u2014\nI want you to know: I see you.\nI carry your quiet courage in my hands\nwhen I change a lightbulb, when I stay\ncalm at the register with the woman who wronged me.\n\nYou didn't teach me that. No one does.\nBut I watched you for eighteen years,\nand now I'm doing what you did\nwithout being asked\u2014sliding under things,\nfixing them, holding still in the kitchen\nwhen the argument comes to dinner.\n\nThank you. The quiet kind.\nThe kind that means everything.",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "qwen2.5-7b-poet-Q4_K_M",
+    "perf_total_sec": 10.33,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

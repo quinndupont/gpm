@@ -1,0 +1,78 @@
+{
+  "user_request": "Something about night.",
+  "category": "short_generic",
+  "prompt_idx": 3,
+  "max_revisions": 4,
+  "model_id": "qwen2.5-7b",
+  "revisions_actual": 4,
+  "change_pcts": [
+    2.5641025641025643,
+    0.0,
+    0.0,
+    0.0,
+    2.0408163265306123,
+    0.0,
+    2.1739130434782608,
+    1.9230769230769231,
+    11.11111111111111,
+    10.416666666666666,
+    14.893617021276595,
+    16.3265306122449,
+    100.0,
+    100.0,
+    0.0,
+    48.97959183673469,
+    2.6315789473684212,
+    54.54545454545455,
+    10.204081632653061,
+    53.84615384615385,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    2.6315789473684212,
+    0.0,
+    2.0408163265306123,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    9.090909090909092
+  ],
+  "revision_history": [
+    {
+      "draft": "In shadows' grip, where whispers weave,\nWhere hidden truths entwine with night's retreat.\nNot just absence, but an essence deep\u2014\nA canvas vast for tales uncharted and steep.\n\nThrough hushed walls of silence, secrets breathe,\nIn every shadowed corner, untold deeds.\nThe moon, a specter haunting dreams and fears,\nIts glow, a guide through paths where light appears.\n\nHere, the past whispers to the present's ear,\nAnd futures sketched in darkness' tender sphere.\nWhat truths lie hidden 'neath the starless sky?\nWhere doves coo softly as night's cloak they try?\n\nIn every cranny of this silent realm,\nEchoes echo only what is sealed.",
+      "critique": "### What Works:\n- The draft effectively uses night as a metaphor for hidden truths and secrets, which aligns with the given angle.\n- The imagery of \"shadows' grip\" and \"whispers weave\" creates an evocative atmosphere.\n- The structure of tercets helps to emphasize the fragmented nature of nighttime experiences.\n\n### Issues:\n1. **Rhyme Scheme**: \n   - **Line 3 (\"deep\u2014\") does not rhyme with \"weave\" (expected A pair)**: This breaks the expected rhyme scheme and disrupts the flow.\n   - **Line 4 (\"steep\") does not rhyme with \"retreat\" (expected B pair)**: Another break in the rhyme pattern.\n   - **Line 6 (\"deeds\") does not rhyme with \"retreat\" (expected B pair)**: This further deviates from the intended scheme.\n   - **Line 7 (\"fears\") does not rhyme with \"breathe\" (expected C pair)**: Another failure in the expected rhyme pattern.\n   - **Line 9 (\"ear\") does not rhyme with \"breathe\" (expected C pair)**: This continues the issue.\n   - **Line 10 (\"sphere\") does not rhyme with \"appears\" (expected D pair)**: The rhyme scheme is significantly off.\n   - **Line 12 (\"try\") does not rhyme with \"appears\" (expected D pair)**: This final line fails to meet expectations.\n\n2. **Meter**:\n   - While the draft uses a mix of iambic and other feet, there are too many variations from the expected iambic meter.\n   - The use of spondees and trochees disrupts the rhythmic flow, making it harder for the reader to maintain a consistent pace.\n\n### Directions:\n1. **Refine the Rhyme Scheme**:\n   - Stick strictly to the ABA BCB CDC DED rhyme scheme as specified.\n   - Consider replacing \"deep\u2014\" with \"deep\" and finding an appropriate word that rhymes with \"weave.\"\n   - Ensure each line adheres to the expected rhyme pairings.\n\n2. **Improve Meter**:\n   - Aim for a more consistent iambic meter by reducing the number of spondees and trochees.\n   - Try to balance the syllables per line closer to 10, which is typical in iambic pentameter.\n\n3. **Line Breaks**:\n   - Ensure that each tercet (three-line stanza) maintains a cohesive thought or image.\n   - Consider how the line breaks can enhance the poem's structure and meaning.\n\n### Revised Draft Example:\n\nIn shadows' grip, where whispers weave,\nWhere hidden truths entwine with night's retreat.\nNot just absence, but an essence deep\u2014\nA canvas vast for tales uncharted and steep.\n\nThrough hushed walls of silence, secrets breathe,\nIn every shadowed",
+      "iteration": 0
+    },
+    {
+      "draft": "In shadows' grip where whispers weave,\nWhere hidden truths entwine with night's retreat.\n\nNot just absence, but an essence deep\u2014\nA canvas vast for tales uncharted and steep.\n\nThrough hushed walls of silence, secrets breathe.\nIn every shadowed corner, untold deeds.\n\nThe moon a specter haunting dreams and fears,\nIts glow a guide through paths where light appears.\n\nHere the past whispers to present's ear,\nFutures sketched in darkness' tender sphere.\n\nWhat truths lie hidden 'neath starless skies?\nDoves coo softly as night's cloak they try.",
+      "critique": "### What Works:\n- The draft effectively uses night as a metaphor for hidden truths and secrets, which aligns with the given angle.\n- The imagery of \"shadows' grip\" and \"whispers weave\" creates an evocative atmosphere.\n- The structure of tercets helps to emphasize the fragmented nature of nighttime experiences.\n\n### Issues:\n1. **Rhyme Scheme**:\n   - **Line 3 (\"deep\u2014\") does not rhyme with \"weave\" (expected A pair)**: This breaks the expected rhyme scheme and disrupts the flow.\n   - **Line 4 (\"steep\") does not rhyme with \"retreat\" (expected B pair)**: Another break in the rhyme pattern.\n   - **Line 6 (\"deeds\") does not rhyme with \"retreat\" (expected B pair)**: This further deviates from the intended scheme.\n   - **Line 7 (\"fears\") does not rhyme with \"breathe\" (expected C pair)**: Another failure in the expected rhyme pattern.\n   - **Line 9 (\"ear\") does not rhyme with \"breathe\" (expected C pair)**: This continues the issue.\n   - **Line 10 (\"sphere\") does not rhyme with \"appears\" (expected D pair)**: The rhyme scheme is significantly off.\n   - **Line 12 (\"try\") does not rhyme with \"appears\" (expected D pair)**: This final line fails to meet expectations.\n\n2. **Meter**:\n   - While the draft uses a mix of iambic and other feet, there are too many variations from the expected iambic meter.\n   - The use of spondees and trochees disrupts the rhythmic flow, making it harder for the reader to maintain a consistent pace.\n\n### Directions:\n1. **Refine the Rhyme Scheme**:\n   - Stick strictly to the ABA BCB CDC DED rhyme scheme as specified.\n   - Replace \"deep\u2014\" with \"deep\" and find an appropriate word that rhymes with \"weave.\"\n   - Ensure each line adheres to the expected rhyme pairings.\n\n2. **Improve Meter**:\n   - Aim for a more consistent iambic meter by reducing the number of spondees and trochees.\n   - Try to balance the syllables per line closer to 10, which is typical in iambic pentameter.\n\n3. **Line Breaks**:\n   - Ensure that each tercet (three-line stanza) maintains a cohesive thought or image.\n   - Consider how the line breaks can enhance the poem's structure and meaning.\n\n### Revised Draft Example:\n\nIn shadows' grip, where whispers weave,\nWhere hidden truths entwine with night's retreat.\nNot just absence, but an essence deep\u2014\nA canvas vast for tales uncharted and steep.\n\nThrough hushed walls of silence, secrets breathe,\nIn every shadowed corner",
+      "iteration": 1
+    },
+    {
+      "draft": "In shadows' grip where whispers weave,\nWhere secrets hide as moonlight retreats.\n\nNot just absence, but an essence deep,\nA labyrinth vast for tales yet kept.\n\nThrough hushed walls of silence, shadows breathe.\nIn every corner, stories softly read.\n\nThe moon a specter haunting dreams and fears,\nIts glow a guide through paths where light appears.\n\nHere the past whispers to present's ear,\nFutures sketched in darkness' tender sphere.\n\nWhat truths lie hidden 'neath starless skies?\nDoves coo softly as night's cloak they try.",
+      "critique": "### What Works:\n- The draft effectively uses night as a metaphor for hidden truths and secrets, which aligns with the given angle.\n- The imagery of \"shadows' grip\" and \"whispers weave\" creates an evocative atmosphere.\n- The structure of tercets helps to emphasize the fragmented nature of nighttime experiences.\n\n### Issues:\n1. **Rhyme Scheme**:\n   - **Line 3 (\"deep\") does not rhyme with \"weave\" (expected A pair)**: This breaks the expected rhyme scheme and disrupts the flow.\n   - **Line 4 (\"kept\") does not rhyme with \"retreats\" (expected B pair)**: Another break in the rhyme pattern.\n   - **Line 6 (\"read\") does not rhyme with \"retreats\" (expected B pair)**: This further deviates from the intended scheme.\n   - **Line 7 (\"fears\") does not rhyme with \"breathe\" (expected C pair)**: Another failure in the expected rhyme pattern.\n   - **Line 9 (\"ear\") does not rhyme with \"breathe\" (expected C pair)**: This continues the issue.\n   - **Line 10 (\"sphere\") does not rhyme with \"appears\" (expected D pair)**: The rhyme scheme is significantly off.\n   - **Line 12 (\"try\") does not rhyme with \"appears\" (expected D pair)**: This final line fails to meet expectations.\n\n2. **Meter**:\n   - While the draft uses a mix of iambic and other feet, there are too many variations from the expected iambic meter.\n   - The use of spondees and trochees disrupts the rhythmic flow, making it harder for the reader to maintain a consistent pace.\n\n### Directions:\n1. **Refine the Rhyme Scheme**:\n   - Stick strictly to the ABA BCB CDC DED rhyme scheme as specified.\n   - Replace \"deep\" with an appropriate word that rhymes with \"weave.\"\n   - Ensure each line adheres to the expected rhyme pairings, such as \"kept\" with \"retreats,\" \"read\" with \"retreats,\" and so on.\n\n2. **Improve Meter**:\n   - Aim for a more consistent iambic meter by reducing the number of spondees and trochees.\n   - Try to balance the syllables per line closer to 10, which is typical in iambic pentameter.\n\n3. **Line Breaks**:\n   - Ensure that each tercet (three-line stanza) maintains a cohesive thought or image.\n   - Consider how the line breaks can enhance the poem's structure and meaning.\n\n### Revised Draft Example:\n\nIn shadows' grip, where whispers weave,\nWhere hidden truths entwine with night's retreat.\nNot just absence, but an essence deep\u2014\nA canvas vast for tales uncharted",
+      "iteration": 2
+    },
+    {
+      "draft": "In shadows' grip where whispers weave,  \nWhere secrets hide as moonlight retreats.\n\nNot just absence but an essence deep,  \nA labyrinth vast for tales yet kept.\n\nThrough hushed walls of silence, shadows breathe;  \nIn every corner, stories softly read.\n\nThe moon a specter haunting dreams and fears,  \nIts glow a guide through paths where light appears.  \n\nHere the past whispers to present's ear,  \nFutures sketched in darkness' tender sphere.\n\nWhat truths lie hidden 'neath starless skies?  \nDoves coo softly as night's cloak they wear.",
+      "critique": "### What Works:\n- The draft effectively uses night as a metaphor for hidden truths and secrets, which aligns with the given angle.\n- The imagery of \"shadows' grip\" and \"whispers weave\" creates an evocative atmosphere.\n- The structure of tercets helps to emphasize the fragmented nature of nighttime experiences.\n\n### Issues:\n1. **Rhyme Scheme**:\n   - Line 3 (\"deep\") does not rhyme with \"weave\" (expected A pair).\n   - Line 4 (\"kept\") does not rhyme with \"retreats\" (expected B pair).\n   - Line 6 (\"read\") does not rhyme with \"retreats\" (expected B pair).\n   - Line 7 (\"fears\") does not rhyme with \"breathe\" (expected C pair).\n   - Line 9 (\"ear\") does not rhyme with \"breathe\" (expected C pair).\n   - Line 10 (\"sphere\") does not rhyme with \"appears\" (expected D pair).\n   - Line 12 (\"wear\") does not rhyme with \"appears\" (expected D pair).\n\n2. **Meter**:\n   - The draft uses a mix of iambic and other feet, which disrupts the rhythmic flow.\n   - There are too many variations from the expected iambic meter.\n\n### Directions:\n1. **Refine the Rhyme Scheme**:\n   - Stick strictly to the ABA BCB CDC DED rhyme scheme as specified.\n   - Replace \"deep\" with an appropriate word that rhymes with \"weave.\"\n   - Ensure each line adheres to the expected rhyme pairings, such as \"kept\" with \"retreats,\" \"read\" with \"retreats,\" and so on.\n\n2. **Improve Meter**:\n   - Aim for a more consistent iambic meter by reducing the number of spondees and trochees.\n   - Try to balance the syllables per line closer to 10, which is typical in iambic pentameter.\n\n3. **Line Breaks**:\n   - Ensure that each tercet (three-line stanza) maintains a cohesive thought or image.\n   - Consider how the line breaks can enhance the poem's structure and meaning.\n\n### Revised Draft Example:\n\nIn shadows' grip, where whispers weave,\nWhere secrets hide as moonlight retreats.\nNot just absence but an essence deep\u2014\nA labyrinth vast for tales uncharted.\n\nThrough hushed walls of silence, shadows breathe;\nIn every corner, stories softly read.\nThe moon a specter haunting dreams and fears,\nIts glow a guide through paths where light appears.\n\nHere the past whispers to present's ear,\nFutures sketched in darkness' tender sphere.\nWhat truths lie hidden 'neath starless skies?\nDoves coo softly as night's cloak they wear.\n\n### Rhyme Analysis:\n- **Expected Scheme**: ABA BCB",
+      "iteration": 3
+    }
+  ],
+  "final_poem": "In shadows' grip where whispers weave,\nWhere secrets hide as moonlight retreats.\n\nNot just absence, but an essence deep\u2014\nA labyrinth vast for tales yet kept.\n\nThrough hushed walls of silence, shadows breathe;\nIn every corner, stories softly read.\n\nThe moon a specter haunting dreams and fears,\nIts glow a guide through paths where light appears.\n\nHere the past whispers to present's ear,\nFutures sketched in darkened air so clear.  \n\nWhat truths lie hidden 'neath starless skies?\nDoves coo softly as night's cloak they wear.",
+  "metadata": {
+    "revisions": 4,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "ollama:qwen2.5:7b-instruct",
+    "model_poet": "ollama:qwen2.5:7b-instruct"
+  }
+}

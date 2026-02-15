@@ -1,0 +1,20 @@
+{
+  "user_request": "Write a limerick about a lazy cat who refused to hunt.",
+  "form": "limerick",
+  "variant": null,
+  "prompt_idx": 5,
+  "model_id": "qwen3-8b",
+  "max_revisions": 0,
+  "final_poem": "There once was a cat named Larry,  \nWho loved naps more than any drama.  \nHe\u2019d rather lie in the sun\u2019s warm glow  \nThan chase mice through the dusty floo.  \nNow he\u2019s famous for doing\u2026 nothing!",
+  "rhyme_analysis": {
+    "strict_rhyme_density": 0.0,
+    "rhyme_density": 0.0,
+    "matches_form": false,
+    "deviations_count": 3,
+    "strict_rhyme_pairs": 0,
+    "rhyme_pairs": 0,
+    "line_count": 5,
+    "detected_scheme": "ABCD E",
+    "expected_scheme": "AABBA"
+  }
+}

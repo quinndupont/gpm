@@ -1,0 +1,24 @@
+{
+  "user_request": "Write a poem about a traveler at a fork in a yellow wood who chooses the less-traveled path.",
+  "category": "famous_poetry",
+  "prompt_idx": 0,
+  "max_revisions": 0,
+  "model_id": "qwen3-8b",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "Beneath the amber light of fading days,  \nwhere shadows stretch and whispers weave,  \nthe traveler paused where two roads lay\u2014  \none trod with footprints, one with leave.  \n\nThe first was worn by countless sighs,  \nits gravel crunched with echoed names.  \nThe second, soft with mossy sighs,  \na ribbon lost in time\u2019s slow frames.  \n\nHe traced the grooves where leaves had fallen,  \neach step a weight of unseen cost.  \nYet in the hush, a pull was called\u2014  \na path that dared to be the lost.  \n\nSo he chose the one that bent and braced,  \nwhere wildflowers dared the wind to stay,  \nand though the way was steep and frayed,  \nit hummed with secrets no one knew.  \n\nNow years have passed, and still he walks,  \nthe scarred terrain his compass keeps,  \nfor every step, a choice to spoke\u2014  \nthe road less taken, never slept.",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "ollama:qwen3:8b",
+    "perf_total_sec": 15.22,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

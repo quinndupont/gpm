@@ -1,0 +1,75 @@
+{
+  "user_request": "A poem about friendship being a gift that lasts a lifetime.",
+  "category": "cliche",
+  "prompt_idx": 7,
+  "max_revisions": 4,
+  "model_id": "qwen3-8b",
+  "revisions_actual": 4,
+  "change_pcts": [
+    42.857142857142854,
+    76.3157894736842,
+    77.14285714285714,
+    58.064516129032256,
+    79.16666666666667,
+    80.76923076923077,
+    77.77777777777777,
+    80.55555555555556,
+    73.91304347826087,
+    79.16666666666667,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    63.265306122448976,
+    39.583333333333336,
+    5.714285714285714,
+    35.483870967741936,
+    0.0,
+    42.30769230769231,
+    0.0,
+    0.0,
+    0.0,
+    33.333333333333336,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "revision_history": [
+    {
+      "draft": "The vase cracks at the base,  \nstill holds water.  \nYour photo fades,  \nbut the warmth lingers.  \nWe leave doors ajar,  \nnot for sound,  \nbut the hum of absence.  \nA clock loses its hands\u2014  \ntime ticks in the gaps.  \nYour phone stays silent,  \nyet the signal hums.  \nYou are the shadow  \nbeneath the lamp,  \nnever asked to glow,  \nonly to stay.",
+      "critique": "**What\u2019s alive:**  \nThe poem\u2019s core metaphor\u2014decaying objects (vase, photo, clock) persisting through absence\u2014aligns with the angle of quiet endurance. The fragmented structure mirrors the theme\u2019s discontinuous yet continuous nature. The final image of the shadow beneath the lamp is effective, grounding the abstract in a tangible, unglamorous detail.  \n\n**Issues:**  \n- **Weak line break** (\u201cnot for sound, / but the hum of absence\u201d): The abrupt shift from \u201csound\u201d to \u201chum\u201d lacks a clear emotional or logical pivot. The line break here weakens the contrast between presence and absence.  \n- **Abstraction** (\u201csignal hums\u201d): The metaphor is vague; \u201csignal\u201d lacks a concrete anchor. The reader struggles to connect it to the physical or emotional persistence the poem aims to convey.  \n- **Sentimentality** (\u201cYou are the shadow\u2026 only",
+      "iteration": 0
+    },
+    {
+      "draft": "The vase cracks at the base, still cradles water.  \nYour photo fades, but memories linger.  \nWe leave doors ajar, not for sound,  \nbut the hum of what\u2019s not here.  \nA clock loses its hands\u2014  \ntime ticks in the silence.  \nYour phone stays silent, yet the signal hums.  \nYou are the shadow beneath the lamp,  \nnever asked to glow,  \nonly to remain.",
+      "critique": "**What\u2019s alive:**  \nThe poem\u2019s core metaphor\u2014decaying objects (vase, photo, clock) persisting through absence\u2014aligns with the angle of quiet endurance. The fragmented structure mirrors the theme\u2019s discontinuous yet continuous nature. The final image of the shadow beneath the lamp is effective, grounding the abstract in a tangible, unglamorous detail.  \n\n**Issues:**  \n- **Weak line break** (\u201cnot for sound, / but the hum of absence\u201d): The abrupt shift from \u201csound\u201d to \u201chum\u201d lacks a clear emotional or logical pivot. The line break here weakens the contrast between presence and absence.  \n- **Abstraction** (\u201csignal hums\u201d): The metaphor is vague; \u201csignal\u201d lacks a concrete anchor. The reader struggles to connect it to the physical or emotional persistence the poem aims to convey.  \n- **Sentimentality** (\u201cYou are the shadow\u2026",
+      "iteration": 1
+    },
+    {
+      "draft": "The vase holds water, though its base is cracked.  \nYour photo bleeds into gray, yet memories cling.  \nWe leave doors ajar\u2014not for sound,  \nbut the hum of absence.  \nA clock loses its hands\u2014  \ntime ticks on, unspooled.  \nYour phone stays silent, yet the signal hums.  \nYou are the shadow beneath the lamp,  \nnever asked to glow,  \nonly to stay.",
+      "critique": "**What\u2019s alive:**  \nThe poem\u2019s core metaphor\u2014decaying objects (vase, photo, clock) persisting through absence\u2014aligns with the angle of quiet endurance. The fragmented structure mirrors the theme\u2019s discontinuous yet continuous nature. The final image of the shadow beneath the lamp is effective, grounding the abstract in a tangible, unglamorous detail.  \n\n**Issues:**  \n- **Weak line break** (\u201cnot for sound, / but the hum of absence\u201d",
+      "iteration": 2
+    },
+    {
+      "draft": "The vase holds water, though its base is cracked.  \nYour photo bleeds into gray, yet memories cling.  \nWe leave doors ajar\u2014not for sound,  \nbut the hum of absence.  \nA clock loses its hands\u2014  \ntime ticks on, unspooled.  \nYour phone stays silent, yet the signal hums.  \nYou are the shadow beneath the lamp,  \nnever asked to glow,  \nonly to stay.",
+      "critique": "**What\u2019s alive:**  \nThe poem\u2019s core metaphor\u2014decaying objects (vase, photo, clock) persisting through absence\u2014aligns with the angle of quiet endurance. The fragmented structure mirrors the theme\u2019s discontin",
+      "iteration": 3
+    }
+  ],
+  "final_poem": "The vase cradles water, though its base is cracked.  \nYour photo fades to gray, yet memory clings.  \nWe leave doors ajar\u2014not for sound,  \nbut the hum of what\u2019s gone.  \nA clock loses its hands\u2014  \ntime ticks on, unspooled.  \nYour phone stays silent, yet the signal hums.  \nYou are the shadow beneath the lamp,  \nnever asked to glow,  \nonly to stay.",
+  "metadata": {
+    "revisions": 4,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "ollama:qwen3:8b",
+    "model_poet": "ollama:qwen3:8b"
+  }
+}

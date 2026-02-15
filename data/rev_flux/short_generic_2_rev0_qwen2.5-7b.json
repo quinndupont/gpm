@@ -1,0 +1,24 @@
+{
+  "user_request": "A poem for spring.",
+  "category": "short_generic",
+  "prompt_idx": 2,
+  "max_revisions": 0,
+  "model_id": "qwen2.5-7b",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "Blossoms bloom in vibrant hues,\nA soft whisper of gentle shoes.\nChirping birds fill skies so bright,\nSpring's tender touch, our hearts alight.\n\nMelodic notes from larks on high,\nNature\u2019s palette, freshly dyed.\nSoft breezes cradle budding blooms,\nIn the warm light of a new month's looms.",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "ollama:qwen2.5:7b-instruct",
+    "perf_total_sec": 1.71,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

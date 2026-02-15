@@ -1,0 +1,24 @@
+{
+  "user_request": "A poem about a bird that comes down the walk and doesn't know the speaker is watching.",
+  "category": "famous_poetry",
+  "prompt_idx": 5,
+  "max_revisions": 0,
+  "model_id": "qwen3-8b",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "A sparrow alights on the cracked sidewalk,  \nits wings a whisper, a tremor of light.  \nIt preens the feathers, a quiet ritual,  \nunaware the gaze of a human is tight  \nbeside the fence, where the morning air  \nholds breath like a secret the sky won\u2019t share.  \nThe bird tilts its head, a small, curious act,  \nas if the world were a question it might ask\u2014  \nbut the speaker remains a shadowed pact,  \na stillness that blooms where the wild things pass.  \nThe creature takes flight, a flicker of gray,  \nand the walk remains, a silent stage for the day.",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "ollama:qwen3:8b",
+    "perf_total_sec": 10.51,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

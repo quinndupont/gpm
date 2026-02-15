@@ -1,0 +1,24 @@
+{
+  "user_request": "A Mother's Day poem about how a mother's love is unconditional.",
+  "category": "cliche",
+  "prompt_idx": 1,
+  "max_revisions": 0,
+  "model_id": "qwen2.5-7b",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "In soft whispers and gentle arms so warm,\nA mother\u2019s love, an ever-flowing storm.\nThrough joyful times and shadows cast by night,\nHer heart beats steady, a calm in every fight.\n\nNo measure can her tenderness contain,\nFor love that knows no bounds or fleeting pain.\nWith hands both strong yet tender as silk thread,\nShe mends the broken, lifts when hearts are shed.\n\nIn whispering prayers and steadfast gaze of pride,\nHer bond with you is woven tightly.\nThrough life\u2019s grand tapestry she weaves her way,\nA beacon bright, come what may.",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "ollama:qwen2.5:7b-instruct",
+    "perf_total_sec": 2.71,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

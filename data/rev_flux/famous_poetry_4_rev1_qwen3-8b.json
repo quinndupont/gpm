@@ -1,0 +1,24 @@
+{
+  "user_request": "A poem where the speaker addresses death as not proud, and sleep is but a short rest.",
+  "category": "famous_poetry",
+  "prompt_idx": 4,
+  "max_revisions": 1,
+  "model_id": "qwen3-8b",
+  "revisions_actual": 1,
+  "change_pcts": [],
+  "revision_history": [
+    {
+      "draft": "Each breath a valve, each heartbeat a piston\u2014  \nI wind the clock\u2019s gears, defy the stall,  \nbut the spring in my chest is a rusted coil,  \nits torque a whisper of what I cannot stall.  \nI am the engineer of my own decay,  \nyet the engine hums, a low, relentless hymn.  \nSleep is the brief recalibration of a stalled engine,  \nnot a surrender, but a reset of the machine.  \nI grip the wrench, but the wrench is made of bone;  \nthe oil in my veins thickens, a tarred ledger  \nof hours, of turns, of gears that grind to dust.  \nAnd when the metronome pauses, I am both  \nthe tick and the shudder, the valve and the leak\u2014  \na closed valve, a paused metronome,  \na silence that hums.",
+      "critique": "**What's alive:**  \nThe poem successfully frames death as a mechanical failure (valve, piston, rusted coil) and sleep as a recalibration (\"reset of the machine\"). Enjambment stretches tension between defiance (\"I wind the clock\u2019s gears, defy the stall\") and inevitability (\"the oil in my veins thickens\"). The closing image of a paused metronome and closed valve collapses sleep and death into a single, unresolved mechanical metaphor, fulfilling the form guidance.  \n\n**Issues:**  \n- **Clich\u00e9:** \"I am the engineer of my own decay\" reuses the tired trope of self-determination against fate, diluting the originality of the mechanical metaphor.  \n- **Abstraction:** \"a",
+      "iteration": 0
+    }
+  ],
+  "final_poem": "Each breath a valve, each heartbeat a piston\u2014  \nI wind the clock\u2019s gears, defy the stall,  \nyet the spring in my chest, a rusted coil,  \nwhispers of torque I cannot stall.  \nI am the engineer of my own decay,  \nyet the engine hums, a low, relentless hymn.  \nSleep is the brief recalibration of a stalled engine\u2014  \nnot surrender, but a reset of the machine.  \nI grip the wrench, but the wrench is made of bone;  \nthe oil in my veins thickens, a tarred ledger  \nof hours, of turns, of gears that grind to dust.  \nWhen the metronome pauses, I am both  \nthe tick and the shudder, the valve and the leak\u2014  \na closed valve, a paused metronome,  \na silence that hums.",
+  "metadata": {
+    "revisions": 1,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "ollama:qwen3:8b",
+    "model_poet": "ollama:qwen3:8b"
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "user_request": "Write about loss.",
+  "category": "short_generic",
+  "prompt_idx": 5,
+  "max_revisions": 3,
+  "model_id": "qwen3-8b",
+  "revisions_actual": 3,
+  "change_pcts": [
+    0.0,
+    0.0,
+    0.0,
+    20.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    20.0,
+    0.0,
+    9.803921568627452,
+    14.285714285714286,
+    0.0,
+    13.953488372093023,
+    51.515151515151516,
+    0.0,
+    0.0,
+    23.25581395348837,
+    0.0,
+    0.0,
+    16.216216216216218,
+    0.0,
+    0.0,
+    18.181818181818183,
+    0.0,
+    0.0,
+    0.0,
+    20.689655172413794,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "revision_history": [
+    {
+      "draft": "The scent of a vanished perfume lingers  \non the pillow, a ghost in the fabric.  \nStatic hums on a radio tuned to a dead frequency\u2014  \na whisper that never resolves.  \nThe empty chair holds the weight  \nof yesterday\u2019s laughter, now a hollow  \nresonance. A clock\u2019s hands freeze  \nat the moment they vanished,  \nits ticking a metronome of absence.  \nThe taste of a spice, once sharp,  \nnow absent from the kitchen shelves\u2014  \na phantom bite on the tongue.  \nFootsteps echo in an empty hallway,  \nfading into the silence between sentences,  \nlouder than any word.  \nThe last letter\u2019s crease remains,  \nthough the ink has faded,  \nits edges curling like a question  \nleft unanswered.  \nA photograph\u2019s edge curls,  \nholding the shape of a missing face,  \nwhile the door creaks open\u2014  \nbut the room is empty,  \nand the light stays behind.",
+      "critique": "",
+      "iteration": 0
+    },
+    {
+      "draft": "The scent of a vanished perfume lingers  \non the pillow, a ghost in the fabric.  \nStatic hums on a radio tuned to a dead frequency\u2014  \na whisper that never ends.  \nThe empty chair holds the weight  \nof yesterday\u2019s laughter, now a hollow  \nresonance. A clock\u2019s hands freeze  \nat the moment they vanished,  \nits ticking a metronome of absence.  \nThe taste of a spice, once sharp,  \nnow absent from the kitchen shelves\u2014  \na phantom bite on the tongue.  \nFootsteps echo in an empty hallway,  \nfading into the silence between sentences,  \nlouder than any word.  \nThe last letter\u2019s crease remains,  \nthough the ink has faded,  \nits edges curling like a question  \nleft unanswered.  \nA photograph\u2019s edge curls,  \nholding the shape of a missing face,  \nwhile the door creaks open\u2014  \nbut the room is empty,  \nand the light stays behind.",
+      "critique": "",
+      "iteration": 1
+    },
+    {
+      "draft": "The scent of a forgotten perfume lingers  \non the pillow, a ghost in the fabric.  \nStatic hums on a radio tuned to a silent frequency\u2014  \na whisper that never ceases.  \nThe empty chair holds the weight  \nof yesterday\u2019s laughter, now a hollow echo.  \nA clock\u2019s hands stall  \nat the moment they vanished,  \nits ticking a metronome of absence.  \nThe taste of a spice, once sharp and vivid,  \nnow absent from the kitchen shelves\u2014  \na phantom bite on the tongue.  \nFootsteps melt into an empty hallway,  \nfading into the silence between sentences,  \nlouder than any word.  \nThe last letter\u2019s crease lingers,  \nthough the ink has faded,  \nits edges curling like a question  \nleft unanswered.  \nA photograph\u2019s edge wrinkles,  \nholding the shape of a missing face,  \nwhile the door creaks open\u2014  \nbut the room is empty,  \nand the light stays behind.",
+      "critique": "**What\u2019s alive:**  \nThe poem\u2019s focus on absence through sensory details (perfume, static, empty chair) and fragmented structure effectively mirrors the fractured logic of loss. The clock\u2019s stalled hands and the photograph\u2019s missing face anchor the absence in concrete, unusual imagery. The final lines\u2014door creaking open to an empty room\u2014create a visceral, unresolved tension.  \n\n**Issues:**  \n- **Clich\u00e9**: \u201cFootsteps echo in an empty hallway\u201d repeats the overused metaphor of echo for absence. Replace with a more original sensory detail (e.g., *Footsteps dissolve in an empty hallway*).  \n- **Redundancy**: \u201cLingers\u201d appears twice (\u201cscent\u2026lingers,\u201d \u201clast letter\u2019s crease lingers\u201d) and feels repetitive. Merge or rephrase to avoid repetition.  \n- **Weak line break**: The line \u201cits edges curling like a question left unanswered\u201d relies on a simile that feels derivative. Replace with a more original metaphor or concrete image.  \n- **Sentimentality**: The closing lines (\u201c",
+      "iteration": 2
+    }
+  ],
+  "final_poem": "The scent of a forgotten perfume lingers  \non the pillow, a ghost in the fabric.  \nStatic hums on a radio tuned to a silent frequency\u2014  \na whisper that never ceases.  \nThe empty chair holds the weight  \nof yesterday\u2019s laughter, now a hollow echo.  \nA clock\u2019s hands freeze  \nat the moment they vanished,  \nits ticking a metronome of absence.  \nThe taste of a spice, once sharp and vivid,  \nnow absent from the kitchen shelves\u2014  \na phantom bite on the tongue.  \nFootsteps fade into an empty hallway,  \nmelting into the silence between sentences,  \nlouder than any word.  \nThe last letter\u2019s crease lingers,  \nthough the ink has faded,  \nits edges curling like a question  \nleft unanswered.  \nA photograph\u2019s edge wrinkles,  \nholding the shape of a missing face,  \nwhile the door creaks open\u2014  \nbut the room is empty,  \nand the light stays behind.",
+  "metadata": {
+    "revisions": 3,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "ollama:qwen3:8b",
+    "model_poet": "ollama:qwen3:8b"
+  }
+}

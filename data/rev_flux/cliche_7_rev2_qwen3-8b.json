@@ -1,0 +1,57 @@
+{
+  "user_request": "A poem about friendship being a gift that lasts a lifetime.",
+  "category": "cliche",
+  "prompt_idx": 7,
+  "max_revisions": 2,
+  "model_id": "qwen3-8b",
+  "revisions_actual": 2,
+  "change_pcts": [
+    0.0,
+    12.903225806451612,
+    14.285714285714286,
+    0.0,
+    0.0,
+    0.0,
+    22.22222222222222,
+    0.0,
+    43.47826086956522,
+    0.0,
+    38.888888888888886,
+    42.857142857142854,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    48.275862068965516,
+    0.0,
+    45.45454545454545,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "revision_history": [
+    {
+      "draft": "The mug cracks where your thumb once gripped it\u2014  \na map of ridges, still holding  \nthe heat of your last cup of tea.  \nWe never spoke of the storm  \nthat drowned the garden,  \nbut the ink of your name  \nstill pools in the margin  \nof my notebook,  \nfaded but legible.  \n\nBeneath the bench where we split  \nthe orange slices,  \nroots tangle without notice,  \na lattice of patience  \nbeneath the soil.  \nYou left the chair  \nat the far end of the room,  \nempty as a sentence  \nin the middle of a paragraph.  \n\nWe laughed until the clock  \ngrew tired of ticking,  \nand now the silence  \nbetween us is a language  \nwithout words\u2014  \na shared breath,  \na withheld hand,  \nthe kind of trust  \nthat outlives its own name.",
+      "critique": "",
+      "iteration": 0
+    },
+    {
+      "draft": "The mug cracks where your thumb once gripped it\u2014  \na map of ridges, still cradling  \nthe warmth of your last cup of tea.  \nWe never spoke of the storm  \nthat drowned the garden,  \nbut the ink of your name  \nstill lingers in the margin  \nof my notebook,  \nfaded yet unmistakable.  \n\nBeneath the bench where we split  \nthe orange,  \nroots tangle unseen,  \na lattice of patience  \nbeneath the soil.  \nYou left the chair  \nat the far end of the room,  \nempty as a sentence  \nleft mid-paragraph.  \n\nWe laughed until the clock  \nstilled its ticking,  \nand now the silence  \nbetween us is a language  \nwithout words\u2014  \na shared breath,  \na withheld hand,  \nthe kind of trust  \nthat outlives its own name.",
+      "critique": "**What\u2019s alive:**  \nThe imagery of the cracked mug and faded ink effectively conveys the persistence of memory without abstraction. The roots metaphor subtly mirrors the unseen foundation of friendship. The enjambment and line breaks create a rhythm that mirrors the quiet, unbroken flow of time. The final lines about trust outlasting its name are precise and avoid sentimentality.  \n\n**Issues:**  \n- **Clich\u00e9:** \"Still holding the heat of your last cup of tea\" leans on overused sensory language. Replace \"heat\" with \"warmth\" for freshness.  \n- **Weak line break:** \"Still lingers in the margin / of my notebook\" splits a compound idea awkwardly. Merge into a single line for clarity.  \n- **Abstraction:** \"The clock grew tired of ticking\" is vague. Replace with \"stilled its ticking\" for concrete imagery.  \n- **Weak line break:** \"Empty as a sentence / left mid-paragraph\" splits a metaphor unnecessarily. Consolidate into one line for impact.  \n\n**Direction:**  \nRevise \"heat\" to \"warmth,\" adjust \"pools in the margin\" to \"still lingers in the margin,\" and replace \"grew tired of ticking\"",
+      "iteration": 1
+    }
+  ],
+  "final_poem": "The mug cracks where your thumb once gripped it\u2014  \na map of ridges, still holding  \nthe ghost of your last cup of tea.  \nWe never spoke of the storm  \nthat swallowed the garden,  \nbut the ink of your name  \nstill lingers in the margin  \nof my notebook,  \nfaded yet unmistakable.  \n\nBeneath the bench where we split  \nthe orange,  \nroots weave a secret,  \na lattice of time  \nbeneath the soil.  \nYou left the chair  \nat the far end of the room,  \nempty as a sentence  \nleft mid-sentence.  \n\nWe laughed until the clock  \nstilled its ticking,  \nand now the silence  \nbetween us is a language  \nwithout words\u2014  \na shared breath,  \na withheld hand,  \nthe kind of trust  \nthat outlives its own name.",
+  "metadata": {
+    "revisions": 2,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "ollama:qwen3:8b",
+    "model_poet": "ollama:qwen3:8b"
+  }
+}

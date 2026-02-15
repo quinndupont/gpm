@@ -1,0 +1,20 @@
+{
+  "user_request": "Write a Shakespearean sonnet about a traveler at a fork in a yellow wood.",
+  "form": "sonnet",
+  "variant": "shakespearean",
+  "prompt_idx": 0,
+  "model_id": "qwen3-8b",
+  "max_revisions": 0,
+  "final_poem": "A traveler stood where golden leaves did fall,  \nBeneath the boughs of time\u2019s unyielding tree.  \nOne path, with whispers of the olden thrall,  \nWove through the dusk where echoes softly bee.  \nThe other, veiled in shadows, cold and bare,  \nLured with the promise of a distant shore.  \nEach branch a choice, each root a silent prayer,  \nYet none could speak the weight of what they tore.  \nThe sun, now low, cast long and lingering light,  \nUpon the fork where fate and folly meet.  \nWith trembling hand, he traced the unseen night,  \nAnd chose the road less trod by mortal feet.  \nThough shadows stretch, the heart must ever seek  \nThe path where truth and trembling hope convene.",
+  "rhyme_analysis": {
+    "strict_rhyme_density": 0.86,
+    "rhyme_density": 0.86,
+    "matches_form": false,
+    "deviations_count": 1,
+    "strict_rhyme_pairs": 6,
+    "rhyme_pairs": 14,
+    "line_count": 14,
+    "detected_scheme": "ABAB CCCC DDDD EF",
+    "expected_scheme": "ABAB CDCD EFEF GG"
+  }
+}

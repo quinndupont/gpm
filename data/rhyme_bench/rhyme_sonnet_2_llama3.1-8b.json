@@ -1,0 +1,20 @@
+{
+  "user_request": "Write a Shakespearean sonnet about death not being proud.",
+  "form": "sonnet",
+  "variant": "shakespearean",
+  "prompt_idx": 2,
+  "model_id": "llama3.1-8b",
+  "max_revisions": 0,
+  "final_poem": "When Death doth stalk, with solemn, dark disguise,\n'Tis oft a mystery that we defy,\nA force so grim and dreadful in its eyes,\nYet proud it is not, as some might imply.\n\nFor though 'tis feared by many, loud and clear,\nIts presence strikes no pride, nor haughty tone,\nBut rather dread, and sorrow's heavy tear,\nThat falls for lives cut short, before their own.\n\nThe grave, a humble home, where all do sleep,\nA place of rest from life's tumultuous tide,\nNo glory claimed, nor vaunted pomp doth keep,\nBut quiet, dark, and still, it doth reside.\n\nAnd thus Death's pride lies not in grandeur's might,\nBut in its gentle touch, that ends our light.",
+  "rhyme_analysis": {
+    "strict_rhyme_density": 0.86,
+    "rhyme_density": 1.0,
+    "matches_form": true,
+    "deviations_count": 0,
+    "strict_rhyme_pairs": 6,
+    "rhyme_pairs": 7,
+    "line_count": 14,
+    "detected_scheme": "ABAB CDCD EFEF GG",
+    "expected_scheme": "ABAB CDCD EFEF GG"
+  }
+}

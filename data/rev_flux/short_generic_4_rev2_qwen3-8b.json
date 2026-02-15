@@ -1,0 +1,43 @@
+{
+  "user_request": "A poem about memory.",
+  "category": "short_generic",
+  "prompt_idx": 4,
+  "max_revisions": 2,
+  "model_id": "qwen3-8b",
+  "revisions_actual": 2,
+  "change_pcts": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    16.216216216216218,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "revision_history": [
+    {
+      "draft": "The key\u2019s weight is a question mark  \nlodged in the palm.  \nThe scent of a dusty book\u2014ozone and static\u2014  \nclings to the wrist like a second skin.  \nThe letter\u2019s paper, a second skin,  \nstiff with the syntax of forgetting.  \nThe clock\u2019s tick, a metronome of absence,  \nmeasures the air between your breaths.  \nThe taste of rain on a windowpane\u2014metallic,  \nunresolved\u2014sticks to the tongue.  \nThe doorknob\u2019s frost, a language without words,  \ncracks under your touch.  \nThe room remembers, but you do not.",
+      "critique": "**What\u2019s alive:**  \nThe poem thrives on visceral, specific imagery\u2014weight of a key, scent of dust, texture of paper\u2014that grounds memory in physicality. The tension between presence (the room\u2019s memory) and absence (the speaker\u2019s erasure) is sharp. Enjambment and fragmented lines mirror the disjointedness of recollection.  \n\n**Issues:**  \n- **Abstraction:** \u201cSyntax of forgetting\u201d risks over-clarifying the ineffable; the metaphor feels intellectualized rather than sensory.  \n- **Weak line breaks:** The dash in \u201cThe scent of a dusty book\u2014ozone and static\u2014\u201d flattens the pause, diluting the fragmentation. A hard break after \u201cbook\u201d would heighten the sense of lingering.",
+      "iteration": 0
+    },
+    {
+      "draft": "The key\u2019s weight is a question mark  \nlodged in the palm.  \nThe scent of a dusty book\u2014ozone and static\u2014  \nclings to the wrist like a second skin.  \nThe letter\u2019s paper, a second skin,  \nstiff with the grammar of forgetting.  \nThe clock\u2019s tick, a metronome of absence,  \nmeasures the air between your breaths.  \nThe taste of rain on a windowpane\u2014metallic,  \nunresolved\u2014sticks to the tongue.  \nThe doorknob\u2019s frost, a language without words,  \ncracks under your touch.  \nThe room remembers, but you do not.",
+      "critique": "",
+      "iteration": 1
+    }
+  ],
+  "final_poem": "The key\u2019s weight is a question mark  \nburied in the palm\u2019s quiet grave.  \nThe scent of a dusty book\u2014ozone, static\u2014  \nclings to the wrist, a second skin.  \nThe letter\u2019s paper, stiff with forgetting\u2019s grammar,  \ncurls like a forgotten tongue.  \nThe clock\u2019s tick, a metronome of absence,  \ncounts the breaths between your ribs.  \nRain\u2019s metallic taste on the windowpane\u2014  \nunresolved, it lingers on the tongue.  \nThe doorknob\u2019s frost, a language without words,  \nsplinters under your touch.  \nThe room remembers, but you do not.",
+  "metadata": {
+    "revisions": 2,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "ollama:qwen3:8b",
+    "model_poet": "ollama:qwen3:8b"
+  }
+}

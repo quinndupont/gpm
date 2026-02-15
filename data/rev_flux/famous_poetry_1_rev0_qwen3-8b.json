@@ -1,0 +1,24 @@
+{
+  "user_request": "A poem where the speaker compares a lover to a summer day but concludes the beloved outlasts it.",
+  "category": "famous_poetry",
+  "prompt_idx": 1,
+  "max_revisions": 0,
+  "model_id": "qwen3-8b",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "Your light outshines the sun\u2019s unsteady flame,  \nA day that melts to dusk, then fades to gray.  \nYet in your gaze, the dawn outlives the name  \nOf seasons\u2019 toll, where time forgets to stay.  \n\nYou are the bloom that thrives beyond the storm,  \nThe quiet root that clings through winter\u2019s chill.  \nWhile summer burns, then dies, a fleeting form,  \nYou hold the sky in hues that never kill.  \n\nNo hour can dim the fire your voice ignites\u2014  \nA constant star, though clouds may veil its shine.  \nThe sun may fall, but you, my love, unite  \nThe endless dark with light that won\u2019t decline.  \n\nSo let the day decay, the moon grow old\u2014  \nYour truth outlives the dawn, the dusk, the night.",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "ollama:qwen3:8b",
+    "perf_total_sec": 13.01,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

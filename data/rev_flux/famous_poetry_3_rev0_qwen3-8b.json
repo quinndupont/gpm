@@ -1,0 +1,24 @@
+{
+  "user_request": "A poem about stopping by woods on a snowy evening, with promises to keep.",
+  "category": "famous_poetry",
+  "prompt_idx": 3,
+  "max_revisions": 0,
+  "model_id": "qwen3-8b",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "Beyond the pines, where silence kneels, I pause,  \nA horse\u2019s breath fogs the frosty air.  \nThe woods exhale a hush, a pause\u2014  \nYet promises cling like snow to hair.  \n\nThe world outside calls with its endless,  \nA chorus of tasks, a tethered rhyme.  \nBut here, the snow etches its hymn,  \nA quiet plea to stay, to climb.  \n\nI\u2019ve made my vows, though shadows creep,  \nTo leave this hush and chase the light.  \nThe woods, though fair, are not my keep\u2014  \nThe dawn awaits, and duties bright.  \n\nThough promises hum in the night,  \nI\u2019ll turn, and let the woods keep their peace.  \nFor every vow is a step, a light\u2014  \nA path through snow, a silent cease.",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "ollama:qwen3:8b",
+    "perf_total_sec": 24.75,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

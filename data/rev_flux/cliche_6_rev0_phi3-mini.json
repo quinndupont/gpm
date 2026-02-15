@@ -1,0 +1,24 @@
+{
+  "user_request": "A love poem about eyes meeting across a crowded room.",
+  "category": "cliche",
+  "prompt_idx": 6,
+  "max_revisions": 0,
+  "model_id": "phi3-mini",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "Across this sea of faces, where souls entwine in silent pleasers and dreams weave their tales untold  \nA gaze that finds another's eyes meets mine \u2013 a moment shared so briefly yet profoundly bold   \nIn the ocean vastness 'midst life\u2019thus bustling scene (iambic pentameter) \nEyes, twin galaxies of light and hue\u2014a love unspoken.  \nHer azure orbs reflect starlit dreams in silent pleasers' sea so wide   \nAnd mine drowned deep within the abyssal tides where secrets reside    \nThe heartbeats pulse like waves against my chest, a rhythmic undercurrent bold (iambic pentameter)  \nAs eyes lock and in our gazes tales of passion are told.   \nHer emerald depths echo laughter laced with mirth that I have not yet heard to be sincere;  her golden glow speaks a language only the brave dare hear,    \nBeneath this sea'scrowd\u2019ed churning tide my soul does ride (iambic pentameter)  \nAs eyes meet across time and space \u2013 an uncharted journey to steer.   \nIn silent whispers of our gaze - a language spoken in light, I find solace pure;  her laughter sings like the night\u2019s own choir clear (iambic pentameter)  \nThrough constellations that align within this room'searthly sphere.   \nEyes meeting at random chance or fate decreed by heaven-sent force, a tale untold of love we must converse to revere the power held in shared glances vast and pure (iambic pentameter)  \nAs eyes do meet where strangers once dared explore;  her azure light imparts an endless allure.   \nTheir whispers blend, a cosmic dance within this silent hallourse \u2013 I find myself ensnared in their mystical lore (iambic pentameter)  \nAn echo of the heart's desire to learn and explore our spirits intertwined\u2014a tale untold with secret code.   \nAnd so we speak through gazes, not word or phrase;  her laughter\u2019s melody in my chest does endure (iambic pentameter)    ",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "ollama:phi3:mini",
+    "perf_total_sec": 6.12,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

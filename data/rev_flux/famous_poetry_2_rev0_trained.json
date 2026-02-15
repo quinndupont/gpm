@@ -1,0 +1,24 @@
+{
+  "user_request": "A short poem about a raven that visits a grieving man and repeats one word.",
+  "category": "famous_poetry",
+  "prompt_idx": 2,
+  "max_revisions": 0,
+  "model_id": "trained",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "He found the raven perched on the fence\nat six o'clock, that dark communion,\nand said what anyone says to black birds\nin a yard where the earth has not been dug.\n\nThe bird did not turn. Sits with one leg lifted,\nthe other foot spreading the cracked soil.\nGives him no eye-contact. Only the sound\u2014\na word he keeps repeating: *lenient.*\n\nAll afternoon it sits and says *lenient,*\nsays it louder when a car drives by,\nsays it softer when the front door opens,\nas if testing how much grief can hold.\n\nHe does not correct it. He watches\nthe raven finish one maggot, swallow,\nand rise on that column of air\nwith its single word still under its breath.",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "qwen2.5-7b-poet-Q4_K_M",
+    "perf_total_sec": 4.24,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

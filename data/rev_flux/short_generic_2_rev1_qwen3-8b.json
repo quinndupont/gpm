@@ -1,0 +1,24 @@
+{
+  "user_request": "A poem for spring.",
+  "category": "short_generic",
+  "prompt_idx": 2,
+  "max_revisions": 1,
+  "model_id": "qwen3-8b",
+  "revisions_actual": 1,
+  "change_pcts": [],
+  "revision_history": [
+    {
+      "draft": "Ice cracks in the garden\u2019s throat\u2014  \na prism of light fractures\u2014  \na single thread, then another.  \n\nShadows retreat,  \nbut not entirely. The puddle\u2019s surface  \nholds its breath, then shivers.  \n\nDamp soil exhales\u2014  \na musk, not a scent,  \nsomething older than roots.  \n\nA leaf\u2019s edge, hesitant,  \nturns toward the sun.  \nIt does not yet know  \nhow to be a leaf.  \n\nThe world tilts.  \nNot toward bloom,  \nbut toward the weight  \nof a thawing hour.",
+      "critique": "",
+      "iteration": 0
+    }
+  ],
+  "final_poem": "Ice cracks in the garden\u2019s throat\u2014  \na prism of light splinters\u2014  \na single thread, then another.  \n\nShadows retreat,  \nbut not entirely\u2014  \nthe puddle\u2019s surface  \nholds its breath, then shivers.  \n\nDamp soil breathes\u2014  \na musk, not a scent,  \nsomething older than roots.  \n\nA leaf\u2019s edge, hesitant,  \nturns toward the sun.  \nIt does not yet know  \nhow to be a leaf.  \n\nThe world tilts.  \nNot toward bloom,  \nbut toward the weight  \nof a thaw,  \nof a thawing hour.",
+  "metadata": {
+    "revisions": 1,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "ollama:qwen3:8b",
+    "model_poet": "ollama:qwen3:8b"
+  }
+}

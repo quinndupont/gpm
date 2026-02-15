@@ -1,0 +1,24 @@
+{
+  "user_request": "A poem about a road not taken and the difference it made.",
+  "category": "famous_poetry",
+  "prompt_idx": 7,
+  "max_revisions": 0,
+  "model_id": "qwen3-8b",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "Beneath the ash of twilight's sigh,  \ntwo paths diverged in a yellow wood\u2014  \none, a trail of weathered stone,  \nthe other, a whisper of moss and mud.  \n\nI chose the latter, where shadows stretch,  \nand the wind hummed a tune of the unknown.  \nEach step etched a question in the earth,  \na map of the unspoken, the undone.  \n\nThe first road led to a mirrored sky,  \nwhere choices were numbered, and time stood still.  \nBut the second, wild and unbound,  \nwove through the dark with a thief\u2019s thrill.  \n\nNow, when I trace the scars of the path,  \nI see how the world bent to fit my stride\u2014  \nnot a road less traveled, but a road  \nthat learned to bend, and the bend made me wide.",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "ollama:qwen3:8b",
+    "perf_total_sec": 12.1,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

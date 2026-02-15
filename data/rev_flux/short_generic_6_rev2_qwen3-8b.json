@@ -1,0 +1,42 @@
+{
+  "user_request": "A poem on time.",
+  "category": "short_generic",
+  "prompt_idx": 6,
+  "max_revisions": 2,
+  "model_id": "qwen3-8b",
+  "revisions_actual": 2,
+  "change_pcts": [
+    0.0,
+    0.0,
+    0.0,
+    16.3265306122449,
+    0.0,
+    9.523809523809524,
+    0.0,
+    28.88888888888889,
+    10.416666666666666,
+    0.0,
+    0.0,
+    13.636363636363637
+  ],
+  "revision_history": [
+    {
+      "draft": "The scent of ink dissolves in the air,  \nA clock\u2019s teeth gnaw the hour into dust.  \nYour voice, a fossil, hums in the hollow where  \nthe shelf holds your name in a language of scars.  \n\nThe pendulum\u2019s sigh is a thread pulled taut,  \nBetween the seconds that never quite fall.  \nA photograph bleeds its edges to gray,  \nWhile the mirror forgets your face was there.  \n\nYour heartbeat, a paused note, swells then fades  \nIn the silence where all echoes are erased.  \nWe leave behind only the dust we can\u2019t name  \nAnd the weight of a clock\u2019s unspoken blame.",
+      "critique": "",
+      "iteration": 0
+    },
+    {
+      "draft": "The scent of ink dissolves in the air,  \nA clock\u2019s teeth gnaw the hour into dust.  \nYour voice, a fossil, hums in the hollow where  \nthe shelf holds your name in a script of scars.  \n\nThe pendulum\u2019s sigh is a thread pulled taut,  \nBetween seconds that never quite fall.  \nA photograph bleeds its edges to gray,  \nWhile the mirror erases your face entirely.  \n\nYour heartbeat, a frozen note, swells then fades  \nIn the silence where all echoes are erased.  \nWe leave behind only the dust we can\u2019t name  \nAnd the weight of a clock\u2019s unspoken weight.",
+      "critique": "",
+      "iteration": 1
+    }
+  ],
+  "final_poem": "The scent of ink dissolves in the air,  \nA clock\u2019s teeth gnaw the hour into dust.  \nYour voice, a fossil, hums in the hollow where  \nthe shelf holds your name in a script of scars.  \n\nThe pendulum\u2019s sigh is a thread pulled taut,  \nBetween seconds that never quite fall.  \nA photograph bleeds its edges to gray,  \nWhile the mirror erases your face entirely.  \n\nYour heartbeat, a frozen note, swells then fades  \nIn the silence where all echoes are erased.  \nWe leave behind only the dust we can\u2019t name  \nAnd the weight of a clock\u2019s unspoken weight.",
+  "metadata": {
+    "revisions": 2,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "ollama:qwen3:8b",
+    "model_poet": "ollama:qwen3:8b"
+  }
+}

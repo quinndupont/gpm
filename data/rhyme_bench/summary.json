@@ -1,0 +1,29 @@
+{
+  "total_runs": 77,
+  "matches_form_count": 25,
+  "matches_form_rate": 0.32,
+  "mean_strict_rhyme_density": 0.56,
+  "models_tested": [
+    "trained",
+    "qwen2.5-7b",
+    "qwen3-8b",
+    "phi3-mini",
+    "deepseek-coder-6.7b",
+    "llama3.1-8b",
+    "llama3.2-3b"
+  ],
+  "prompt_indices": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+  ],
+  "max_revisions": 0
+}

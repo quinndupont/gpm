@@ -1,0 +1,20 @@
+{
+  "user_request": "Write a villanelle about the loss of time.",
+  "form": "villanelle",
+  "variant": null,
+  "prompt_idx": 3,
+  "model_id": "trained",
+  "max_revisions": 0,
+  "final_poem": "The clock said loss is just a word, but hours\npeeled from me like rinds off oranges in March.\nI kept rearranging what I had left stored.\n\nA glass of water on the nightstand\nkept cooling to that temperature of yours\u2014\nthe one where bodies nearly make their match.\nBut time, the gross old hag who takes her shawl\n\nstole every morning before it was arrayed,\neach filament of light she pulled like taffee\nand sold me back to myself as something small.\n\nThe glass kept shrinking on its coaster.\nMy hands performed their tasks with such good will\u2014\na window washed, a cello wiped clean\u2014               (refrain)\n\nbut somewhere underneath the kitchen faucet,\na thread of absent minutes ran to sill.\n\nI can't recall what you looked like at the start.\nThe glass keeps cooling. March keeps doing that.\nA body left alone grows almost still.              (refrain)\n\nWhat I call loss, time calls simply fact:\nthe bath towel folded into nothing flat\nand stacked with others in its gray damp hold.   (refrain)",
+  "rhyme_analysis": {
+    "strict_rhyme_density": 0.33,
+    "rhyme_density": 0.33,
+    "matches_form": false,
+    "deviations_count": 17,
+    "strict_rhyme_pairs": 5,
+    "rhyme_pairs": 8,
+    "line_count": 21,
+    "detected_scheme": "ABCD EFGH IGJK LMGN MLMM L",
+    "expected_scheme": "ABA ABA ABA ABA ABA ABAA"
+  }
+}

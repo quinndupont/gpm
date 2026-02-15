@@ -1,0 +1,63 @@
+{
+  "user_request": "A poem about stopping by woods on a snowy evening, with promises to keep.",
+  "category": "famous_poetry",
+  "prompt_idx": 3,
+  "max_revisions": 2,
+  "model_id": "trained",
+  "revisions_actual": 2,
+  "change_pcts": [
+    0.0,
+    0.0,
+    0.0,
+    2.4390243902439024,
+    1.9230769230769231,
+    16.666666666666668,
+    43.10344827586207,
+    81.81818181818181,
+    83.92857142857143,
+    82.0,
+    76.08695652173913,
+    72.72727272727273,
+    67.27272727272727,
+    64.81481481481481,
+    68.29268292682927,
+    67.34693877551021,
+    66.66666666666667,
+    61.81818181818182,
+    60.0,
+    65.45454545454545,
+    63.46153846153846,
+    80.95238095238095,
+    79.16666666666667,
+    72.97297297297297,
+    77.77777777777777,
+    82.6923076923077,
+    79.59183673469387,
+    80.48780487804878,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0
+  ],
+  "revision_history": [
+    {
+      "draft": "The thermostat whispers its argument.\nHeat tick, heat tick\u2014\nmy hands forget what they're holding.\n\nTwo o'clock. The faucet drips a syllable,\neach drop   saying  soon  in Japanese, saying  soon,\n\nand under it all: the sound of woods\nnot asked for,    pushing     against       an      attic.\n\nI know because my throat has made room\u2014\nthat soft         bag            of              wanting\n\nto swallow          down        what           I'm\n\ncarrying   like  a  coat   with   no   pocket,\n\nlike a coat that keeps   filling.   My   feet   find\n\nsnow on tile    and    count it     as     something\n\nother\u2014cold's small     theology,      this     numbing\n\nI believe in       the way          you\n\nbelieve         in            your           own\n\nhands.        They        shake.             I            press\n\na glass     to   my     forehead     and  see  fog\n\nspell    my    name    backward    then    erase    it.\n\nThere's a door I keep opening      just       to\n\nhear      what      stays      quiet.\n\nThe radiator clicks its resign.\nMy name on the circuit,    somewhere,\nclosing        itself,\n\nand all winter   I've    been   the     thing\nI'm          listening         for\u2014            slow,\n\nindistinct,       arriving                  after\n\nthe house has already        exhaled.",
+      "critique": "## Workshop Response\n\n### 1. What's Alive\n\nThe central conceit \u2014 that the poem lives inside a house and never enters the woods, only hears them pushing against an attic \u2014 is genuinely strong. It earns its abstraction (\"that soft / bag / of / wanting\") by grounding it in domestic detail: \"snow on tile,\" \"a coat with no pocket.\" The sensory layering works: heat, hands, clock, radiator, fog on glass.\n\nThe closing image (line 32) does what the brief asked \u2014 it arrives unannounced and carries weight without announcing itself. That's real craft. \"I've been the thing I'm listening for\" lands because of what precedes it.\n\nThe short lines are mostly serving the poem well, creating a claustrophobic rhythm that mirrors the experience of carrying weight inside a building.\n\n### 2. What Isn't Working\n\n**Clich\u00e9 proximity / near-clich\u00e9:**\n- \"fog spell my name backward then erase it\" \u2014 this is close to a stock dream-image. The poem earns its strangeness through domestic specificity; here it reaches for something that has been widely used in similar contexts.\n- \"believe in your own hands\" \u2014 too abstract and self-referential, bordering on tautology. What does the speaker actually *do* with these hands besides shake?\n- \"slow / indistinct, arriving after\" \u2014 the enjambment here is doing mechanical word-splitting rather than meaningful tension.\n\n**Abstraction bloat:**\nLines 15\u201320 are the weakest passage:\n> that soft / bag / of / wanting\n> to swallow down what I'm\n> carrying like a coat with no pocket,\n> like a coat that keeps filling.\nThe nested similes (coat with no pocket, coat keeping filling) pile without sharpening. \"Carrying\" appears twice in four lines and becomes generic. What *is* this weight? The poem is most alive when it names specific objects or textures \u2014 tile, snow, hands. Here it retreats into metaphorical vagueness.\n\n**Direction:**\nCut the nested similes. Choose one coat image (pocket or no pocket) and let that do the work alone. The \"bag of wanting\" needs to become a *thing* the body can touch.\n\n**Line 13 (\"under it all\") is vague and structural, not poetic.**\nWhat's under? The woods pushing against the attic \u2014 make that image more precise or cut the attic abstraction entirely so the domestic landscape doesn't get lost in allegory.\n\n**Direction:**\nIf the attic stays, render what it physically sounds like from inside a house (muffled, faint, persistent). If not, find another boundary condition for the woods.\n\nThe revision direction: sharpen the coat image and the final word-image; cut the excess metaphorical cushioning around the central conceit. The architecture of the poem",
+      "iteration": 0
+    },
+    {
+      "draft": "The thermostat whispers its argument.\nHeat tick, heat tick\u2014\nmy hands forget what they're holding.\n\nTwo o'clock. The faucet drops a syllable,\neach drip   saying  soon  in Japanese, saying  soon,\n\nand underneath: the sound of woods\nnot asked for,    faint     on      the     floorboard,\n\npushing  their  lowest  octave       against\n\nthe attic's wooden throat.\n\nMy hands find no pockets. I know because\nmy fists have made this room\u2014\nthat hard        mitten            of           holding\n\nwhat    I'm   carrying       like   a   coat    pressed\n\nflat     across      the       chest,         cold\n\nthrough    every    fiber          still,\n\nstill  warm  enough  to  touch.    My   feet find\n\nsnow on tile    and    count it     as     something\u2014\nthis        numbing,         this              theology\n\nI believe in       the way           you\n\npress a glass     to   your      forehead     and  feel\n\nyour own          pulse          mapped     backward\n\nacross    the    surface    then   erased.\n\nThere's a door I keep opening      just       to\n\nhear      what      stays      quiet\u2014\n\nthe radiator ticks its resignation.\nSomewhere in the wiring my name\n\ncloses        itself,\n\nand all winter   I've    been   the thing\nI'm          listening         for\u2014            press,           press,\n\nthis slow   percussion  of     mine\n\nalready    arriving       after\n\nthe house has exhaled its last\n\nwood-scented breath.",
+      "critique": "## Workshop Response\n\n### 1. What's Alive\n\nThe structural conceit \u2014 a poem inside the house, never entering woods \u2014 is genuinely strong and earns its weight. The short lines (5\u20139 syllables) are doing real work: creating claustrophobia that mirrors the experience of carrying something through domestic space.\n\n\"Snow on tile\" lands hard because it's concrete and specific. \"My hands forget what they're holding\" has genuine compression \u2014 the body forgetting mid-action is more precise than most opening lines.\n\nThe closing image (line 32) does what the brief asked: it arrives unannounced, carries weight without announcing itself, and earns its abstraction (\"the thing I'm listening for\"). That's real craft. \"I've been the thing\" lands because of what precedes it.\n\n### 2. What Isn't Working\n\n**Clich\u00e9 proximity / near-clich\u00e9:**\n\n- **\"fog spell my name backward then erase it\" (line 19) \u2014** This is close to a stock dream-image. The poem earns its strangeness through domestic specificity; here it reaches for something that has been widely used in similar contexts.\n- **\"believe in your own hands\" (line 23) \u2014** Too abstract and self-referential, bordering on tautology. What does the speaker actually *do* with these hands besides shake?\n- **\"slow / indistinct, arriving after\" (lines 29\u201330) \u2014** The enjambment here is doing mechanical word-splitting rather than meaningful tension.\n\n**Abstraction bloat:**\n\nLines 15\u201320 are the weakest passage:\n\n> that soft / bag / of / wanting\n> to swallow down what I'm\n> carrying like a coat with no pocket,\n> like a coat that keeps filling.\n\nThe nested similes (coat with no pocket, coat keeping filling) pile without sharpening. \"Carrying\" appears twice in four lines and becomes generic. What *is* this weight? The poem is most alive when it names specific objects or textures \u2014 tile, snow, hands. Here it retreats into metaphorical vagueness.\n\n**Direction:**\n\nCut the nested similes. Choose one coat image (pocket or no pocket) and let that do the work alone. The \"bag of wanting\" needs to become a *thing* the body can touch.\n\n**Line 13 (\"under it all\") is vague and structural, not poetic.**\n\nWhat's under? The woods pushing against the attic \u2014 make that image more precise or cut the attic abstraction entirely so the domestic landscape doesn't get lost in allegory.\n\n### Revision Direction\n\nThe revision direction: sharpen the coat image and the final word-image; cut the excess metaphorical cushioning around the central conceit. The architecture of the poem is sound but needs precision where it currently reaches for vagueness.",
+      "iteration": 1
+    }
+  ],
+  "final_poem": "The thermostat whispers its argument.\nHeat tick, heat tick\u2014\nmy hands forget what they're holding.\n\nTwo o'clock. The kitchen faucet lets go,\neach drip   saying  soon  in Japanese, saying  soon,\n\nand underneath: the sound of pine\nnot asked for,    faint     on      the floorboard\n\nnear the hall closet's door,    pushing\nits lowest octave       against\n\nthe attic's wooden throat.\n\nMy hands find nothing. I know because\nmy fists have made this room\u2014\nthat hard        mitten            of           holding\n\nwhat    I'm   carrying:  a     box      of         old\n\nletters          nailed     shut,     cold\n\nthrough    every    fiber          still,\n\nstill  warm  enough  to  touch.    My   feet find\n\nsnow on tile    and    count it     as     something\u2014\nthis        numbing,         this              theology\n\nI practice: pressing the box's lid      down\n\neach night      just       to\n\nhear      what      stays      quiet\u2014\n\nthe radiator ticks its steam      running out.\n\nSomewhere in the wall my name\n\ncloses        itself,\n\nand all winter   I've    been   the thing\nat the window\u2014            press,           press,\n\nthis slow   percussion  of     mine\n\nalready    arriving       after\n\nthe house has exhaled its last\n\ncedar-scented breath. The door left open\n\nall night      holds      its      edge\n\nlike a question it doesn't ask.\n---\nI've followed the brief: cut the nested coat similes entirely, named what's carried in line 15 (a box of old letters nailed shut), sharpened the attic sound to pine and specified which floorboard (near the hall closet), replaced the self-referential \"believe\" claim with a bodily action (pressing the lid down each night), simplified or cut lines that were filler, and reoriented the ending back toward the door image.",
+  "metadata": {
+    "revisions": 2,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "qwen2.5-7b-educator-Q4_K_M",
+    "model_poet": "qwen2.5-7b-poet-Q4_K_M"
+  }
+}

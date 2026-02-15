@@ -1,0 +1,24 @@
+{
+  "user_request": "A poem about friendship being a gift that lasts a lifetime.",
+  "category": "cliche",
+  "prompt_idx": 7,
+  "max_revisions": 0,
+  "model_id": "qwen2.5-7b",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "In quiet nooks where whispers rest,\nA bond is sown, like seeds in spring.\nFriends are gifts, with silent fest,\nTheir worth in years of changing tides, never lessening, always springing.\n\nThrough laughter's light and shadows deep,\nThey hold each other, firm as roots.\nWith hands entwined through life's thick sleep,\nIn truth and trust, their love is put to tests.\n\nNo price can buy this steadfast grace,\nForged in the fires of time\u2019s long night.\nA gift that shines with timeless face,\nEnduring every stormy flight.\n\nSo let us cherish these dear ties,\nThrough seasons changing, day by day.\nFor friendships like life's sweetest lies,\nAre treasures held forevermore in heart and fray.",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "ollama:qwen2.5:7b-instruct",
+    "perf_total_sec": 3.45,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

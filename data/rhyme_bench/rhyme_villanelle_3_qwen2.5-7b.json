@@ -1,0 +1,20 @@
+{
+  "user_request": "Write a villanelle about the loss of time.",
+  "form": "villanelle",
+  "variant": null,
+  "prompt_idx": 3,
+  "model_id": "qwen2.5-7b",
+  "max_revisions": 0,
+  "final_poem": "In shadows where once light did dance and play,\nTime slips through fingers, an elusive thief.\nIts passage leaves not a single day astray.\n\nNo return to stolen hours now gray and grey,\nWhere laughter was loud in rooms that are hush.\nIn shadows where once light did dance and play,\n\nLost in minutes on roads without a way,\nThe sun sets the stage with its fading rush.\nIts passage leaves not a single day astray.\n\nYears turn like pages, yet time does us rash.\nSilent echoes of what used to be lush.\nNo return to stolen hours now gray and grey,\nIn shadows where once light did dance and play.\n\nMoments that once glittered, now dim and bash.\nThe clock ticks the silence with its relentless gush.\nIts passage leaves not a single day astray,\n\nIn shadows where once light did dance and play.",
+  "rhyme_analysis": {
+    "strict_rhyme_density": 0.94,
+    "rhyme_density": 0.94,
+    "matches_form": false,
+    "deviations_count": 7,
+    "strict_rhyme_pairs": 52,
+    "rhyme_pairs": 50,
+    "line_count": 17,
+    "detected_scheme": "ABAA CAAC ACCA ACCA A",
+    "expected_scheme": "ABA ABA ABA ABA ABA ABAA"
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "user_request": "A Mother's Day poem about how a mother's love is unconditional.",
+  "category": "cliche",
+  "prompt_idx": 1,
+  "max_revisions": 2,
+  "model_id": "qwen3-8b",
+  "revisions_actual": 2,
+  "change_pcts": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "revision_history": [
+    {
+      "draft": "The clock\u2019s pulse is a metronome  \nshe never winds, yet it keeps  \ntime in the kitchen\u2019s slow breath.  \nYou brush your teeth with the rhythm  \nof a vacuum\u2019s hum\u2014  \na frequency you\u2019ve never named,  \nonly felt, like the roots  \nof the plant in the corner,  \nspreading silent,  \nunseen.  \n\nHer hands, a map of threads  \nweaving the blanket you\u2019ll outgrow  \nbefore you know its shape.  \nYou sleep in the folds,  \nunaware the mattress  \nis stitched with her sighs,  \nthe pillowstuff  \na quiet rebellion  \nagainst the weight of your head.  \n\nThe dishes, always clean,  \nstacked in a tower of silence\u2014  \nshe\u2019s the gravity you don\u2019t notice,  \nthe force that holds your world  \ntogether,  \na gravity you\u2019ll never measure.  \nYou grow,  \nunquestioning,  \nwhile the walls  \nabsorb the echo of her voice,  \na sound you\u2019ve never learned to name.",
+      "critique": "",
+      "iteration": 0
+    },
+    {
+      "draft": "The clock\u2019s pulse is a metronome  \nshe never winds, yet it keeps  \ntime in the kitchen\u2019s slow breath.  \nYou brush your teeth with the rhythm  \nof a vacuum\u2019s hum\u2014  \na frequency you\u2019ve never named,  \nonly felt, like the roots  \nof the plant in the corner,  \nspreading silent,  \nunseen.  \n\nHer hands, a map of threads  \nweaving the blanket you\u2019ll outgrow  \nbefore you know its shape.  \nYou sleep in the folds,  \nunaware the mattress  \nis stitched with her sighs,  \nthe pillowstuff  \na quiet rebellion  \nagainst the weight of your head.  \n\nThe dishes, always clean,  \nstacked in a tower of silence\u2014  \nshe\u2019s the gravity you don\u2019t notice,  \nthe force that holds your world  \ntogether,  \na gravity you\u2019ll never measure.  \nYou grow,  \nunquestioning,  \nwhile the walls  \nabsorb the echo of her voice,  \na sound you\u2019ve never learned to name.",
+      "critique": "",
+      "iteration": 1
+    }
+  ],
+  "final_poem": "The clock\u2019s pulse is a metronome  \nshe never winds, yet it keeps  \ntime in the kitchen\u2019s slow breath.  \nYou brush your teeth with the rhythm  \nof a vacuum\u2019s hum\u2014  \na frequency you\u2019ve never named,  \nonly felt, like the roots  \nof the plant in the corner,  \nspreading silent,  \nunseen.  \n\nHer hands, a map of threads  \nweaving the blanket you\u2019ll outgrow  \nbefore you know its shape.  \nYou sleep in the folds,  \nunaware the mattress  \nis stitched with her sighs,  \nthe pillowstuff  \na quiet rebellion  \nagainst the weight of your head.  \n\nThe dishes, always clean,  \nstacked in a tower of silence\u2014  \nshe\u2019s the gravity you don\u2019t notice,  \nthe force that holds your world  \ntogether,  \na gravity you\u2019ll never measure.  \nYou grow,  \nunquestioning,  \nwhile the walls  \nabsorb the echo of her voice,  \na sound you\u2019ve never learned to name.",
+  "metadata": {
+    "revisions": 2,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "ollama:qwen3:8b",
+    "model_poet": "ollama:qwen3:8b"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "user_request": "Write a Shakespearean sonnet about a traveler at a fork in a yellow wood.",
+  "form": "sonnet",
+  "variant": "shakespearean",
+  "prompt_idx": 0,
+  "model_id": "deepseek-coder-6.7b",
+  "max_revisions": 0,
+  "final_poem": "Beware, I am a poet and my main function is to write poems without comments or instructions. Here's your Shakespearean sonnet about traveler at a fork in yellow wood:\n\nIn the lanes of the road where meadows flow, \nOn this branch by chance did they stray, \nAnd there stood before us an old man, \nWho hath lived but now he might be gone.\n\nHe was wise and rich beyond measure,\nHis life unceasing in youthful vigor;\nYet to this world no more his will abides,\nIn the wood of destiny he lay buried.\n",
+  "rhyme_analysis": {
+    "strict_rhyme_density": 0.22,
+    "rhyme_density": 0.67,
+    "matches_form": false,
+    "deviations_count": 4,
+    "strict_rhyme_pairs": 1,
+    "rhyme_pairs": 3,
+    "line_count": 9,
+    "detected_scheme": "ABCD DEEF A",
+    "expected_scheme": "ABAB CDCD EFEF GG"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "user_request": "A poem about friendship being a gift that lasts a lifetime.",
+  "category": "cliche",
+  "prompt_idx": 7,
+  "max_revisions": 0,
+  "model_id": "llama3.2-3b",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "A thread of gold in life's tapestry,\n Binding hearts, forever free.\nFriendship is a gift divine,\nA bond that weaves through all of time.\n\nThrough laughter and tears, it stands,\nUnshaken, like a steadfast hand.\nThrough trials and joys, it stays,\nA constant heartbeat, night and days.\n\nIt gathers dust, like seasons past,\nYet in the heart, its beauty lasts.\nFor friendship is not fleeting fame,\nBut a treasure that remains the same.\n\nIn memories, it's woven deep,\nA fabric rich, a love that keeps.\nAnd when our time on earth draws near,\nFriendship's gift will wipe away each tear.",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "ollama:llama3.2:3b",
+    "perf_total_sec": 1.59,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

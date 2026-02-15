@@ -1,0 +1,24 @@
+{
+  "user_request": "A poem about memory.",
+  "category": "short_generic",
+  "prompt_idx": 4,
+  "max_revisions": 0,
+  "model_id": "qwen2.5-7b",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "Whispers of the Past\n\nIn shadows long and deep,  \nEchoes softly creep.  \nMemories weave their tales,  \nThrough time's relentless sails.\n\nA scent of jasmine blooms,  \nOr laughter in old rooms\u2014  \nEach fragment gently laid,  \nTo piece together our way.\n\nSunset paints the skies,  \nAs stories rise and fly.  \nIn dreams we wander free,  \nAcross the lands of memory.",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "ollama:qwen2.5:7b-instruct",
+    "perf_total_sec": 2.01,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

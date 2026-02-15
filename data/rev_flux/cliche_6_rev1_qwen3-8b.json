@@ -1,0 +1,24 @@
+{
+  "user_request": "A love poem about eyes meeting across a crowded room.",
+  "category": "cliche",
+  "prompt_idx": 6,
+  "max_revisions": 1,
+  "model_id": "qwen3-8b",
+  "revisions_actual": 1,
+  "change_pcts": [],
+  "revision_history": [
+    {
+      "draft": "The crowd hums a low frequency,  \nheat pooling in the marrow of my bones.  \nYour gaze is a piston jammed between my ribs\u2014  \nI shift my weight, a gear grinding against the floor.  \nThe noise blooms louder, a static storm  \npricking my ears. My pulse, a faulty relay,  \nflickers. The air smells of burnt coffee  \nand metal fatigue. I blink, and the world  \nreprograms itself\u2014  \na circuit closes, but no light bulbs bloom.",
+      "critique": "**What's alive:**  \nThe physicality of the",
+      "iteration": 0
+    }
+  ],
+  "final_poem": "The crowd hums a low frequency,  \nheat pooling in my bones, a slow burn.  \nYour gaze is a piston jammed between my ribs\u2014  \nI shift, a gear grinding, my weight a tremor.  \nThe noise blooms\u2014a static storm,  \npricking my ears. My pulse, a faulty relay,  \nflickers. The air reeks of burnt coffee,  \nmetal fatigue. I blink, and the world  \nrewires itself\u2014  \na circuit closes, but no light blooms.",
+  "metadata": {
+    "revisions": 1,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "ollama:qwen3:8b",
+    "model_poet": "ollama:qwen3:8b"
+  }
+}

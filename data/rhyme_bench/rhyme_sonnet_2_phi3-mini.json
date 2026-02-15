@@ -1,0 +1,20 @@
+{
+  "user_request": "Write a Shakespearean sonnet about death not being proud.",
+  "form": "sonnet",
+  "variant": "shakespearean",
+  "prompt_idx": 2,
+  "model_id": "phi3-mini",
+  "max_revisions": 0,
+  "final_poem": "Death is but an end, yet oft it seems as though  \nA fearsome beast of dread and towering might;    \nWe quiver at its approach with hearts alight,   \nYet in our souls there's strength that one can find no peace.     \nFor Death itself hath not the power to frighten \u2013 \nIt comes for all as evening draws it night away from day -  \nAnd yet we shun this fate each and every fainting;    \nWe fear, what lies beyond in some dismal sway?   \nYet here is wisdom that none can deny:     \nTo live with love gives strength to bear its sting \u2013         \nFor Death' end it comes but still doth not win.  \nIt claims no more than winter ever does;    \nAnd though we die, our lives a precious boon -   \nIn the grand design of life and death\u2019s own run.",
+  "rhyme_analysis": {
+    "strict_rhyme_density": 0.33,
+    "rhyme_density": 0.33,
+    "matches_form": false,
+    "deviations_count": 5,
+    "strict_rhyme_pairs": 2,
+    "rhyme_pairs": 2,
+    "line_count": 12,
+    "detected_scheme": "ABBC DEFG DHIH",
+    "expected_scheme": "ABAB CDCD EFEF GG"
+  }
+}

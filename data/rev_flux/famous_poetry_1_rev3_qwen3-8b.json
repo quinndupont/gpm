@@ -1,0 +1,67 @@
+{
+  "user_request": "A poem where the speaker compares a lover to a summer day but concludes the beloved outlasts it.",
+  "category": "famous_poetry",
+  "prompt_idx": 1,
+  "max_revisions": 3,
+  "model_id": "qwen3-8b",
+  "revisions_actual": 3,
+  "change_pcts": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    2.127659574468085,
+    9.523809523809524,
+    0.0,
+    10.256410256410257,
+    0.0,
+    0.0,
+    0.0,
+    29.26829268292683,
+    0.0,
+    6.0606060606060606,
+    0.0,
+    35.8974358974359,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "revision_history": [
+    {
+      "draft": "The willow's branches, a green, trembling hand,  \ntrace constellations on the moonlit sand.  \nEach leaf a whisper, each sway a sigh\u2014  \nthe river hums the night\u2019s secret why.  \n\nThe path ahead, a silver thread,  \nunspools the dark where shadows tread.  \nFootsteps dissolve in mist\u2019s embrace,  \nas stars blink warnings from their place.  \n\nA breeze, a sigh, the trees conspire\u2014  \nto fold the world in silent fire.  \nThe moon, a lantern, low and slow,  \nguides wanderers to where the lost go.  \n\nAnd when the dawn begins to bleed,  \nthe willow\u2019s song will never need  \nto speak\u2014its roots have learned to hold  \nthe weight of every story told.",
+      "critique": "**What\u2019s alive:**  \nThe poem\u2019s imagery is vivid and cohesive, with a consistent natural metaphor (willow, river, moon) that evokes a quiet, meditative tone. The structure (quatrains, rhyme scheme) supports a lyrical flow, and the final lines tie the willow\u2019s role as a silent witness to the theme of storytelling.",
+      "iteration": 0
+    },
+    {
+      "draft": "The willow's branches, a green, trembling hand,  \ntrace constellations on the moonlit sand.  \nEach leaf a whisper, each sway a sigh\u2014  \nthe river hums the night\u2019s secret why.  \n\nThe path ahead, a silver thread,  \nunspools the dark where shadows tread.  \nFootsteps dissolve in mist\u2019s embrace,  \nas stars blink warnings from their place.  \n\nA breeze, a sigh, the trees conspire\u2014  \nto fold the world in silent fire.  \nThe moon, a lantern, low and slow,  \nguides wanderers to where the lost go.  \n\nAnd when the dawn begins to bleed,  \nthe willow\u2019s song will never need  \nto speak\u2014its roots have learned to hold  \nthe weight of every story told.",
+      "critique": "",
+      "iteration": 1
+    },
+    {
+      "draft": "The willow\u2019s branches, a green, trembling hand,  \ntrace constellations on the moonlit shore.  \nEach leaf a whisper, each sway a sigh\u2014  \nthe river hums the night\u2019s secret sigh.  \n\nThe path ahead, a silver thread,  \nunspools the dark where shadows tread.  \nFootsteps dissolve in mist\u2019s embrace,  \nas stars blink warnings through the veil.  \n\nA breeze, a sigh, the trees conspire\u2014  \nto fold the world in silent pyre.  \nThe moon, a lantern, low and slow,  \nguides wanderers to the lost\u2019s unknown.  \n\nAnd when the dawn begins to bleed,  \nthe willow\u2019s song will never need  \nto speak\u2014its roots have learned to hold  \nthe weight of every story told.",
+      "critique": "",
+      "iteration": 2
+    }
+  ],
+  "final_poem": "The willow\u2019s branches, a green, trembling hand,  \netch constellations on the moonlit shore.  \nEach leaf a whisper, each sway a sigh\u2014  \nthe river hums the night\u2019s secret sigh.  \n\nThe path ahead, a silver thread,  \nunspools the dark where shadows tread.  \nFootsteps dissolve in mist\u2019s embrace,  \nas stars blink warnings through the veil.  \n\nA breeze, a sigh, the trees conspire\u2014  \nto fold the world in silent pyre.  \nThe moon, a lantern, low and slow,  \nguides wanderers to the lost\u2019s unknown.  \n\nAnd when the dawn begins to bleed,  \nthe willow\u2019s song will never need  \nto speak\u2014its roots have learned to hold  \nthe weight of every story told.",
+  "metadata": {
+    "revisions": 3,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "ollama:qwen3:8b",
+    "model_poet": "ollama:qwen3:8b"
+  }
+}

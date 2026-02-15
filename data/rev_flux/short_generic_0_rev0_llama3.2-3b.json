@@ -1,0 +1,24 @@
+{
+  "user_request": "A poem about rain.",
+  "category": "short_generic",
+  "prompt_idx": 0,
+  "max_revisions": 0,
+  "model_id": "llama3.2-3b",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "Softly falls the midnight rain\nA million tears upon the ground\nGentle rhythm, soothing sound\nCalming souls, all around\n\nPetals lift, and flowers sway\nDrinking in the watery day\nRaindrops on the roof above\nA symphony of endless love\n\nIn the puddles, reflections stare\nRipples dance, without a care\nThe world's washed clean, revived anew\nAs rain whispers secrets true",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "ollama:llama3.2:3b",
+    "perf_total_sec": 1.1,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

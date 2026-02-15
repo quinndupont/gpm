@@ -1,0 +1,24 @@
+{
+  "user_request": "A poem for Valentine's Day about true love lasting forever.",
+  "category": "cliche",
+  "prompt_idx": 0,
+  "max_revisions": 0,
+  "model_id": "trained",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "# Two Hearts, One River\n\nThere was a boy and there was a well,\nand the well had watered everything he loved\u2014\nthe dogwood in April, the creek in August,\neach drought-bent blade of grass\ncurving back toward health on his word alone.\n\nShe did not ask for this. She only turned\nwhen dust got in her eye, only knelt\nto press a weed from the boy's shirt.\nBut he had already mapped her tolerance\non a kind of topography,\nhad named the elevation where trust lived:\n\na hill he could climb backward down at any time.\n\nYears later: the well went dry.\nNot all at once\u2014there were seasons\nwhere neither spoke of thirst, where pipes\nrusticked deep in limestone, where no one\ncould say exactly when the water left.\n\nAnd here is the miracle no one taught them:\nthat not possessing each other's history\nmade it possible for them to own\nthe whole beautiful property of now.\nThe boy stopped guaranteeing rain. The woman\nstopped depending on his calendar.\nThey learned the landscape looked different\nfrom either hilltop, that standing close\non the riverbank they could finally see\nhow their two streams converged into one\nbefore entering into anything called Love,\nwhich had been sitting there all along,\nmud-colored and mineral-rich, untouched,\n\nand both of them older now,\nmore honest about what they needed,\nless interested in being right,\nthinner than ever\u2014open\nlike the valley floor where nothing grows\nexcept the honest air.\n\nThis is how it looks. Not with cards or gemstones.\nNot with any ritual. Just two people\nstanding in a field no one taught them to love,\ntasting limestone, agreeing it's bad for teeth,\nand not hating it for it.",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "qwen2.5-7b-poet-Q4_K_M",
+    "perf_total_sec": 9.55,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

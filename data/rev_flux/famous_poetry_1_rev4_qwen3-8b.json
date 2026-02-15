@@ -1,0 +1,61 @@
+{
+  "user_request": "A poem where the speaker compares a lover to a summer day but concludes the beloved outlasts it.",
+  "category": "famous_poetry",
+  "prompt_idx": 1,
+  "max_revisions": 4,
+  "model_id": "qwen3-8b",
+  "revisions_actual": 4,
+  "change_pcts": [
+    10.0,
+    20.754716981132077,
+    24.56140350877193,
+    17.02127659574468,
+    24.56140350877193,
+    11.11111111111111,
+    50.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    9.523809523809524,
+    10.0,
+    24.074074074074073,
+    0.0,
+    0.0,
+    0.0,
+    13.333333333333334,
+    0.0
+  ],
+  "revision_history": [
+    {
+      "draft": "The heat bends the car hood into a question mark,  \nlight bleaches the shirt to a ghost of its own name.  \nA storm\u2019s ozone lingers, sharp in the closed room\u2014  \na smell that outlives the thunder\u2019s last sigh.  \nBut she arrives, a coolness in the cracked earth\u2019s mouth\u2014  \nher skin unmarked by the sun\u2019s slow erosion.  \nHer voice hums in the wiring of the house.",
+      "critique": "**What\u2019s alive:**  \nThe opening lines (\u201cheat bends the car hood,\u201d \u201clight bleaches the shirt\u201d) anchor the poem in tactile, specific decay. The storm\u2019s ozone lingering (\u201csharp in the closed room\u201d) ties material erosion to memory, avoiding clich\u00e9. The abrupt pivot to the lover\u2019s presence (\u201cBut she arrives\u201d) is effective, and the final line (\u201cher voice hums in the wiring of the house\u201d) is stark, concrete, and resonant.  \n\n**Issues:**  \n- **Abstraction**: \u201ca smell that outlives the thunder\u2019s last sigh\u201d is vague. The metaphor of the ozone lingering is strong, but the phrase \u201cthunder\u2019s last sigh\u201d",
+      "iteration": 0
+    },
+    {
+      "draft": "The heat twists the car hood into a question mark,  \nlight bleaches the shirt to a ghost, its name erased.  \nA storm\u2019s ozone lingers, sharp as a closed room\u2019s breath\u2014  \na scent that outlives the thunder\u2019s final sigh.  \nBut she arrives, a coolness in the earth\u2019s cracked mouth\u2014  \nher skin untouched by the sun\u2019s slow erosion.  \nHer voice hums through the house\u2019s wiring.",
+      "critique": "**What\u2019s alive:**  \nThe opening lines (\u201cheat bends the car hood,\u201d \u201clight bleaches the shirt\u201d) anchor the poem in tactile, specific decay. The storm\u2019s ozone lingering (\u201csharp in the closed room\u201d) ties material erosion to memory, avoiding clich\u00e9. The abrupt pivot to the lover\u2019s presence (\u201cBut she arrives\u201d) is effective, and the final line (\u201cher voice hums in the wiring of the house\u201d) is stark, concrete, and resonant.  \n\n**Issues:**  \n- **Abstraction**: \u201ca scent that outlives the thunder\u2019s final sigh\u201d is vague. The metaphor of the ozone lingering is strong, but the phrase \u201cthunder",
+      "iteration": 1
+    },
+    {
+      "draft": "The heat twists the car hood into a question mark,  \nlight bleaches the shirt to a ghost, its name erased.  \nA storm\u2019s ozone lingers, sharp as a closed room\u2019s breath\u2014  \na scent that outlives the thunder\u2019s final sigh.  \nBut she arrives, a coolness in the earth\u2019s cracked mouth\u2014  \nher skin untouched by the sun\u2019s slow erosion.  \nHer voice hums through the house\u2019s veins.",
+      "critique": "**What\u2019s alive:**  \nThe opening lines (\u201cheat bends the car hood,\u201d \u201clight bleaches the shirt\u201d) anchor the poem in tactile, specific decay. The storm\u2019s ozone lingering (\u201csharp in the closed room\u201d) ties material erosion to memory, avoiding clich\u00e9. The abrupt pivot to the lover\u2019s presence (\u201cBut she arrives\u201d) is effective, and the final line (\u201cher voice hums in the wiring of the house\u201d) is stark, concrete, and resonant.  \n\n**Issues:**  \n- **Abstraction**: \u201ca scent that outlives the thunder\u2019s final sigh\u201d is vague. The metaphor of the ozone lingering is strong, but the phrase \u201cthunder\u2019s final sigh\u201d dilutes the sensory specificity. Replace with a concrete",
+      "iteration": 2
+    },
+    {
+      "draft": "The heat bends the car hood into a question mark,  \nlight bleaches the shirt to a ghost, erasing its name.  \nA storm\u2019s ozone lingers, sharp as a closed room\u2019s breath\u2014  \na scent that outlives the thunder\u2019s final sigh.  \nBut she arrives, a coolness in the earth\u2019s cracked mouth\u2014  \nher skin, unmarked by the sun\u2019s slow erosion.  \nHer voice hums through the house\u2019s veins.",
+      "critique": "**What\u2019s alive:**  \nThe opening lines (\u201cheat bends the car hood,\u201d \u201clight bleaches the shirt\u201d) anchor the poem in tactile, specific decay. The storm\u2019s ozone lingering (\u201csharp in the closed room\u201d) ties material erosion to memory, avoiding clich\u00e9. The abrupt pivot to the lover\u2019s presence (\u201cBut she arrives\u201d) is effective, and the final line (\u201cher voice hums in the wiring of the house\u201d) is stark, concrete, and resonant.  \n\n**Issues:**  \n- **Abstraction**: \u201ca scent that outlives the thunder\u2019s final",
+      "iteration": 3
+    }
+  ],
+  "final_poem": "The heat bends the car hood into a question mark,  \nlight bleaches the shirt to a ghost, its name erased.  \nA storm\u2019s ozone lingers, sharp as a closed room\u2019s breath\u2014  \na scent that outlives the thunder\u2019s last sigh.  \nBut she arrives, a coolness in the earth\u2019s cracked mouth\u2014  \nher skin, untouched by the sun\u2019s slow erosion.  \nHer voice hums through the house\u2019s veins.",
+  "metadata": {
+    "revisions": 4,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "ollama:qwen3:8b",
+    "model_poet": "ollama:qwen3:8b"
+  }
+}

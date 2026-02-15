@@ -1,0 +1,64 @@
+{
+  "user_request": "A romantic poem about two hearts beating as one.",
+  "category": "cliche",
+  "prompt_idx": 2,
+  "max_revisions": 2,
+  "model_id": "trained",
+  "revisions_actual": 2,
+  "change_pcts": [
+    70.0,
+    81.48148148148148,
+    75.43859649122807,
+    75.0,
+    75.0,
+    80.0,
+    76.27118644067797,
+    78.94736842105263,
+    76.78571428571429,
+    77.41935483870968,
+    81.25,
+    71.73913043478261,
+    80.0,
+    75.92592592592592,
+    80.0,
+    76.08695652173913,
+    82.6086956521739,
+    85.41666666666667,
+    80.70175438596492,
+    80.95238095238095,
+    86.36363636363636,
+    80.95238095238095,
+    80.43478260869566,
+    76.92307692307692,
+    81.13207547169812,
+    73.17073170731707,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0
+  ],
+  "revision_history": [
+    {
+      "draft": "He knew before the coffee cooled she'd set it down too hard,\nthe way her wrist locked mid-air like a small decision\nmade only for herself. He watched from the kitchen window\nwhere the light was bad and everything looked brown.\n\nTuesday, second month \u2014 he couldn't remember\nwhat day it was without asking. That particular Tuesday\nshe crinkled the newspaper into something resembling a hat,\npressed it flat on his head while he read the front page,\nand they both laughed because that's how laughter works:\nit lives in neither of you until one person opens their mouth.\n\nHe learned her second heel struck first, always.\nHe learned she kept the kitchen faucet running\nin the morning. He didn't fix either thing.\n\nThe mug sat on the counter Wednesday and Thursday too,\nthe cupping water singing its low syllable,\nand neither of them moved it because there was\nno argument about it \u2014 just two people sharing\na room that held more than either had asked for.\n\nHe caught her: he actually stopped talking, mid-sentence,\nwhich is the unliterary part worth noting.\nThe way you'd stop if you saw someone's coat\nwas going to fall off. He said nothing.\nJust turned his attention to her ankle\nthe way it lowered onto the floor in a specific way,\nhalf-weighted, almost embarrassed by its own gravity.\n\nShe felt him before she looked up.\n\nAfter that there was no becoming one.\nThere was only the kitchen and its running faucet\nand Tuesday breakfast where he peeled an orange\nand offered her the white rind because she liked it,\nand he'd always just thrown it in the trash,\nbut this time he brought it to her hand\nand she took it without hesitation, chewing slowly,\n\nand that was enough for both of them.",
+      "critique": "## Workshop Response\n\n### 1. What's Alive\n\nThe turn at \"After that there was no becoming one\" \u2014 this is the poem's real engine, where the emotional claim lands on a concrete verb instead of an abstraction. The orange peeling scene (lines 32\u201335) also works because it commits to domestic detail and earns its tenderness through action rather than declaration.\n\nThe structural conceit \u2014 building toward a moment where two people can no longer *become* one because they already are \u2014 is genuinely interesting. It resists the easy \"we were inseparable\" mode and instead dramatizes saturation, which is harder to do well.\n\nThe kitchen faucet running as a repeated image does real work: it tracks intimacy moving from presence to habit without ever being named as such.\n\n### 2. What Isn't Working\n\n**Clich\u00e9 / dead language (lines 1\u20133):**\n\"He knew before the coffee cooled she'd set it down too hard\" \u2014 \"coffee cooled,\" \"set it down too hard,\" and the whole gesture of watching from a window with bad light are close to generic domestic setup. The wrist locking \"like a small decision made only for herself\" is the poem *explaining* its own image rather than trusting it. **Direction:** Cut or radically compress this opening. One sharp shot \u2014 the mug hitting the counter, say \u2014 will do more than three sentences of furniture cataloguing.\n\n**Abstraction / telling (lines 6\u20138):**\n\"That particular Tuesday / she crinkled the newspaper into something resembling a hat\" \u2014 \"a small decision made only for herself\" and then \"they both laughed because that's how laughter works\" are both narrating emotion instead of rendering it. The parenthetical about laughter is especially dead; it kills the poem's momentum to explain itself. **Direction:** Remove the narrator's commentary entirely. Let the action carry its own weight \u2014 show her crinkling, him watching, them laughing (if that happens). Trust the reader.\n\n**Sentimentality / editorializing (line 14):**\n\"Just turned his attention to her ankle\nthe way it lowered onto the floor in a specific way,\nhalf-weighted, almost embarrassed by its own gravity.\" \u2014 The \"embarrassed by its own gravity\" is the poem's weakest moment. It anthropomorphizes an ankle and adds a feeling that belongs to the speaker's interpretation, not the scene. **Direction:** Strip this to pure observation: what did he see? What did it look like?\n\n**Prose / weak line breaks (throughout):**\nThe draft reads mostly as prose with occasional line breaks. The lines have no tension \u2014 no enjambment creating surprise or double meaning, no compression that makes the language do more work than the sentence could alone. \"That's how laughter works\" is a complete sentence broken at will. **Direction:** Every line break should either create a secondary reading",
+      "iteration": 0
+    },
+    {
+      "draft": "He watched her set the mug down wrong, wrist\nlocked like a gate swinging shut. Tuesday.\nShe pressed a crinkled paper to his forehead,\nboth of them laughing when he didn't lift it.\n\nHis kitchen: second hand soap smell, water\nrunning while he stood at the sink, rinsing\nnothing. Her heel striking first. Always.\n\nWednesday the cupping water sang its syllable.\nThursday too. She sat across from him\neating toast the way she always did \u2014\none hand on plate, one holding the baguette,\ncareful not to touch him.\n\nHe peeled an orange at the table. Offered her\nthe white rind and she took it, chewing slow,\nchewing like she'd found something she'd lost\nand kept finding again.\n\nSecond month. The light bad.\nThe faucet.\n\nHe stopped mid-sentence \u2014 actual thing,\nnot metaphor \u2014 his hand already reaching\nfor hers when he saw hers already there,\nboth hands flat on the table between them,\nboth holding nothing, both holding everything,\n\nand that was Tuesday breakfast and it went\non like that: him peeling, her taking,\nthe white rind going down, water running.",
+      "critique": "## Revision Workshop Response\n\n---\n\n### 1. What's Alive\n\nThe orange peeling scene (lines 28\u201335) is the poem's strongest sustained passage. The detail that she took \"without hesitation\" and chewed slowly \u2014 that single action carries more emotional weight than any abstract claim about unity. The shift in the final three lines from shared kitchen to Tuesday breakfast to the act of peeling and offering also earns its ending because each image builds on the last with concrete precision.\n\nThe refrain of domestic gesture (\"wrist locked like a gate swinging shut,\" \"her heel striking first,\" \"the white rind going down\") accumulates without becoming merely decorative. Each instance shifts slightly \u2014 from watching to habit, to something that stops mid-sentence. That's real craft in the line breaks: each one creates a small tension between what precedes and follows.\n\nThe closing image of flat hands on nothing/holding everything lands because it stays grounded in physical gesture rather than reaching for metaphor (\"becoming one\").\n\n---\n\n### 2. What Isn't Working\n\n**Line 1 \u2014 \"He watched her set the mug down wrong, wrist / locked like a gate swinging shut.\"**\n\"Wrong\" is doing work that \"hard\" or \"too hard\" could do with more authority. More importantly: *the metaphor*. The wrist locking into a gate is the poem's best image, and it arrives as a simile attached to narration (\"he watched\"). Cut the narration \u2014 show him watching. Let the image stand alone or slightly delayed (line 2 breaking earlier) so the reader experiences what he experienced.\n\n**Lines 4\u20135 \u2014 \"Tuesday. Her second heel struck first. Always.\"**\n\"Always\" is doing heavy thematic work in a way that undermines the poem's precision elsewhere. The repetition of her heel striking first *feels* inevitable and abstract, not observed. Direction: Replace with something as concrete as the mug or newspaper. What did he see? A foot?\n\n**Lines 7\u20139 \u2014 \"Wednesday the cupping water sang its syllable. / Thursday too. She sat across from him / eating toast the way she always did.\"**\n\"Water running while he stood at the sink, rinsing / nothing\" is stronger as a fragment in the previous draft because it has the flatness that makes it real. Here \"sang its syllable\" and \"eating toast the way she always did\" drift toward paraphrase \u2014 telling us about the gesture instead of letting the image do work. Direction: Remove the explanatory frame. Let the water run, let her eat.\n\n**Lines 10\u201312 \u2014 \"One hand on plate, one holding the baguette,\"**\nThe detail is precise but the line break after \"holding\" lets the sentence complete as prose. The enjambment would create a small suspension: \"one holding\" breaking onto something unexpected.\n\n**Line 14 \u2014 \"chewing slow,",
+      "iteration": 1
+    }
+  ],
+  "final_poem": "She crinkled the bag against his forehead, laughing\nwhen he didn't reach.\n\nHis soap: cheaper than new. Water idling\nwhile he cycled the handle back and forth,\nnothing in his hands.\n\nTuesday the sink held two glasses \u2014 hers empty,\nhis half-full. He left it there all afternoon.\nThirsty only later.\n\nShe tore bread down the middle, both halves\nholding equal weight before eating one.\nThe kitchen faucet sang its one note\nwhile she worked the other.\n\nHe peeled an orange in one continuous ribbon.\nOffered her the white pith and she took it,\nchewed slow \u2014 almost dental, that chewing,\nas if checking teeth were still there.\n\nWednesday the water ran again. He stood\nat the second basin, rinsing nothing specific.\nHer heel on floor tiles first. Always.\n\nThursday the glass filled itself three times.\nShe drank once, set it down wrong, wrist\nlocked like a gate shutting.\n\nHe watched her hand there \u2014 open,\nthen not, then holding\nthe exact shape of what he wanted.\n\nFriday: she sat across from him eating toast\none-handed, careful not to touch the other.\n\nThat evening he peeled another orange.\nThe rind curled off in one strip again.\nHe handed it to her without looking up.\n\nShe took it. Chewed slow.",
+  "metadata": {
+    "revisions": 2,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "qwen2.5-7b-educator-Q4_K_M",
+    "model_poet": "qwen2.5-7b-poet-Q4_K_M"
+  }
+}

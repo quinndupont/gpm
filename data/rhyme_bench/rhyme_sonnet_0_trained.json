@@ -1,0 +1,20 @@
+{
+  "user_request": "Write a Shakespearean sonnet about a traveler at a fork in a yellow wood.",
+  "form": "sonnet",
+  "variant": "shakespearean",
+  "prompt_idx": 0,
+  "model_id": "trained",
+  "max_revisions": 0,
+  "final_poem": "Where two paths diverge in the yellow wood,\nthe sun's thin finger cannot pierce them both\u2014\none winding down into a darker shroud,\nthe other lifting toward some fainter star.  \n\nI stand, that traveler whose footfall is wet,\nand feel the earth shift under my one shoe.\nWhich way the heart will turn its single met,\nI cannot know until I turn and go.\n\nBut something in me doubts the path that climbs\npast bracken dead against a bruised heaven\u2014\nit looks too much like all those upward aims\nmy restless years have made, and little won.\n\nSo let me try the other. If it bends\nto darkness, at least I went that way fully, spun.",
+  "rhyme_analysis": {
+    "strict_rhyme_density": 0.29,
+    "rhyme_density": 0.57,
+    "matches_form": false,
+    "deviations_count": 4,
+    "strict_rhyme_pairs": 2,
+    "rhyme_pairs": 4,
+    "line_count": 14,
+    "detected_scheme": "ABAC DEDF GHGI JI",
+    "expected_scheme": "ABAB CDCD EFEF GG"
+  }
+}

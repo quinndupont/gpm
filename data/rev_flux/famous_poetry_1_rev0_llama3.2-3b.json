@@ -1,0 +1,24 @@
+{
+  "user_request": "A poem where the speaker compares a lover to a summer day but concludes the beloved outlasts it.",
+  "category": "famous_poetry",
+  "prompt_idx": 1,
+  "max_revisions": 0,
+  "model_id": "llama3.2-3b",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "Softly glowing, warmth on skin\nA whispered promise of days within\nGreen fields stretch far and wide\nVibrant hues that never subside\n\nBut as the sun begins its slow descent\nFading light, a gentle event\nPetals drop, petals fall\nSummer's beauty may lose all\n\nYet in your eyes, my love remains\nUnchanging heart that still sustains\nA flame that flickers through the night\nEnduring longer than summer's delight",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "ollama:llama3.2:3b",
+    "perf_total_sec": 1.17,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

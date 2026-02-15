@@ -1,0 +1,20 @@
+{
+  "user_request": "Write a limerick about a lazy cat who refused to hunt.",
+  "form": "limerick",
+  "variant": null,
+  "prompt_idx": 5,
+  "model_id": "phi3-mini",
+  "max_revisions": 0,
+  "final_poem": "There once was a feline so languid,  \nWho'd rather nap than be any kind of hunter.   \nHe\u2019d curl up in sunrays bright,    \nRefusing prey by day or night,      \nIn dreamland forevermore to twiddle fingers and thumbs for food he could never find himself!",
+  "rhyme_analysis": {
+    "strict_rhyme_density": 0.4,
+    "rhyme_density": 0.4,
+    "matches_form": false,
+    "deviations_count": 2,
+    "strict_rhyme_pairs": 1,
+    "rhyme_pairs": 1,
+    "line_count": 5,
+    "detected_scheme": "ABCC D",
+    "expected_scheme": "AABBA"
+  }
+}

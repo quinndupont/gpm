@@ -1,0 +1,46 @@
+{
+  "user_request": "Write a poem about a traveler at a fork in a yellow wood who chooses the less-traveled path.",
+  "category": "famous_poetry",
+  "prompt_idx": 0,
+  "max_revisions": 2,
+  "model_id": "llama3.1-8b",
+  "revisions_actual": 2,
+  "change_pcts": [
+    41.666666666666664,
+    0.0,
+    69.04761904761905,
+    74.35897435897436,
+    81.13207547169812,
+    80.3921568627451,
+    0.0,
+    0.0,
+    44.44444444444444,
+    78.04878048780488,
+    73.91304347826087,
+    80.3921568627451,
+    82.92682926829268,
+    86.79245283018868,
+    100.0,
+    100.0
+  ],
+  "revision_history": [
+    {
+      "draft": "In twilight's hush, where shadows softly fall\nI stand sentinel, a ancient, gnarled wall\nA testament to seasons' ebb and flow\nAs traveler's feet pause before me slow\n\nTheir eyes rove past my weathered, moss-stained face\nTo the unseen trail that beckons them to pace\nThe sun-drenched birches sway in gentle breeze\nWhile honey-scented beeches whisper secrets on the trees\n\nI feel their weight upon my ancient heart\nAs fingers grasp my bark, a moment's part\nA fleeting pause before the next step's stride\nTheir footsteps quiet now, with careful hide\n\nIn distant woods, a bird begins to sing\nIts melody entwines with rustling leaves that cling\nTo earthy scents of dampened forest floor\nAs traveler's gaze falls inward once more",
+      "critique": "**What's alive:**\n\n* The speaker, a tree or rock, offers a unique and detached perspective on the traveler's decision.\n* The language is rich in sensory details, such as \"twilight's hush,\" \"weathered, moss-stained face,\" and \"earthy scents of dampened forest floor.\"\n* The use of enjambment and caesura creates a sense of hesitation and indecision, mirroring the traveler's internal conflict.\n\n**What isn't working:**\n\n* **Clich\u00e9:** In line 3, \"seasons' ebb and flow\" is a familiar phrase that doesn't add much depth to the poem. Consider replacing it with something more specific and nuanced.\n* **Weak line break:** The transition from line 4 (\"As traveler's feet pause before me slow\") to line 5 (\"Their eyes rove past my weathered, moss-stained face\") feels abrupt. A more deliberate line break could enhance the sense of hesitation and indecision.\n* **Sentimentality:** In line 11, \"A fleeting pause before the next step's stride\" feels overly sentimental. Consider focusing on the physical sensations of the moment instead.\n\n**Direction:**\n\n* Revise line 3 to something like \"As seasons' whispers weave my ancient form\" or \"As roots delve deep into the earth's dark core.\"\n* Experiment with a more deliberate line break between lines 4 and 5, such as using caesura or enjambment to create a sense of pause.\n* Replace line 11 with something like \"Their weight presses down upon my bark\" or \"A moment's stillness grips their footsteps tight.\"",
+      "iteration": 0
+    },
+    {
+      "draft": "In crepuscular light, where shadows softly creep\nI stand sentinel, a ancient, gnarled wall\nAs seasons' whispers weave my ancient form\nTheir eyes rove past my weathered face\n\n\nTo the path that winds through shadows they are drawn\nFingers tracing lines upon my bark, a moment's hold\nThe sun-drenched birches sway in gentle breeze\nWhile honey-scented beeches whisper secrets on the trees\n\nI feel their weight presses down upon my bark\nAs footsteps quiet now, with careful hide\n\nIn distant woods, a bird begins to sing\nIts melody entwines with rustling leaves that cling\nTo earthy scents of dampened forest floor\nTheir gaze falls inward once more, in conflict's roar",
+      "critique": "**What's alive:**\n\n* The speaker, a tree or rock, offers a unique and detached perspective on the traveler's decision.\n* The language is rich in sensory details, such as \"twilight's hush,\" \"weathered, moss-stained face,\" and \"earthy scents of dampened forest floor.\"\n* The use of enjambment and caesura creates a sense of hesitation and indecision, mirroring the traveler's internal conflict.\n\n**What isn't working:**\n\n* **Clich\u00e9:** In line 9, \"sun-drenched birches sway in gentle breeze\" is a familiar phrase that doesn't add much depth to the poem. Consider replacing it with something more specific and nuanced.\n* **Weak line break:** The transition from line 7 (\"While honey-scented beeches whisper secrets on the trees\") to line 8 (\"I feel their weight presses down upon my bark\") feels abrupt. A more deliberate line break could enhance the sense of hesitation and indecision.\n* **Abstraction:** In line 13, \"Their gaze falls inward once more, in conflict's roar\" is an abstract concept that doesn't provide a clear image or sensation. Consider focusing on the physical sensations of the moment instead.\n\n**Direction:**\n\n* Revise line 9 to something like \"Birch leaves tremble with each caress of breeze\" or \"Sunlight filters through their slender limbs.\"\n* Experiment with a more deliberate line break between lines 7 and 8, such as using caesura or enjambment to create a sense of pause.\n* Replace line 13 with something like \"Their weight presses down upon my bark\" or \"A moment's stillness grips their footsteps tight.\"",
+      "iteration": 1
+    }
+  ],
+  "final_poem": "In crepuscular light, where shadows softly creep\nI stand sentinel, an ancient wall\nAs seasons' leaves rustle against my bark\nTheir eyes rove past my weathered face\n\nTo the path that winds through shadows they are drawn\nFingers tracing lines upon my trunk, a moment's hold\nLeaves creak beneath their feet in uneven beat\n Birch limbs trembling with each caress of breeze\n\n\nI feel their weight presses down upon my skin\nAs footsteps quiet now, with careful hide\n\nIn distant woods, an owl begins to hoot\nIts melody entwines with rustling leaves that cling\nTo earthy scents of dampened forest floor\nA moment's stillness grips their footsteps tight\nTheir gaze falls inward once more",
+  "metadata": {
+    "revisions": 2,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "ollama:llama3.1:8b",
+    "model_poet": "ollama:llama3.1:8b"
+  }
+}

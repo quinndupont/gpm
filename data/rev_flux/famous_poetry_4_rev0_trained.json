@@ -1,0 +1,24 @@
+{
+  "user_request": "A poem where the speaker addresses death as not proud, and sleep is but a short rest.",
+  "category": "famous_poetry",
+  "prompt_idx": 4,
+  "max_revisions": 0,
+  "model_id": "trained",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "**Non-Pride, Brief as Sleep**\n\nDeath, thou shalt not brag\n\nOn this score: I've met thy ken\nAnd found thee out for what thou art\u2014\nA summer snore the body makes,\nA dropping of all careful thought,\nThe settling of a damp sheet,\nNo more. Consider: when thou takest\nThee to bed with any gentleman\nOf forty, say, or thereabouts,\nWhat hast thou found? A brief ceasing.\nThat's all. Thy pride upon thy tombstone\u2014\nBut even that is only sleep\nWith accounts docketted beside.\n\nAnd what of beauty, which thou think'st\nTo hold some title over me?\nWhy should my soul not rise refreshed\nAs any schoolboy from his rest,\nHis ink-stained sheets still smearing dreams\nOf girls or tests? The body sleeps.\nThe spirit\u2014though it too may flag\u2014\nCan count thy hours on one hand\nAnd find them wanting. Not proud, Death,\nNot proud at all: just the long night\nDrawing its linen curtains\nAcross a room where nothing happens,\nWhere even wonder fogs its eye.\n\nSo here's to those who've woken\nMid-sentence, mid-amour, mid-thought\u2014\nHalf-asleep, still driving. Sleep\nIs but the body's courtesy.\nThe soul has other schedules.\nAnd I have mine.",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "qwen2.5-7b-poet-Q4_K_M",
+    "perf_total_sec": 7.58,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

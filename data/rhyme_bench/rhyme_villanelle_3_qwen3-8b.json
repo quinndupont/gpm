@@ -1,0 +1,20 @@
+{
+  "user_request": "Write a villanelle about the loss of time.",
+  "form": "villanelle",
+  "variant": null,
+  "prompt_idx": 3,
+  "model_id": "qwen3-8b",
+  "max_revisions": 0,
+  "final_poem": "",
+  "rhyme_analysis": {
+    "strict_rhyme_density": 0,
+    "rhyme_density": 0.0,
+    "matches_form": null,
+    "deviations_count": 0,
+    "strict_rhyme_pairs": 0,
+    "rhyme_pairs": 0,
+    "line_count": 0,
+    "detected_scheme": "",
+    "expected_scheme": null
+  }
+}

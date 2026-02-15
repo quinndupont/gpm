@@ -1,0 +1,20 @@
+{
+  "user_request": "Write three rhyming couplets about a journey home.",
+  "form": "couplets",
+  "variant": null,
+  "prompt_idx": 9,
+  "model_id": "qwen2.5-7b",
+  "max_revisions": 0,
+  "final_poem": "Through twisted roads and silent nights,  \nThe old familiar path takes its signs.  \n\nHome's warm light does guide my way,  \nEchoes of childhood still play.",
+  "rhyme_analysis": {
+    "strict_rhyme_density": 0.5,
+    "rhyme_density": 0.5,
+    "matches_form": false,
+    "deviations_count": 1,
+    "strict_rhyme_pairs": 1,
+    "rhyme_pairs": 1,
+    "line_count": 4,
+    "detected_scheme": "ABCC",
+    "expected_scheme": "AA BB CC DD"
+  }
+}

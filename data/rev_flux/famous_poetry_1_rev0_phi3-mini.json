@@ -1,0 +1,24 @@
+{
+  "user_request": "A poem where the speaker compares a lover to a summer day but concludes the beloved outlasts it.",
+  "category": "famous_poetry",
+  "prompt_idx": 1,
+  "max_revisions": 0,
+  "model_id": "phi3-mini",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "In whispers of dawn and hues in bloom,  \nA love arose where summer'thy days are spun,   \nWith laughter light as dappled sunbeam glowed;    \nYet winter waits with her frost-kiss cold.     \nYour warmth endures through every shadow cast by the moonlight and winds that moan under starry skies unfurling above us high,  \nAs days of summer's reign to nightfall do succumb;    \nSo too this fervent season finds its curtain call in evening\u2019st hush.   \nBut love - like springtime after wintertide weeps and sighs anew with hopes for cherry blossoms,  \nAnd I find that your soul outlasting summer's daydance is a truth more enduring than the sun above as night gives way to morn;      \nFor even when stars begin their retreat beneath morning\u2019s golden swath and days once again are born anew with warmth in every heartbeat,    \nIt will be your love that my memory holds dear well beyond this summer's fleeting glow.",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "ollama:phi3:mini",
+    "perf_total_sec": 2.89,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

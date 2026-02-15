@@ -1,0 +1,24 @@
+{
+  "user_request": "A short poem about a raven that visits a grieving man and repeats one word.",
+  "category": "famous_poetry",
+  "prompt_idx": 2,
+  "max_revisions": 0,
+  "model_id": "qwen2.5-7b",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "In twilight's soft embrace, a raven came,\nPerched on the mourner's gloomy bough.\nWith wings as shadows, silent he perched,\nRepeating one word\u2014only sorrow grew.\n\n\"Nevermore,\" echoed in weeping tones,\nA chant of lost hope, a sigh of woes.",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "ollama:qwen2.5:7b-instruct",
+    "perf_total_sec": 1.54,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

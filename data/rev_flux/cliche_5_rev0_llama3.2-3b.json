@@ -1,0 +1,24 @@
+{
+  "user_request": "A Father's Day poem about a dad being a hero and role model.",
+  "category": "cliche",
+  "prompt_idx": 5,
+  "max_revisions": 0,
+  "model_id": "llama3.2-3b",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "A gentle hand that guided me through years\nA steady heart that calmed my every fear\nHe showed me strength in vulnerability's form\nAnd taught me courage to face each storm\n\nHis eyes, a mirror of a loving soul\nReflected kindness, making me whole\nWith every step, he paved the way for me\nTo find my voice and set my spirit free\n\nA hero in his own quiet way\nHe roamed life's path with integrity's sway\nFor those who loved him, he was all we'd see\nA selfless heart that poured love like a sea\n\nAs I grow older, I realize more each day\nThe hero I've been blessed to have on my way\nThank you for being there, through every fall\nAnd rising again, standing tall",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "ollama:llama3.2:3b",
+    "perf_total_sec": 1.83,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

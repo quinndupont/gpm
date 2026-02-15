@@ -1,0 +1,24 @@
+{
+  "user_request": "A Christmas poem about the magic of the season and family togetherness.",
+  "category": "cliche",
+  "prompt_idx": 3,
+  "max_revisions": 0,
+  "model_id": "qwen3-8b",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "The air is stitched with whispers of winter,  \nA hush that hums beneath the stars,  \nWhere laughter spills from every corner,  \nAnd time dissolves in shared hearts.  \n\nThe tree, a flame of tangled dreams,  \nBares secrets older than the snow,  \nWhile cookies bake in golden silence,  \nAnd carols weave through every door.  \n\nHands clasp warm as stories unfold\u2014  \nOf winters past, of paths once trod,  \nEach face a map of love\u2019s refrain,  \nEach moment stitched in threads of gold.  \n\nThe world may spin in distant spheres,  \nBut here, the magic stays unbound\u2014  \nA chorus of the soul\u2019s refrain,  \nWhere family and faith are found.",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "ollama:qwen3:8b",
+    "perf_total_sec": 8.39,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "user_request": "A poem where the speaker hears America singing, each worker their own song.",
+  "category": "famous_poetry",
+  "prompt_idx": 6,
+  "max_revisions": 0,
+  "model_id": "qwen3-8b",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "America sings in the hum of the loom,  \na chorus of hands shaping the dawn,  \neach thread a refrain, each knot a song\u2014  \nthe factory\u2019s breath, the fields\u2019 soft tone.  \n\nThe bricklayer\u2019s hammer, a staccato hymn,  \nthe nurse\u2019s voice, steady as tide and steel,  \nthe teacher\u2019s whisper, a lullaby spun  \nfrom chalk and dreams on a classroom wheel.  \n\nThey sing in the sweat of the morning\u2019s grind,  \nin the wrench\u2019s click, the truck\u2019s rumble, the crane\u2019s cry,  \na thousand voices, a thousand lines\u2014  \nthe nation\u2019s hymn, stitched from dust and sky.",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "ollama:qwen3:8b",
+    "perf_total_sec": 6.98,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

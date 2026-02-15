@@ -1,0 +1,20 @@
+{
+  "user_request": "Write a Shakespearean sonnet about a traveler at a fork in a yellow wood.",
+  "form": "sonnet",
+  "variant": "shakespearean",
+  "prompt_idx": 0,
+  "model_id": "llama3.1-8b",
+  "max_revisions": 0,
+  "final_poem": "In twilight's hush, where yellow woods do sleep,\nA traveler stands, beset by doubts and fears,\nAt crossroads worn with ancient, silent keep\nOf paths that wind through mountains, darkening years.\n\nThe one road beckons to a distant land,\nWhere sunbeams dance upon the verdant hill;\nThe other path unwinds into the sand,\nWhere shadows lie and darkness doth enthrall still.\n\nBut which way lies his journey's promise true?\nDo fleeting hopes or certain fears prevail?\nHe weighs each choice, as fate is won anew\nIn every step he takes, with anxious gale.\n\nAnd yet, in choosing one path over all,\nHis heart remains uncertain, lost and small.",
+  "rhyme_analysis": {
+    "strict_rhyme_density": 1.0,
+    "rhyme_density": 1.0,
+    "matches_form": true,
+    "deviations_count": 0,
+    "strict_rhyme_pairs": 7,
+    "rhyme_pairs": 19,
+    "line_count": 14,
+    "detected_scheme": "ABAB CDCD EDED DD",
+    "expected_scheme": "ABAB CDCD EFEF GG"
+  }
+}

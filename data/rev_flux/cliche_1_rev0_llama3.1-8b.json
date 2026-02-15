@@ -1,0 +1,24 @@
+{
+  "user_request": "A Mother's Day poem about how a mother's love is unconditional.",
+  "category": "cliche",
+  "prompt_idx": 1,
+  "max_revisions": 0,
+  "model_id": "llama3.1-8b",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "Unfettered and true,\nA love that shines right through,\nNo conditions, no bounds to test,\nA mother's heart beats with its best.\n\nIn every moment, in every place,\nHer love remains a constant face,\nFor all her children, big or small,\nShe gives herself without it all.\n\nWith open arms and an open heart,\nShe welcomes each new life from the start,\nThrough laughter and through tears and strife,\nA mother's love is hers to give, for life.",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "ollama:llama3.1:8b",
+    "perf_total_sec": 2.42,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

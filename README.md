@@ -158,7 +158,7 @@ serve_gpm.py             # Reference HTTP chat server (POST /api/chat)
 
 ### RevFlux (revision process benchmark)
 
-`scripts/benchmarks/rev_flux/` measures **process dynamics**, not outcome quality: how much each line changes during revision, where change concentrates, and how this varies by prompt category, revision length, and model (trained GGUF vs vanilla Ollama).
+`scripts/benchmarks/rev_flux/` measures **process dynamics**, not outcome quality: how much each line changes during revision, where change concentrates, and how this varies by prompt category and revision length. Only the trained model runs the revision loop; vanilla models produce initial drafts only (for other comparisons).
 
 ```bash
 # Run harness (all models, categories, revision lengths)

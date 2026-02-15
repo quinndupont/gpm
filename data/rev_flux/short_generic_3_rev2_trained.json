@@ -1,0 +1,66 @@
+{
+  "user_request": "Something about night.",
+  "category": "short_generic",
+  "prompt_idx": 3,
+  "max_revisions": 2,
+  "model_id": "trained",
+  "revisions_actual": 2,
+  "change_pcts": [
+    0.0,
+    0.0,
+    0.0,
+    40.476190476190474,
+    82.92682926829268,
+    77.5,
+    84.44444444444444,
+    76.92307692307692,
+    81.3953488372093,
+    84.0909090909091,
+    77.5,
+    80.85106382978724,
+    71.42857142857143,
+    81.57894736842105,
+    84.61538461538461,
+    84.61538461538461,
+    78.72340425531915,
+    85.71428571428571,
+    74.4186046511628,
+    85.71428571428571,
+    78.57142857142857,
+    80.35714285714286,
+    81.63265306122449,
+    73.6842105263158,
+    86.36363636363636,
+    67.5,
+    79.1044776119403,
+    81.3953488372093,
+    81.25,
+    76.74418604651163,
+    76.74418604651163,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0
+  ],
+  "revision_history": [
+    {
+      "draft": "The thermostat on the skull clicks down.\nThermoregulatory brown fat begins its slow\ncatabolism\u2014glycogen broken to glucose,\nglucose to pyruvate, pyruvate to something\nless than itself. The mitochondria answer\nthe call like cells in a lab, efficient,\nmindful only of yield.\n\nMy eyelids are not the question.\nWhat matters is the drop\u2014the way the body\nreduces surface area, pulls edges together\ntightly as a snail draws into its shell.\nThe lungs fill to less than full. The diaphragm\nknows this. Knows it the way a switch knows dark:\nby absence.\n\nSomething under the skin has gone pink.\nRadiation from the extremities\u2014fingers,\nnose, the tips of ears\u2014gives up its heat\nthe way an engine cools after being switched off.\nBlood finds the deepest work. The liver\nand kidneys, still warm, keep their particular\nfires burning in the basement metabolism\nof what makes things happen.\n\nConsciousness is a room with its lights low,\nnot out. The mind performs its last, gentle\ninventory: the body's own weight of water\nloss; the way skin membranes relax their\ntension like wet tissue paper left overnight.\nA tingle at the fingertips\u2014oh, that's\nthe potassium pump, working both ways now,\ndraining what's available.\n\nSomewhere in this cooling there is an entry\npoint. The cell membrane grows more permeable.\nThe body takes its instructions from cold\nthe way a lake fractures: from inside,\nfirst cracks parallel to no one's looking,\nthen across, then the sound.",
+      "critique": "## Workshop Response\n\n### 1. What's Alive\n\nThe poem's strongest passages are those where specific, physical detail does the work that a thousand abstractions would fail to do:\n\n- **\"A tingle at the fingertips\u2014oh, that's / the potassium pump, working both ways now\"** \u2014 this is precise, grounded, and earns its revelation. The \"oh\" as exclamation has real timing.\n- **\"The way skin membranes relax their / tension like wet tissue paper left overnight\"** \u2014 the simile arrives late enough to feel earned rather than decorative.\n- **\"A lake fractures: from inside, first cracks parallel to no one's looking, then across, then the sound.\"** \u2014 This is the poem's best extended image. The specificity of cracking water versus generic \"darkness\" or \"night\" makes it land.\n\nThe core structure \u2014 short lines (5\u20139 syllables), minimal punctuation, heavy on process and internal physiology \u2014 is correct for what the brief asks. That instinct to stay inside the body is sound.\n\n### 2. What Isn't Working\n\n**Abstraction / dead language:**\n- **\"Efficient, / mindful only of yield.\"** \u2014 This is commentary on metabolism rather than metabolism itself. Cut or replace with a physical image.\n- **\"The way the body / reduces surface area, pulls edges together / tightly as a snail draws into its shell.\"** \u2014 The simile arrives too early and is too ornamental. It softens what should be precise and clinical. \"A snail draws into its shell\" has a pastoral quality that contradicts the coldness the poem wants.\n- **\"Radiation from the extremities\u2014fingers, / nose, the tips of ears\u2014gives up its heat.\"** \u2014 \"Radiation\" is doing decorative work here; it's not how heat actually leaves skin. The physics are wrong in a way that undermines trust.\n\n**Clich\u00e9 / stock language:**\n- **\"Still warm, keep their particular / fires burning.\"** \u2014 This personifies and softens what should be cold.\n- **\"The way a switch knows dark:\"** \u2014 Light-as-death clich\u00e9 dressed as inversion. It doesn't land because the reader has encountered this pairing so many times.\n\n**Redundancy:**\n- The poem says \"cooling\" or variations on it three separate ways (line 12, line 34, line 47). Cut every instance.\n- \"Something under the skin has gone pink\" and \"skin membranes relax their tension like wet tissue paper\" both describe the same visual \u2014 pink-wet-paper. One is enough.\n\n**Direction:**\n\n- **Revise each simile.** Ensure they're concrete and earned, not decorative. The snail shell needs to stay but should arrive later in the poem's logic, not as a first image.\n- **Cut every instance of \"still\"",
+      "iteration": 0
+    },
+    {
+      "draft": "The thermostat on the skull clicks down.\nThermoregulatory brown fat begins its slow\ncatabolism\u2014glycogen broken to glucose,\nglucose to pyruvate, each molecule\nshedding a little heat until the pyruvate\ndrops off like a stone in still water.\n\nMy eyelids are not the question. What matters\nis the drop\u2014the body's reduction, edges\npulling tight as a snail draws its membrane\ninto the shell. The lungs fill to half-full.\nThe diaphragm knows this dark: it sinks\nwith each reduced command until the alveoli\nstalemate in their sacs of lung.\n\nUnder the skin, water begins to leave.\nRadiation from fingers, nose, ear-tips\u2014\neverything letting go its stored heat,\nthe way a poured liquid finds the lowest level.\nBlood pulls back to organs with particular\nurgency: liver and kidneys keep their fires\nin basements where metabolism writes things down.\n\nConsciousness is a room with its lights lowered\u2014not out.\nThe mind performs an inventory: water lost through skin,\nmembranes relaxing like wet paper left overnight,\na tingle at the fingertips\u2014potassium pumps reversing now,\ndraining what's available, pulling sodium in\nto keep the balance thin as a hair.\n\nSomewhere in this cooling there is an entry point\u2014the cell membrane\ngrows more permeable, ions moving both ways\nuntil the body takes its instructions from cold:\ncracks start inside. Parallel. Then across.\nThen the sound.",
+      "critique": "## Revision Workshop Response\n\n---\n\n### 1. What's Alive\n\nThe lake fracture passage remains the poem's strongest extended image \u2014 specific, earned through physical detail, and structurally effective: \"cracks parallel to no one's looking\" carries real rhythmic weight before the pivot to \"across.\" The potassium pump line (\"oh, that's / the potassium pump, working both ways now\") is precise, tonally right, and has a genuine moment of revelation. The closing three lines still do more work than most drafts.\n\n### 2. What Isn't Working\n\n**Failure: Abstraction masquerading as imagery (lines 13\u201318).**\n- **\"The way the body / reduces surface area, pulls edges together / tightly as a snail draws into its shell.\"** \u2014 This is explanation *of* what the poem should be showing. The simile arrives too early and too ornamental; it softens the coldness the poem wants to enact. \"A snail draws into its shell\" has pastoral, domestic warmth that contradicts everything else.\n- **\"The way a switch knows dark:\"** \u2014 Light-as-death clich\u00e9 dressed as inversion. It doesn't land because the reader has encountered this pairing so many times.\n\n**Direction:** Cut both of these similes entirely or replace them with images that stay inside the body's own physics: heat leaving skin through specific channels, not a snail retracting into its shell (which is still \"envelops\" in feeling). Let the poem show surface area reduction as a physical fact \u2014 what does cold do to fat cells? What does it do to connective tissue?\n\n---\n\n**Failure: Redundancy and repetition.**\n- **\"Cooling\" or variations on it appears three times (line 12, line 34, line 47).** Cut every instance.\n- **\"Pink\" / \"wet tissue paper\" \u2014 both describe the same visual \u2014 pink-wet-paper. One is enough.**\n\n**Direction:** Choose one moment of skin color change and let it carry weight without restating.\n\n---\n\n**Failure: Clich\u00e9 language (line 26).**\n- **\"Still warm, keep their particular / fires burning.\"** \u2014 This personifies and softens what should be cold. \"Particular fires\" is vague warmth dressed as specificity.\n- **\"Efficient, / mindful only of yield.\"** \u2014 Same problem: commentary on metabolism rather than metabolism.\n\n**Direction:** Replace both with physical language. What does brown fat actually do? What does the liver's core temperature feel like against cooler blood?\n\n---\n\n**Failure: Syntactic filler and weak line breaks (lines 19\u201326).**\n- **\"Under the skin, water begins to leave.\nRadiation from fingers, nose, ear-tips\u2014\neverything letting go its stored heat,\nthe way a poured liquid finds the lowest level.\"**",
+      "iteration": 1
+    }
+  ],
+  "final_poem": "The thermostat clicks. Thermoregulatory brown fat\nbegins its slow breakdown\u2014glycogen stripped\nto glucose, each molecule dropping heat,\nglucose to pyruvate, pyruvate\ndropping like a stone in still water.\n\nMy muscles contract without reason.\nLactic acid pools in the myofibrils,\nmyoglobin releasing its oxygen\u2014\na small efficiency, the body\nsystematizing every cell into heat engine.\n\nThe skin's pores narrow. Radiant loss\nfrom fingers, nose, ear-tips\u2014a withdrawal\nas complete as a circuit losing ground.\nBlood pulls back to organs: liver and kidneys\nkeeping their fires in basements where metabolism\nwrites its equations on the fat membrane.\n\nWater leaves tissue through channels\u2014\ncerebral spinal fluid thinning,\nmembranes relaxing like wet paper left overnight.\nA tingle at the fingertips: potassium pumps reversing now,\ndraining what's available, pulling sodium in\nto keep the dilution thick as a wall.\n\nThe diaphragm knows this dark:\nit sinks with each reduced command until the alveoli\nstalemate\u2014sac full of lung, full of stillness.\n\nSomewhere inside the cooling there is an entry point\u2014the membrane\ngrows more permeable, ions moving both ways\nuntil cold takes its instructions: cracks start inside.\nParallel. Then across the synapse's gap.\nThen the sound a cell makes going quiet,\na hiss like water leaving a stone.",
+  "metadata": {
+    "revisions": 2,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "qwen2.5-7b-educator-Q4_K_M",
+    "model_poet": "qwen2.5-7b-poet-Q4_K_M"
+  }
+}

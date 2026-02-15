@@ -1,0 +1,24 @@
+{
+  "user_request": "A poem about rain.",
+  "category": "short_generic",
+  "prompt_idx": 0,
+  "max_revisions": 0,
+  "model_id": "trained",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "## Rain\n\nRain is not the thing that falls\u2014\nit is the name we give to falling,\nthe word for water's decision\nto abandon surface, to drop\n\nthrough the green. Each bead\ntraced by gravity on glass or leaf\nis a small black hole swallowing\nwhatever light stood in its way.\n\nI have watched rain invent itself\non windows, making oceans where there were none,\nturning the room into a ship\nsailing toward battlements of trees.\n\nIt does not wet so much as mark\u2014\na line across the shoulder, water\ntracing the curve of what it wants.\nThe grasses bend their whole bodies\n\ntoward it, open like mouths.\nThis is how thirst teaches:\nby bending everything\nuntil the thing bent remembers\n\nwhat it was before rigidity,\nremembers soft. The rain does not judge.\nIt lands on the hard city and the soft city\nalike, wetting the philosophy\n\nthat says *this is clean*, that says\n*this surface mine will be restored*\u2014\nand dissolves them both into the ordinary\nact of becoming damp.\n\nIn the night I heard it knock\non the roof like a hand no one owned,\nlike something trying to decide\nwhether to stay or make a fist\n\nand knock, and knock again.\nThat is what rain does with patience:\nit makes a fist. It opens.\nIt repeats this until the house\n\nlearns to listen inside itself\u2014\nthe sound of being almost full,\nthe cup set down on a table,\nthe wet ringing after water's gone,\n\njust the ring of something\nthat was touched by having been filled.",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "qwen2.5-7b-poet-Q4_K_M",
+    "perf_total_sec": 8.72,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

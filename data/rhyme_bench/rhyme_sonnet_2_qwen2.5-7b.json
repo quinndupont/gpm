@@ -1,0 +1,20 @@
+{
+  "user_request": "Write a Shakespearean sonnet about death not being proud.",
+  "form": "sonnet",
+  "variant": "shakespearean",
+  "prompt_idx": 2,
+  "model_id": "qwen2.5-7b",
+  "max_revisions": 0,
+  "final_poem": "When Death doth lift his haughty, icy hand,\nAnd whispers through the shadows of despair\u2014\nDo we then quail beneath a spectral band?\nIn cowardice, our spirits should not fear.\n\nFor Death himself, how proud he ought to be!\nTo claim eternal rule o'er all mankind.\nYet in his boasts, he doth but mock the free,\nWho walk beyond his grasp, unbound and blind.\n\nSo let him rage where shadows dance and shiver\u2014\nHis might, a fleeting dream beneath the sun.\nFor souls that breathe, we need not fear to quiver:\nIn life\u2019s sweet moments, death can never run.\n\nThus, in each heart that beats with noble fire,\nDeath finds his loss; for proud is he who dies.",
+  "rhyme_analysis": {
+    "strict_rhyme_density": 0.71,
+    "rhyme_density": 0.86,
+    "matches_form": false,
+    "deviations_count": 3,
+    "strict_rhyme_pairs": 5,
+    "rhyme_pairs": 10,
+    "line_count": 14,
+    "detected_scheme": "ABAC DADA BEFE FG",
+    "expected_scheme": "ABAB CDCD EFEF GG"
+  }
+}

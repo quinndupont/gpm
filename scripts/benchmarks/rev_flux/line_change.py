@@ -47,15 +47,14 @@ def line_change_percentages(prev_draft: str, next_draft: str) -> list[float]:
 def revision_round_changes(revision_history: list[dict]) -> list[list[float]]:
     """
     For each revision round, return per-line change percentages vs previous draft.
-    revision_history[i]["draft"] = draft after round i (initial draft at i=0).
-    Returns list of lists: one list per round (round 0 = initial, no change; round 1+ = vs previous).
+    Pipeline appends final draft when it differs from last; so we have full sequence.
+    Returns list of lists: round 0 = []; round 1+ = change from prev to curr.
     """
     if not revision_history:
         return []
     rounds = []
     for i in range(len(revision_history)):
         if i == 0:
-            # Initial draft: no prior to compare
             rounds.append([])
             continue
         prev = revision_history[i - 1]["draft"]
@@ -72,6 +71,27 @@ def aggregate_line_changes(rounds: list[list[float]]) -> list[float]:
     for r in rounds:
         out.extend(r)
     return out
+
+
+def revised_lines_per_round(
+    rounds: list[list[float]],
+    threshold: float = 0.5,
+) -> list[list[tuple[int, float]]]:
+    """
+    Per round: list of (line_idx, change_pct) for lines that changed (pct > threshold).
+    """
+    result = []
+    for r in rounds:
+        result.append([(i, p) for i, p in enumerate(r) if p > threshold])
+    return result
+
+
+def lines_changed_per_round(
+    rounds: list[list[float]],
+    threshold: float = 0.5,
+) -> list[int]:
+    """Count of lines changed per round (change_pct > threshold)."""
+    return [len([p for p in r if p > threshold]) for r in rounds]
 
 
 def line_stability_indices(

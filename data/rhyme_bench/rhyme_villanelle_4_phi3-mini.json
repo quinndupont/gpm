@@ -1,0 +1,20 @@
+{
+  "user_request": "Write a villanelle about the inevitability of change.",
+  "form": "villanelle",
+  "variant": null,
+  "prompt_idx": 4,
+  "model_id": "phi3-mini",
+  "max_revisions": 0,
+  "final_poem": "In life's great river, we ride its constant flow and sway (A)  \nThe currents of change are ever present in our lives; they guide us onward as well-trodden paths fade away (a).   \nYet each dawn brings with it the promise that tomorrow holds new guise.    \nThough time's hands may steer, yet we hold a steadfast play  \nWithin ourselves amidst transformation\u2019s relentless spray; in this perpetual shift of tides (a)   \nIn life's great river, our course is ever constant flow and sway.    \nIts banks erode beneath the weight that years impart on us day by nightly dome  \nEach tick a step into realms unseen as we navigate through change\u2019s articulate (a)   \nIn life's great river, ride its waves with resolve or fear to stay.    \nYet even rivers find paths anew; their course from past and future drawn free by hands of fate so frail  \nMay shape new courses not foreseen nor dreamed within our young hearts confined (a)   \nThe currents guide us, life\u2019s inevitable way to sway.",
+  "rhyme_analysis": {
+    "strict_rhyme_density": 0.75,
+    "rhyme_density": 0.33,
+    "matches_form": false,
+    "deviations_count": 7,
+    "strict_rhyme_pairs": 16,
+    "rhyme_pairs": 5,
+    "line_count": 12,
+    "detected_scheme": "AABC ACDA CEAC",
+    "expected_scheme": "ABA ABA ABA ABA ABA ABAA"
+  }
+}

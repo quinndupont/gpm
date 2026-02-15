@@ -1,0 +1,20 @@
+{
+  "user_request": "Write a limerick about a lazy cat who refused to hunt.",
+  "form": "limerick",
+  "variant": null,
+  "prompt_idx": 5,
+  "model_id": "qwen2.5-7b",
+  "max_revisions": 0,
+  "final_poem": "There once was a cat quite sedentary,\nWho lounged all day, rain or sunny.\nHe'd see mice run by with glee,\nBut from his spot on the mat he\u2019d sigh:\n\u201cHunting\u2019s for losers,\u201d he'd softly mury.",
+  "rhyme_analysis": {
+    "strict_rhyme_density": 0.4,
+    "rhyme_density": 0.6,
+    "matches_form": false,
+    "deviations_count": 1,
+    "strict_rhyme_pairs": 1,
+    "rhyme_pairs": 2,
+    "line_count": 5,
+    "detected_scheme": "AABC A",
+    "expected_scheme": "AABBA"
+  }
+}

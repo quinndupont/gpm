@@ -1,0 +1,24 @@
+{
+  "user_request": "Write a poem about a traveler at a fork in a yellow wood who chooses the less-traveled path.",
+  "category": "famous_poetry",
+  "prompt_idx": 0,
+  "max_revisions": 0,
+  "model_id": "qwen2.5-7b",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "In\u9ec3\u91d1\u4e4b\u6797\uff0c\u5206\u5c94\u8def\u73fe\uff0c\n\u65c5\u4eba\u7336\u7591\uff0c\u6b4e\u606f\u8f15\u5606\u3002\n\u5de6\u9053\u7f55\u6709\u4eba\u8de1\uff0c\u53f3\u5f91\u5149\u83ef\u70ab\u721b\u3002\n\n\u4ed6\u9078\u90a3\u5e7d\u5bc2\u873f\u8712\uff0c\n\u8e0f\u904e\u67af\u679d\u6563\u843d\u7684\u6697\u591c\uff0c\n\u5fc3\u4e2d\u9ed8\u8a31\uff0c\u5805\u5b9a\u610f\u5ff5\u3002\n\n\u4e0d\u70ba\u7e41\u82b1\u4f3c\u9326\u4e4b\u671b\uff0c\n\u53ea\u56e0\u5922\u60f3\u5728\u5f7c\u65b9\u6d41\u6d6a\u3002\n\u9ec3\u91d1\u6797\u6728\u9593\uff0c\u5c11\u4eba\u8de1\u884c\uff0c\n\u4ed6\u8f15\u6b65\u524d\u884c\uff0c\u7121\u6028\u7121\u6094\u3002",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "ollama:qwen2.5:7b-instruct",
+    "perf_total_sec": 5.48,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

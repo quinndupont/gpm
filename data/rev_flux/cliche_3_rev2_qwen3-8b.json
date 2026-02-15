@@ -1,0 +1,45 @@
+{
+  "user_request": "A Christmas poem about the magic of the season and family togetherness.",
+  "category": "cliche",
+  "prompt_idx": 3,
+  "max_revisions": 2,
+  "model_id": "qwen3-8b",
+  "revisions_actual": 2,
+  "change_pcts": [
+    0.0,
+    5.2631578947368425,
+    80.0,
+    81.48148148148148,
+    77.14285714285714,
+    77.77777777777777,
+    80.95238095238095,
+    71.42857142857143,
+    77.77777777777777,
+    82.3529411764706,
+    75.0,
+    82.5,
+    84.21052631578948,
+    33.333333333333336,
+    100.0
+  ],
+  "revision_history": [
+    {
+      "draft": "Grandmother\u2019s hands fold dough\u2014  \na whisper of flour.  \nThe scent of pine resin  \nmixes with cinnamon\u2019s sigh\u2014  \nsteam curls from the kettle\u2019s mouth  \nin a distant kitchen.  \nLight fractures through the window\u2019s dust,  \nlace on the floor,  \na map of hours.  \nChildhood breath fogges the glass,  \nfingers tracing the fog\u2019s slow dissolve\u2014  \na ritual of warmth,  \nunspoken,  \nunbroken.",
+      "critique": "",
+      "iteration": 0
+    },
+    {
+      "draft": "Grandmother\u2019s hands fold dough\u2014  \na whisper of flour,  \nkneading time into shape.  \nThe scent of pine resin  \nweaves with cinnamon\u2019s sigh\u2014  \nsteam curls from the kettle\u2019s mouth,  \na distant kitchen\u2019s breath.  \nLight fractures through the window\u2019s dust,  \nlace on the floor,  \na map of hours unfolding.  \nChildhood breath fogges the glass,  \nfingers tracing the fog\u2019s slow dissolve\u2014  \na ritual of warmth,  \nunspoken,  \nunbroken.",
+      "critique": "",
+      "iteration": 1
+    }
+  ],
+  "final_poem": "Grandmother\u2019s hands fold dough, a silent hymn\u2014  \na whisper of flour,  \nkneading time into a shape.  \nThe scent of pine resin weaves with cinnamon\u2019s sigh\u2014  \nsteam curls from the kettle\u2019s mouth, a breath from the distant kitchen.  \nLight fractures through the window\u2019s dust, lace on the floor\u2014a map of hours unfolding.  \nChildhood breath fogges the glass, fingers tracing the fog\u2019s slow dissolve\u2014  \na ritual of warmth, unspoken, unbroken.",
+  "metadata": {
+    "revisions": 2,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "ollama:qwen3:8b",
+    "model_poet": "ollama:qwen3:8b"
+  }
+}

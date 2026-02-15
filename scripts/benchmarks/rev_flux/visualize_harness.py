@@ -82,6 +82,11 @@ def plot_line_stability(
     plt = _ensure_matplotlib()[0]
     stability = line_stability_indices(revision_history)
     if not stability:
+        fig, ax = plt.subplots(figsize=(10, 5))
+        ax.text(0.5, 0.5, "No revision data", ha="center", va="center", transform=ax.transAxes)
+        ax.set_title(title)
+        fig.savefig(out_path, dpi=150)
+        plt.close()
         return
     fig, ax = plt.subplots(figsize=(10, 5))
     x = list(range(len(stability)))
@@ -90,6 +95,7 @@ def plot_line_stability(
     ax.set_xlabel("Line index")
     ax.set_ylabel("Rounds unchanged")
     ax.set_title(title)
+    ax.set_ylim(0, max(stability) + 1 if stability else 1)
     fig.tight_layout()
     fig.savefig(out_path, dpi=150)
     plt.close()
@@ -100,18 +106,21 @@ def plot_category_comparison(
     out_path: Path,
     title: str = "RevFlux: Per-Category Change Distribution",
 ) -> None:
-    """Box plot: change_pcts by category."""
+    """Box plot: change_pcts by category. Only runs with revision data."""
     plt = _ensure_matplotlib()[0]
     by_cat: dict[str, list[float]] = {}
     for r in runs:
+        pcts = r.get("change_pcts", [])
+        if not pcts:
+            continue
         cat = r.get("category", "unknown")
-        by_cat.setdefault(cat, []).extend(r.get("change_pcts", []))
+        by_cat.setdefault(cat, []).extend(pcts)
     if not by_cat:
         return
     fig, ax = plt.subplots(figsize=(8, 5))
     cats = list(by_cat)
     data = [by_cat[c] for c in cats]
-    bp = ax.boxplot(data, labels=cats, patch_artist=True)
+    bp = ax.boxplot(data, tick_labels=cats, patch_artist=True)
     for patch in bp["boxes"]:
         patch.set_facecolor("steelblue")
         patch.set_alpha(0.7)
@@ -128,19 +137,22 @@ def plot_revision_length_comparison(
     out_path: Path,
     title: str = "RevFlux: Change by Max Revision Length",
 ) -> None:
-    """Box plot: change_pcts by max_revisions."""
+    """Box plot: change_pcts by max_revisions. Only runs with revision data."""
     plt = _ensure_matplotlib()[0]
     by_rev: dict[int, list[float]] = {}
     for r in runs:
+        pcts = r.get("change_pcts", [])
+        if not pcts:
+            continue
         rev = r.get("max_revisions", 0)
-        by_rev.setdefault(rev, []).extend(r.get("change_pcts", []))
+        by_rev.setdefault(rev, []).extend(pcts)
     if not by_rev:
         return
     fig, ax = plt.subplots(figsize=(8, 5))
     revs = sorted(by_rev)
     data = [by_rev[r] for r in revs]
     labels = [str(r) for r in revs]
-    bp = ax.boxplot(data, labels=labels, patch_artist=True)
+    bp = ax.boxplot(data, tick_labels=labels, patch_artist=True)
     for patch in bp["boxes"]:
         patch.set_facecolor("coral")
         patch.set_alpha(0.7)
@@ -158,18 +170,22 @@ def plot_model_comparison(
     out_path: Path,
     title: str = "RevFlux: Per-Model Change Distribution",
 ) -> None:
-    """Box plot: change_pcts by model_id."""
+    """Box plot: change_pcts by model_id. Only includes models with revision data (trained)."""
     plt = _ensure_matplotlib()[0]
     by_model: dict[str, list[float]] = {}
     for r in runs:
+        pcts = r.get("change_pcts", [])
+        if not pcts:
+            continue
         mid = r.get("model_id") or r.get("metadata", {}).get("model_poet", "unknown")
-        by_model.setdefault(mid, []).extend(r.get("change_pcts", []))
+        by_model.setdefault(mid, []).extend(pcts)
     if not by_model:
         return
     models = list(by_model)
     data = [by_model[m] for m in models]
     fig, ax = plt.subplots(figsize=(max(8, len(models) * 1.5), 5))
-    bp = ax.boxplot(data, labels=models, patch_artist=True, rot=15)
+    bp = ax.boxplot(data, tick_labels=models, patch_artist=True)
+    plt.setp(ax.get_xticklabels(), rotation=15, ha="right")
     for patch in bp["boxes"]:
         patch.set_facecolor("mediumseagreen")
         patch.set_alpha(0.7)
@@ -186,10 +202,12 @@ def plot_approval_timing(
     out_path: Path,
     title: str = "RevFlux: Approval Timing",
 ) -> None:
-    """Bar chart: when did educator approve (round 1, 2, 3, ...) or not at all."""
+    """Bar chart: when did educator approve (round 1, 2, 3, ...) or not at all. Only runs with revision."""
     plt = _ensure_matplotlib()[0]
     by_round: dict[int | str, int] = {}
     for r in runs:
+        if not r.get("revision_history"):
+            continue
         meta = r.get("metadata", {})
         if meta.get("approved"):
             rd = meta.get("approved_at_round", 1)

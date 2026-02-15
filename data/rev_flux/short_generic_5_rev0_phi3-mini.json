@@ -1,0 +1,24 @@
+{
+  "user_request": "Write about loss.",
+  "category": "short_generic",
+  "prompt_idx": 5,
+  "max_revisions": 0,
+  "model_id": "phi3-mini",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "Oh, Loss  \n\nIn your embrace I find my sorrow deep and true;   \nA silent thief that haunts me in morning's hue.    \nI wake each day to face this ghostly guest of mine:     \nYou take away the dreamed-of dawn so fine,       \nAnd leave behind a sky painted with shades  \nOf loss and longing - where once was love that blazed   \nLike suns in summer'de warmth. ",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "ollama:phi3:mini",
+    "perf_total_sec": 1.3,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

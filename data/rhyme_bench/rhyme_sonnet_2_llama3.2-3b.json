@@ -1,0 +1,20 @@
+{
+  "user_request": "Write a Shakespearean sonnet about death not being proud.",
+  "form": "sonnet",
+  "variant": "shakespearean",
+  "prompt_idx": 2,
+  "model_id": "llama3.2-3b",
+  "max_revisions": 0,
+  "final_poem": "When mortal flesh doth meet its final fate,\n'Tis not with pride that Death doth claim his right,\nHe comes, a silent thief, in dark estate,\nAnd takes from us our fleeting life's last light.\n\nFor who among us dare to boast of pain,\nOr think ourselves above the mortal coil?\nDeath is no noble figure, void of stain,\nBut rather an inevitable, cold soil.\n\nHis pride lies not in power, nor might he hold\nA seat at heaven's gate; for all may pass him by,\nAnd those who fear his approach do behold\nTheir own mortality with sorrowful eye.\n\nSo let us shun the pomp of mortal glory,\nFor Death's true nature is humility's dark story.",
+  "rhyme_analysis": {
+    "strict_rhyme_density": 1.0,
+    "rhyme_density": 1.0,
+    "matches_form": true,
+    "deviations_count": 0,
+    "strict_rhyme_pairs": 7,
+    "rhyme_pairs": 11,
+    "line_count": 14,
+    "detected_scheme": "AAAA BCBC DEDE FF",
+    "expected_scheme": "ABAB CDCD EFEF GG"
+  }
+}

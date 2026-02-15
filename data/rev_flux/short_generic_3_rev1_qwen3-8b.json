@@ -1,0 +1,24 @@
+{
+  "user_request": "Something about night.",
+  "category": "short_generic",
+  "prompt_idx": 3,
+  "max_revisions": 1,
+  "model_id": "qwen3-8b",
+  "revisions_actual": 1,
+  "change_pcts": [],
+  "revision_history": [
+    {
+      "draft": "Light unspools its thread.  \nThe air thickens, a woolen sigh.  \nHeat clings to the brick, a fossil of day.  \nInsects\u2019 hum dissolves to static.  \nThe streetlamp\u2019s breath fogs the glass.  \nPetrichor stirs\u2014earth exhales its last.  \nShadows stretch, not as limbs but as ink.  \nBlotting the edges of what was once clear.  \nThe world unclenches. A pause. Then\u2014  \nthe dark arrives, not as a fall,  \nbut a slow, wet unzipping of light.",
+      "critique": "**What\u2019s alive:**  \nThe poem\u2019s sensory shift is vivid\u2014\u201cair thickens, a woolen sigh,\u201d \u201cheat clings to the brick,\u201d \u201cpetrichor stirs\u201d\u2014anchoring the transition in tactile and environmental details. The metaphor of shadows as \u201cink\u201d and the enjambment\u2019s momentum toward darkness align with the form guidance. The line \u201cthe",
+      "iteration": 0
+    }
+  ],
+  "final_poem": "Light unspools its thread.  \nThe air thickens, a woolen sigh.  \nHeat clings to the brick, a fossil of the day\u2019s decay.  \nInsects\u2019 hum dissolves to static, a buzz of fading.  \nThe streetlamp\u2019s breath fogs the glass.  \nPetrichor stirs\u2014the earth exhales, a breath of rain.  \nShadows stretch, not as limbs but as ink.  \nBlotting the edges of what was once clear, a silent erasure.  \nThe world unclenches\u2014a pause\u2014then the dark arrives,  \nnot as a fall, but a slow, wet unzipping of light.",
+  "metadata": {
+    "revisions": 1,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "ollama:qwen3:8b",
+    "model_poet": "ollama:qwen3:8b"
+  }
+}

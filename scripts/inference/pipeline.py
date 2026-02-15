@@ -171,7 +171,8 @@ class PoetryPipeline:
             f"{past_section}"
             f"{user_ctx}\n"
             "Produce compact revision instructions for the poet (~100–150 words). "
-            "Focus on what still needs to change in the current draft. Bullet or numbered list. No preamble. Actionable only."
+            "Be SPECIFIC: name which lines or sections need changes. The poet will make ONLY these changes — "
+            "do not ask for broad rewrites. Bullet or numbered list. No preamble. Actionable only."
         )
         return self._educator_generate(prompt, task="poet_instructions")
 
@@ -198,6 +199,7 @@ class PoetryPipeline:
             f"Previous draft:\n---\n{draft}\n---\n\n"
             f"Revision instructions:\n---\n{instructions}\n---\n"
             f"{user_ctx}"
+            "Make ONLY the changes specified above. Preserve all other lines exactly. "
             "Revise the poem according to the instructions. Output ONLY the revised poem."
         )
 
@@ -352,7 +354,8 @@ class PoetryPipeline:
             f"{user_ctx}"
             "Construct a COMPACT revised generation brief (~300 tokens). "
             "Each critique point must map to a concrete revision direction. "
-            "The poet receives: this draft, your critique, and your brief — ensure your brief translates critique into actionable directions. "
+            "Be specific: name which lines or sections to change. The poet will make ONLY the changes you specify — "
+            "avoid broad rewrites; target the exact spots that need fixing. "
             "Angle, clichés to avoid, imagery domain, form. No flourish."
         )
 
@@ -371,6 +374,8 @@ class PoetryPipeline:
         verbose: bool = False,
         interactive: bool = False,
     ) -> dict:
+        import time
+        t_start = time.perf_counter()
         revisions = max_revisions if max_revisions is not None else self.max_revisions
 
         def out(agent: str, label: str, text: str):
@@ -378,6 +383,32 @@ class PoetryPipeline:
                 sep = "─" * 60
                 body = text.strip() if text else "(no output)"
                 print(f"\n{sep}\n[{agent}] {label}\n{sep}\n{body}\n", flush=True)
+
+        # 0 rev = poet only, no educator
+        if revisions == 0:
+            if verbose:
+                print("→ Poet: generating (no educator)...", flush=True)
+            poet_prompt = f"Write a poem. Request: {user_request}\n\nOutput ONLY the poem. Do not add commentary."
+            t0 = time.perf_counter()
+            draft = self._poet_generate(poet_prompt, is_revision=False)
+            t1 = time.perf_counter()
+            t_total = t1 - t_start
+            poet_name = self.poet_model_override or "qwen2.5-7b-poet-Q4_K_M"
+            return {
+                "final_poem": draft,
+                "generation_brief": None,
+                "revision_history": [],
+                "metadata": {
+                    "revisions": 0,
+                    "approved": False,
+                    "approved_at_round": None,
+                    "model_educator": "N/A (poet only)",
+                    "model_poet": poet_name,
+                    "perf_total_sec": round(t_total, 2),
+                    "perf_first_token_ms": None,
+                    "perf_avg_token_ms": None,
+                },
+            }
 
         if verbose:
             print("\n→ Educator: generating brief...", flush=True)
@@ -435,6 +466,11 @@ class PoetryPipeline:
             draft = self._poet_generate(revision_prompt, is_revision=True)
             out("POET", f"Revision {i + 1} draft → Educator", draft)
 
+        # Append final draft so revision_round_changes has full sequence
+        if revision_history and revision_history[-1]["draft"] != draft:
+            revision_history.append({"draft": draft, "critique": None, "iteration": "final"})
+
+        t_total = time.perf_counter() - t_start
         edu_name = self.educator_model_override or "qwen2.5-7b-educator-Q4_K_M"
         poet_name = self.poet_model_override or "qwen2.5-7b-poet-Q4_K_M"
         return {
@@ -442,11 +478,14 @@ class PoetryPipeline:
             "generation_brief": brief,
             "revision_history": revision_history,
             "metadata": {
-                "revisions": len(revision_history),
+                "revisions": len([h for h in revision_history if h.get("critique")]),
                 "approved": approved_at_round is not None,
                 "approved_at_round": approved_at_round,
                 "model_educator": edu_name,
                 "model_poet": poet_name,
+                "perf_total_sec": round(t_total, 2),
+                "perf_first_token_ms": None,
+                "perf_avg_token_ms": None,
             },
         }
 
@@ -455,7 +494,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("request", nargs="?", type=str, help="User's poem request (omit for interactive)")
     parser.add_argument("--config", type=Path, default=CONFIG_PATH)
-    parser.add_argument("--max-revisions", type=int, choices=[1, 2, 3, 4, 5], help="Max revisions (non-interactive)")
+    parser.add_argument("--max-revisions", type=int, choices=[0, 1, 2, 3, 4, 5], help="Max revisions (0=poet only)")
     parser.add_argument("--train-rhyme", action="store_true", help="Local MLX rhyme fine-tune (strong_rhyme_poems + 20%% general)")
     args = parser.parse_args()
 

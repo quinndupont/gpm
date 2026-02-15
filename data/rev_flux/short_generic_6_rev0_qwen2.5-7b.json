@@ -1,0 +1,24 @@
+{
+  "user_request": "A poem on time.",
+  "category": "short_generic",
+  "prompt_idx": 6,
+  "max_revisions": 0,
+  "model_id": "qwen2.5-7b",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "Eternal whisper of moments,\nPainted swift by sunbeams.\nClocks tick, yet time's enigma\u2014\nElusive, vast, immense.\n\nDaybreak cradles dawn\u2019s light,\nTwilight kisses dusk.\nIn every heartbeat\u2019s height,\nTime weaves the human trust.\n\nYestertales in silent rooms,\nEchoes of once-lived days.\nEach moment a thread to looms,\nOf destinies that sway.\n\nPast glides like misty shrouds\u2014\nFuture's a whispered dream.\nNow, this fleeting gift abounds,\nLet it shape you, unseen.",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "ollama:qwen2.5:7b-instruct",
+    "perf_total_sec": 2.75,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

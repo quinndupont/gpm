@@ -1,0 +1,20 @@
+{
+  "user_request": "Write a villanelle about the loss of time.",
+  "form": "villanelle",
+  "variant": null,
+  "prompt_idx": 3,
+  "model_id": "llama3.2-3b",
+  "max_revisions": 0,
+  "final_poem": "In secret chambers hidden deep inside\nA thief creeps, snatching hours away\nTime's silence, like a forgotten bride\n\n Memories fade like sunset's dying side\nThe heart once full of life now does stray\nIn secret chambers hidden deep inside\n\nMoments lost in endless, winding tide\nRegrets that linger like autumn grey\nTime's silence, like a forgotten bride\n\nEchoes of what could have been applied\nLeaving only sorrow to convey\n Memories fade like sunset's dying side\n\nA fleeting dream that vanished in the night\nThe years gone by leave us far astray\nIn secret chambers hidden deep inside\n\n Time's silence, like a forgotten bride",
+  "rhyme_analysis": {
+    "strict_rhyme_density": 0.94,
+    "rhyme_density": 0.94,
+    "matches_form": false,
+    "deviations_count": 1,
+    "strict_rhyme_pairs": 55,
+    "rhyme_pairs": 48,
+    "line_count": 16,
+    "detected_scheme": "ABAA BAAB AABA CBAA",
+    "expected_scheme": "ABA ABA ABA ABA ABA ABAA"
+  }
+}

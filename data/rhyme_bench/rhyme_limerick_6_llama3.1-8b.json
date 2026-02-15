@@ -1,0 +1,20 @@
+{
+  "user_request": "Write a limerick about a poet who forgot to rhyme.",
+  "form": "limerick",
+  "variant": null,
+  "prompt_idx": 6,
+  "model_id": "llama3.1-8b",
+  "max_revisions": 0,
+  "final_poem": "There once was a poet so fine,\nForgot rhymes, and her verse declined.\nShe wrote with great zeal,\nBut no rhythm did reveal,\nNow her poems are quite unaligned.",
+  "rhyme_analysis": {
+    "strict_rhyme_density": 0.4,
+    "rhyme_density": 0.8,
+    "matches_form": false,
+    "deviations_count": 2,
+    "strict_rhyme_pairs": 1,
+    "rhyme_pairs": 2,
+    "line_count": 5,
+    "detected_scheme": "ABCC B",
+    "expected_scheme": "AABBA"
+  }
+}

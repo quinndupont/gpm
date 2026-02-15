@@ -1,0 +1,24 @@
+{
+  "user_request": "A poem about memory.",
+  "category": "short_generic",
+  "prompt_idx": 4,
+  "max_revisions": 0,
+  "model_id": "qwen3-8b",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "Flicker of a candle in the attic's breath,  \ndust motes dance where forgotten names once hung.  \nA grandmother\u2019s\u7c2a, bent with time\u2019s slow teeth,  \nholds the weight of a thousand unspoken songs.  \n\nThe clock\u2019s hands trace the same old, hollow tune,  \neach tick a step through the labyrinth of years.  \nA photograph\u2019s whisper, half-remembered, soon  \nunfurls the scent of a summer long before.  \n\nMemory is a thief who steals the light,  \nyet leaves the shadows to remind us we\u2019ve been.  \nIt stitches stars from the fragments of night,  \nand in its quilt, we find the world again.",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "ollama:qwen3:8b",
+    "perf_total_sec": 9.94,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

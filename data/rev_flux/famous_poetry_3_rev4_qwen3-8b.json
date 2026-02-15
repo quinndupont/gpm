@@ -1,0 +1,82 @@
+{
+  "user_request": "A poem about stopping by woods on a snowy evening, with promises to keep.",
+  "category": "famous_poetry",
+  "prompt_idx": 3,
+  "max_revisions": 4,
+  "model_id": "qwen3-8b",
+  "revisions_actual": 4,
+  "change_pcts": [
+    0.0,
+    9.803921568627452,
+    18.42105263157895,
+    0.0,
+    11.764705882352942,
+    15.217391304347826,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    62.7906976744186,
+    39.21568627450981,
+    0.0,
+    0.0,
+    7.8431372549019605,
+    0.0,
+    0.0,
+    0.0,
+    14.583333333333334,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    2.272727272727273,
+    0.0,
+    0.0,
+    7.8431372549019605,
+    0.0,
+    0.0,
+    0.0,
+    12.244897959183673,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "revision_history": [
+    {
+      "draft": "The woods breathe in a language of frost,  \ntheir branches etched with the syntax of stillness\u2014  \npine resin hums, a low, resinous hymn,  \nwhile the road hums, a throaty murmur beneath the snow\u2019s white veil.  \nI carry the weight of a thousand unspoken vows,  \neach step a question mark in the drift,  \na labyrinth of white where shadows gnaw  \nat the edges of what I might undo.  \nTo wander is to forget the clock\u2019s silent hand,  \nits tick a tether to the world beyond\u2014  \na realm of meetings, of emails, of debts  \nthat bloom like frost on the windowpane.  \nI linger where the pines exhale their breath,  \nand the world beyond is a promise I cannot keep.",
+      "critique": "",
+      "iteration": 0
+    },
+    {
+      "draft": "The woods breathe in a language of frost,  \ntheir branches etched with the script of stillness\u2014  \npine resin hums, a low, sacred hymn,  \nwhile the road hums, a throaty murmur beneath the snow\u2019s white veil.  \nI carry the weight of a thousand unspoken promises,  \neach step a question mark in the snow\u2019s drift,  \na labyrinth of white where shadows gnaw  \nat the edges of what I might undo.  \nTo wander is to forget the clock\u2019s silent hand,  \nits tick a tether to the world beyond\u2014  \na realm of meetings, of emails, of debts  \nthat bloom like frost on the windowpane.  \nI linger where the pines exhale their breath,  \nand the world beyond is a promise I cannot keep.",
+      "critique": "",
+      "iteration": 1
+    },
+    {
+      "draft": "The woods whisper in frost\u2019s hushed tongue,  \ntheir branches etched with silence\u2019 script\u2014  \npine resin hums, a low, sacred hymn,  \nwhile the road hums, a throaty murmur beneath the snow\u2019s white veil.  \nI bear the weight of a thousand unspoken promises,  \neach step a question mark in the snow\u2019s drift,  \na labyrinth of white where shadows gnaw  \nat the edges of what I might undo.  \nTo wander is to release the clock\u2019s silent hand,  \nits tick a tether to the world beyond\u2014  \na realm of meetings, of emails, of debts  \nthat bloom like frost on the windowpane.  \nI linger where the pines exhale their breath,  \nand the world beyond is a promise I cannot keep.",
+      "critique": "**What\u2019s alive:**  \nThe poem successfully contrasts the woods\u2019 stillness with the hum of distant traffic and the weight of unspoken obligations.",
+      "iteration": 2
+    },
+    {
+      "draft": "The woods whisper in frost\u2019s hushed tongue,  \ntheir branches etched with silence\u2019s script\u2014  \npine resin hums, a low, sacred hymn,  \nwhile the road hums, a throaty murmur beneath the snow\u2019s white veil.  \nI carry the weight of a thousand unspoken promises,  \neach step a question mark in the snow\u2019s drift,  \na labyrinth of white where shadows gnaw  \nat the edges of what I might undo.  \nTo wander is to unclench the clock\u2019s silent hand,  \nits tick a tether to the world beyond\u2014  \na realm of meetings, of emails, of debts  \nthat bloom like frost on the windowpane.  \nI linger where the pines exhale their breath,  \nand the world beyond is a promise I cannot keep.",
+      "critique": "**What\u2019s alive:**  \nThe poem successfully contrasts the woods\u2019 stillness with the hum of distant traffic and the weight of unspoken obligations. The imagery of pine resin and the road\u2019s hum creates a tension between natural quiet and mechanical noise. Free verse with enjambment mirrors the speaker\u2019s hesitation, and line breaks emphasize the gap between desire and duty.  \n\n**What isn\u2019t working:**  \n- **Clich\u00e9**: \u201csnow\u2019s white veil\u201d repeats the avoided phrase \u201csilent snow\u201d and lacks originality. Replace with a concrete, sensory image (",
+      "iteration": 3
+    }
+  ],
+  "final_poem": "The woods whisper in frost\u2019s hushed tongue,  \ntheir branches etched with silence\u2019s script\u2014  \npine resin hums, a low, sacred hymn,  \nwhile the road hums, a throaty murmur beneath the snow\u2019s white veil.  \nI carry the weight of a thousand unspoken promises,  \neach step a question mark in the snow\u2019s drift,  \na labyrinth of white where shadows gnaw  \nat the edges of what I might undo.  \nTo wander is to unclench the clock\u2019s silent hand,  \nits tick a tether to the world beyond\u2014  \na realm of meetings, of emails, of debts  \nthat bloom like frost on the windowpane.  \nI linger where the pines exhale their breath,  \nand the world beyond is a promise I cannot keep.",
+  "metadata": {
+    "revisions": 4,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "ollama:qwen3:8b",
+    "model_poet": "ollama:qwen3:8b"
+  }
+}

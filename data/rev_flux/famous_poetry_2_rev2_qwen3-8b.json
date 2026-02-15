@@ -1,0 +1,42 @@
+{
+  "user_request": "A short poem about a raven that visits a grieving man and repeats one word.",
+  "category": "famous_poetry",
+  "prompt_idx": 2,
+  "max_revisions": 2,
+  "model_id": "qwen3-8b",
+  "revisions_actual": 2,
+  "change_pcts": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "revision_history": [
+    {
+      "draft": "Feathers map the unspoken\u2014each quill a letter,  \na braille of breath. It lingers, a stone in the throat,  \nheavy as a vow. He repeats it, a spell, a chain\u2014  \neach syllable a nail. It etches his skin, a scar  \nthat hums. The word fractures the air, a crack  \nin the silence. What does it demand?  \nThe raven\u2019s ritual: to carve the sound  \ninto flesh, to let it fester.  \n*Stay*\u2014  \na glyph in the marrow,  \na weight that grows,  \na cage without bars.",
+      "critique": "**What's alive:**  \nThe poem\u2019s visceral focus on the word\u2019s physicality\u2014its weight as a stone, its etching into skin, its fracturing of air\u2014anchors the ritual in the body. The imagery of feathers as a map of unspoken letters and the word as a glyph in the marrow aligns with the domain. The jagged lines and repetition of the word \u201cStay\u201d (italicized, fragmented) mirror the raven\u2019s single-syllable ritual.  \n\n**Issues:**  \n- **Abstraction**: The line \u201cWhat does it demand?\u201d feels detached from the physicality established",
+      "iteration": 0
+    },
+    {
+      "draft": "Feathers map the unspoken\u2014each quill a letter,  \na braille of breath. It lingers, a stone in the throat,  \nheavy as a vow. He repeats it, a spell, a chain\u2014  \neach syllable a nail. It etches his skin, a scar  \nthat hums. The word fractures the air, a crack  \nin the silence. What does it demand?  \nThe raven\u2019s ritual: to carve the sound  \ninto flesh, to let it fester.  \n*Stay*\u2014  \na glyph in the marrow,  \na weight that grows,  \na cage without bars.",
+      "critique": "**What's alive:**  \nThe poem\u2019s visceral focus on the word\u2019s physicality\u2014its weight as a stone, its etching into skin, its fracturing of air\u2014anchors the ritual in the body. The imagery of feathers as a map of unspoken letters and the word as a glyph in the marrow aligns with the domain. The jagged lines and repetition of the word \u201cStay\u201d (italicized, fragmented) mirror the raven\u2019s single-syllable ritual.  \n\n**Issues:**  \n- **Abstraction**: The line \u201cWhat does it demand?\u201d feels detached from the physicality established. It shifts to a rhetorical question without grounding",
+      "iteration": 1
+    }
+  ],
+  "final_poem": "Feathers map the unspoken\u2014each quill a letter,  \na braille of breath. It lingers, a stone in the throat,  \nheavy as a vow. He repeats it, a spell, a chain\u2014  \neach syllable a nail. It etches his skin, a scar  \nthat hums. The word fractures the air, a crack  \nin the silence. What does it demand?  \nThe raven\u2019s ritual: to carve the sound  \ninto flesh, to let it fester.  \n*Stay*\u2014  \na glyph in the marrow,  \na weight that grows,  \na cage without bars.",
+  "metadata": {
+    "revisions": 2,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "ollama:qwen3:8b",
+    "model_poet": "ollama:qwen3:8b"
+  }
+}

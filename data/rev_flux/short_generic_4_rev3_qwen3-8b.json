@@ -1,0 +1,79 @@
+{
+  "user_request": "A poem about memory.",
+  "category": "short_generic",
+  "prompt_idx": 4,
+  "max_revisions": 3,
+  "model_id": "qwen3-8b",
+  "revisions_actual": 3,
+  "change_pcts": [
+    23.529411764705884,
+    34.09090909090909,
+    0.0,
+    0.0,
+    44.11764705882353,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    2.9411764705882355,
+    0.0,
+    0.0,
+    25.0,
+    0.0,
+    0.0,
+    53.84615384615385,
+    0.0,
+    18.181818181818183,
+    2.7777777777777777,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "revision_history": [
+    {
+      "draft": "The key\u2019s teeth bite into my palm\u2014  \na ridge of rust, a map of absence.  \nYour laugh hums in the hollow  \nwhere the lock once turned.  \n\nThe jar\u2019s neck, crusted with salt,  \nholds the tang of your last meal\u2014  \na lemon\u2019s bitter bloom,  \nsour and sweet as the day  \nyou left without saying goodbye.  \n\nLight fractures through the glass,  \na mosaic of dust and decades\u2014  \neach shard a flicker of your hand  \nbrushing the curtain,  \nthe way your fingers  \nleft a smudge of light  \non the wall.  \n\nThe button\u2019s roughness, a scar  \nbeneath the fabric\u2019s worn seam,  \nstill wears the weight of your grip\u2014  \na knot of thread, a silent  \ntug of the sleeve  \nyou never wore again.",
+      "critique": "",
+      "iteration": 0
+    },
+    {
+      "draft": "The key\u2019s teeth gnaw my palm\u2014  \na ridge of rust, a map of where you\u2019ve gone.  \nYour laugh hums in the hollow  \nwhere the lock once turned.  \n\nThe jar\u2019s neck, salt-crusted,  \nholds the tang of your last meal\u2014  \na lemon\u2019s bitter bloom,  \nsour and sweet as the day  \nyou left without saying goodbye.  \n\nLight fractures through the glass\u2014  \na mosaic of dust and decades\u2014  \neach shard a flicker of your hand  \nbrushing the curtain\u2019s edge,  \nthe way your fingers  \nleft a smudge of light  \non the wall\u2019s silent face.  \n\nThe button\u2019s roughness, a scar  \nbeneath the fabric\u2019s frayed seam,  \nstill bears the weight of your grip\u2014  \na knot of thread, a silent  \ntug of the sleeve  \nyou never wore again.",
+      "critique": "**What\u2019s alive:**  \nThe poem thrives on tactile specificity\u2014rust on a key, salt on a jar, light fracturing through glass. These anchors ground memory in physicality, avoiding abstraction. The fragmented lines mimic the",
+      "iteration": 1
+    },
+    {
+      "draft": "The key\u2019s teeth gnaw my palm\u2014  \na ridge of rust, a map of where you\u2019ve gone.  \nYour laugh hums in the hollow  \nwhere the lock once turned.  \n\nThe jar\u2019s neck, salt-crusted,  \nholds the tang of your last meal\u2014  \na lemon\u2019s bitter bloom,  \nsour and sweet as the day  \nyou left without saying goodbye.  \n\nLight fractures through the glass\u2014  \na mosaic of dust and decades\u2014  \neach shard a flicker of your hand  \nbrushing the curtain\u2019s edge,  \nthe way your fingers  \nleft a smudge of light  \non the wall\u2019s silent face.  \n\nThe button\u2019s roughness, a scar  \nbeneath the fabric\u2019s frayed seam,  \nstill bears the weight of your grip\u2014  \na knot of thread, a silent  \ntug of the sleeve  \nyou never wore again.",
+      "critique": "**What\u2019s alive:**  \nThe poem thrives on tactile specificity\u2014rust on a key, salt on a jar, light fracturing through glass. These anchors ground memory in physicality, avoiding abstraction. The fragmented lines mimic the disjointed nature of recollection, and the sensory domain (tang of lemon, roughness of a button) aligns with the prompt\u2019s focus on unexpected anchors.  \n\n**Issues:**  \n- **Abstraction:** \u201cA flicker of your hand\u201d and \u201csmudge of",
+      "iteration": 2
+    }
+  ],
+  "final_poem": "The key\u2019s teeth gnaw my palm\u2014  \na ridge of rust, a map of where you\u2019ve gone.  \nYour laugh hums in the hollow  \nwhere the lock once turned.  \n\nThe jar\u2019s neck, salt-crusted,  \nholds the tang of your last meal\u2014  \na lemon\u2019s bitter bloom,  \nsour and sweet as the day  \nyou left without saying goodbye.  \n\nLight fractures through the glass\u2014  \na mosaic of dust and decades\u2014  \neach shard a flicker of your hand  \nbrushing the curtain\u2019s edge,  \nthe way your fingers  \nleft a smudge of light  \non the wall\u2019s silent face.  \n\nThe button\u2019s roughness, a scar  \nbeneath the fabric\u2019s frayed seam,  \nstill bears the weight of your grip\u2014  \na knot of thread, a silent  \ntug of the sleeve  \nyou never wore again.",
+  "metadata": {
+    "revisions": 3,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "ollama:qwen3:8b",
+    "model_poet": "ollama:qwen3:8b"
+  }
+}

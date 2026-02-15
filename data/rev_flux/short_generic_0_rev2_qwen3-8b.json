@@ -1,0 +1,45 @@
+{
+  "user_request": "A poem about rain.",
+  "category": "short_generic",
+  "prompt_idx": 0,
+  "max_revisions": 2,
+  "model_id": "qwen3-8b",
+  "revisions_actual": 2,
+  "change_pcts": [
+    26.53061224489796,
+    40.90909090909091,
+    11.764705882352942,
+    13.793103448275861,
+    17.073170731707318,
+    15.909090909090908,
+    20.454545454545453,
+    64.0,
+    93.75,
+    84.84848484848484,
+    80.0,
+    69.6969696969697,
+    86.20689655172414,
+    80.0,
+    100.0
+  ],
+  "revision_history": [
+    {
+      "draft": "The rain etches its code into plastic veins\u2014  \na language of erosion, soft and persistent,  \nunspooling the static of forgotten  \ngraffiti from concrete ribs.  \nNeon signs flicker, their hues bleeding  \ninto the puddles\u2019 slow digestion of light,  \nwhile rusted pipes exhale their last  \nwhispers through cracks in the pavement\u2019s  \nskin.  \nHere, memory is not preserved but  \nscoured away\u2014  \nthe circuit board\u2019s brittle hymn,  \nthe asphalt\u2019s crusted tongue,  \nall dissolving into the dark\u2019s  \nunrelenting appetite.",
+      "critique": "**What\u2019s alive:**  \nThe poem",
+      "iteration": 0
+    },
+    {
+      "draft": "The rain carves its cipher into plastic arteries\u2014  \na tongue of erosion, relentless and patient,  \nunraveling the static of forgotten  \ngraffiti from concrete bones.  \nNeon signs flicker, their hues dissolving  \ninto the puddles\u2019 slow consumption of light,  \nwhile rusted pipes exhale their final lament  \nthrough fissures in the pavement\u2019s weathered skin.  \nHere, memory is not archived but  \neroded\u2014  \nthe circuit board\u2019s fractured hymn,  \nthe asphalt\u2019s crusted tongue,  \nall melting into the dark\u2019s  \ninsatiable hunger.",
+      "critique": "**What\u2019s alive:**  \nThe poem\u2019s visceral engagement with synthetic decay and rain\u2019s er",
+      "iteration": 1
+    }
+  ],
+  "final_poem": "The rain carves its cipher into plastic veins\u2014  \na tongue of erosion, relentless and patient,  \nunraveling the static of forgotten  \ngraffiti from concrete bones.  \nNeon signs flicker, their hues dissolving  \ninto the puddles\u2019 slow devouring of light,  \nwhile rusted pipes exhale their final lament  \nthrough fissures in the pavement\u2019s weathered skin.  \nHere, memory is not archived but  \neroded\u2014  \nthe circuit board\u2019s fractured hymn,  \nthe asphalt\u2019s crusted tongue,  \nall melting into the dark\u2019s  \ninsatiable maw.",
+  "metadata": {
+    "revisions": 2,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "ollama:qwen3:8b",
+    "model_poet": "ollama:qwen3:8b"
+  }
+}

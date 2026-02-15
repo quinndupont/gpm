@@ -1,0 +1,24 @@
+{
+  "user_request": "A poem where the speaker hears America singing, each worker their own song.",
+  "category": "famous_poetry",
+  "prompt_idx": 6,
+  "max_revisions": 1,
+  "model_id": "qwen3-8b",
+  "revisions_actual": 1,
+  "change_pcts": [],
+  "revision_history": [
+    {
+      "draft": "America sings\u2014steel bones groan, a factory\u2019s throat  \ncoughing sparks into the dark. A welder\u2019s hymn,  \nmolten and jagged, slices the anthem\u2019s throat.  \nA janitor\u2019s song, a scrub brush\u2019s  \nwhisper\u2014  \nAmerica sings\u2014  \na hymn of bleach and knees,  \nscraping the anthem\u2019s floor clean.  \nAmerica sings\u2014  \na truck\u2019s tire hums a hymn,  \nbut the driver\u2019s  \nlungs are reed pipes,  \nblowing  \ndissonant  \nnotes through the  \nanthem\u2019s  \nstatic.  \nA nurse\u2019s song, a stethoscope\u2019s  \ntick,  \nAmerica sings\u2014  \nbut the rhythm  \nis a heartbeat  \ndrowning  \nin the  \nanthem\u2019s  \nstatic.  \nThe anthem\u2019s a machine  \nwith a thousand  \nvoices  \ngrinding  \nin its  \ngears\u2014  \nAmerica sings,  \nbut the song  \nis a  \nfracture,  \na  \ndissonant  \nchord,  \nunresolved.",
+      "critique": "**What\u2019s alive:**  \nThe mechanical metaphors (\u201csteel bones,\u201d \u201clungs as reed pipes\u201d) effectively contrast industrial and organic sounds, creating tension between",
+      "iteration": 0
+    }
+  ],
+  "final_poem": "America sings\u2014steel bones groan, a factory\u2019s throat  \ncoughs sparks into the dark. A welder\u2019s hymn,  \nmolten and jagged, splits the anthem\u2019s spine.  \nA janitor\u2019s song, a scrub brush\u2019s  \nwhisper\u2014  \nAmerica sings\u2014  \na hymn of bleach and knees,  \nscraping the anthem\u2019s floor clean.  \nAmerica sings\u2014  \na truck\u2019s tire hums a hym,  \nbut the driver\u2019s  \nlungs are reed pipes,  \nblowing  \ndissonant  \nnotes through the  \nanthem\u2019s  \nstatic.  \nA nurse\u2019s song, a stethoscope\u2019s  \ntick,  \nAmerica sings\u2014  \nyet the rhythm  \nis a heartbeat  \ndrowning  \nin the  \nanthem\u2019s  \nstatic.  \nThe anthem\u2019s a machine  \nwith a thousand  \nvoices  \ngrinding  \nin its  \ngears\u2014  \nAmerica sings,  \nbut the song  \nis a  \nfracture,  \na  \ndissonant  \nchord,  \nunresolved.",
+  "metadata": {
+    "revisions": 1,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "ollama:qwen3:8b",
+    "model_poet": "ollama:qwen3:8b"
+  }
+}

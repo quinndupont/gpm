@@ -1,0 +1,24 @@
+{
+  "user_request": "A poem about stopping by woods on a snowy evening, with promises to keep.",
+  "category": "famous_poetry",
+  "prompt_idx": 3,
+  "max_revisions": 0,
+  "model_id": "llama3.2-3b",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "Stopping by Woods on a Snowy Evening\n\nThe wood stands in the winter's chill,\nA solemn figure, still and uninviting.\nSnowflakes dance upon its breast,\nAs if to join it in repose.\n\nI must be off, but I will stay\nFor just one promise of tomorrow's keep,\nAnd though the woods are cold and gray,\nTonight their silence is not deep.\n\nThe world outside is hushed and grey,\nBut here beside the wood's still face,\nA quiet warmth that cannot stray,\nInvites me to a peaceful place.",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "ollama:llama3.2:3b",
+    "perf_total_sec": 1.36,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

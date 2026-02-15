@@ -1,0 +1,24 @@
+{
+  "user_request": "A romantic poem about two hearts beating as one.",
+  "category": "cliche",
+  "prompt_idx": 2,
+  "max_revisions": 0,
+  "model_id": "trained",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "Two Pulse Beats\n\nThere's a rhythm in the room when you're here\u2014\nnot silence, not music, something between,\nthe kind of frequency that asks to be aligned.\n\nI've read about it. Two pacemakers synchronized.\nThe image was clinical, silver wires\ncrossing the skin like small moons drawing lines\nthrough a tidal body. That's too medical.\nThat's not what I mean.\n\nWhat I mean is your hand on my wrist,\nnot checking for anything, just resting there,\nand suddenly the rate finds its common verse,\n\ntwo staves nearly overlapping, the barlines\nalmost\u2014almost meeting without crushing,\nthe way two musicians can play in harmony\nwithout ever practicing together. You hummed\na plain old tune the other day while I was sleeping.\nI woke mid-phrase and took it up with mine.\n\nThat's what I'm talking about: the slight\ndisplacement, the beat that slightly misses\nthen catches on the next measure, builds\nthe way a conversation builds when both parties\nare listening so intently they stop speaking\nand let each other finish. You know that feeling.\nThe heart does too. It learns it early\u2014\nbefore we do\u2014and holds us to it\n\nwith its steady, simple math: one rise,\none fall, then rise again without pause,\nthe way a partner breathes in sync with you,\nnot copying but answering the question\nalready on your lips.\n\nI haven't told you yet\u2014but I have faith\nin how this goes. The body knows more\nthan the brain does about what matters:\nhow two pulses find their own little corridor,\nwalk it without maps, and keep going.\nThat's love. That's what I wanted to say.\nThe rest is just the sound it makes.",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "qwen2.5-7b-poet-Q4_K_M",
+    "perf_total_sec": 9.45,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

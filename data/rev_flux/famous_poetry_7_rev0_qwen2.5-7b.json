@@ -1,0 +1,24 @@
+{
+  "user_request": "A poem about a road not taken and the difference it made.",
+  "category": "famous_poetry",
+  "prompt_idx": 7,
+  "max_revisions": 0,
+  "model_id": "qwen2.5-7b",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "In fields of whispers, where paths diverged,\nOne trod but left the other to dry leaves.\nThe road not chosen whispered tales untold,\nOf forests deep, and rivers free from bounds.\n\nBy lakeside glades, where sunlight danced alone,\nLay secrets veiled by mosses green as hope.\nHad I ventured there, what might have been my fate?\nA world of wonders unseen, a dreamy scope.\n\nInstead, the path worn smooth by countless feet\nLed to familiar sights and sounds so tried.\nYet in those footprints left behind the other road,\nLived stories of adventure yet unexplored.",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "ollama:qwen2.5:7b-instruct",
+    "perf_total_sec": 2.88,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

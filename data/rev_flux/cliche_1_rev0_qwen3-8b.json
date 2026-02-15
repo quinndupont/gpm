@@ -1,0 +1,24 @@
+{
+  "user_request": "A Mother's Day poem about how a mother's love is unconditional.",
+  "category": "cliche",
+  "prompt_idx": 1,
+  "max_revisions": 0,
+  "model_id": "qwen3-8b",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "Through years that bend like rivers, deep  \nand wide, your love has carved its path\u2014  \nthrough scars and joy, through every step,  \na compass drawn in quiet strength.  \n\nA lighthouse in the storm's fierce cry,  \nyou hold the dark, yet never hold  \nthe light you give, unbound, unswayed  \nby what we ask or what we need.  \n\nWhen you falter, you are not alone\u2014  \nthe roots of your embrace outlast  \nthe weight of all we cannot say,  \na moon that knows the night\u2019s own face.  \n\nA garden where the wild things grow,  \nyour arms a home for every tear,  \nfor laughter, for the wounds we bear,  \nfor all the ways we dare to roam.  \n\nNo measure, no decree, no \"why\"\u2014  \njust hands that hold the fall, the climb,  \nthe endless, endless, endless \"yes\"  \nthat threads the dusk with morning\u2019s hymn.  \n\nForever, mother, you are mine\u2014  \na love that time cannot unmake,  \na song that hums in every bone,  \nunseen, unswayed, unshaken.",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "ollama:qwen3:8b",
+    "perf_total_sec": 12.88,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "user_request": "A poem for a wedding about soulmates and happily ever after.",
+  "category": "cliche",
+  "prompt_idx": 4,
+  "max_revisions": 2,
+  "model_id": "qwen3-8b",
+  "revisions_actual": 2,
+  "change_pcts": [
+    0.0,
+    45.23809523809524,
+    38.297872340425535,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    16.666666666666668,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "revision_history": [
+    {
+      "draft": "We are constellations charting routes through the dark,  \nnot orbits scripted by some ancient hand.  \nLike plates that grind for eons, then fracture\u2014  \na decision sharp as a comet\u2019s tail,  \nwe choose the friction, the heat.  \nOur paths, once separate, now spiral  \ntoward a gravity we\u2019ve made ourselves.  \n\nHands clasped like a compass needle pointing to a pole,  \na language older than words.  \nThe world grinds on, a tectonic hum\u2014  \nbut we are the tremor, the split-second yes.  \nOur collision a map of scars and stars,  \nuncharted, waiting to be traced.  \n\nWe choose to burn, to bend, to become the axis  \nwhere the world\u2019s chaos spins its slow, unyielding spin.",
+      "critique": "",
+      "iteration": 0
+    },
+    {
+      "draft": "We are constellations charting routes through the dark,  \nunbound by orbits forged by ancient hands.  \nLike tectonic plates that grind, then fracture\u2014  \na decision sharp as a comet\u2019s tail,  \nwe choose the friction, the heat.  \nOur paths, once separate, now spiral  \ntoward a gravity we\u2019ve made ourselves.  \n\nHands clasped like a compass needle trembling toward a pole,  \na language older than words.  \nThe world grinds on, a tectonic hum\u2014  \nbut we are the tremor, the split-second yes.  \nOur collision a map of scars and stars,  \nuncharted, waiting to be traced.  \n\nWe choose to burn, to bend, to become the axis  \nwhere the world\u2019s chaos spins its slow, unyielding spin.",
+      "critique": "",
+      "iteration": 1
+    }
+  ],
+  "final_poem": "We are constellations etching routes through the dark,  \nunbound by orbits carved by ancient hands.  \nLike tectonic plates that grind, then fracture\u2014  \na decision sharp as a comet\u2019s blade,  \nwe choose the friction, the heat.  \nOur paths, once separate, now spiral  \ntoward a gravity we\u2019ve forged ourselves.  \n\nHands clasped like a compass needle trembling toward a pole,  \na language older than words.  \nThe world grinds on, a tectonic hum\u2014  \nbut we are the tremor, the split-second yes.  \nOur collision a map of scars and stars,  \nuncharted, waiting to be traced.  \n\nWe choose to burn, to bend, to become the axis  \nwhere the world\u2019s chaos spins its slow, unyielding spin.",
+  "metadata": {
+    "revisions": 2,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "ollama:qwen3:8b",
+    "model_poet": "ollama:qwen3:8b"
+  }
+}

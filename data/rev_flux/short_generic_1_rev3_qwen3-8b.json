@@ -1,0 +1,45 @@
+{
+  "user_request": "Write something about the ocean.",
+  "category": "short_generic",
+  "prompt_idx": 1,
+  "max_revisions": 3,
+  "model_id": "qwen3-8b",
+  "revisions_actual": 3,
+  "change_pcts": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "revision_history": [
+    {
+      "draft": "The ocean is a neural network, its currents synapses\u2014plankton, the neurons, firing in silent code. Bioluminescent thoughts pulse through the dark, a language of light.  \nValves open in the deep, turbines hum where the sun\u2019s rays are devoured. Salt and sunlight feed the metabolism of the abyss.  \nFishing nets snag the memory of whales, their songs now static in the plastic. Colonizers etched their borders into the seabed, a ledger of bones\u2014each line a scar, each page a tomb.  \nThe ocean\u2019s skin, a circuit board of sediment, bears the fingerprints of oil, the etching of drill bits, the ghostly ink of sunscreen.  \nAnd still, the currents remember\u2014each wave a data stream, each tide a slow, relentless rewrite of the world.",
+      "critique": "**What's alive:**  \nThe neural network and machine metaphors (plankton as neurons, sediment as circuit board) anchor the ocean as a living archive. The",
+      "iteration": 0
+    },
+    {
+      "draft": "The ocean is a neural network, its currents synapses\u2014plankton, the neurons, firing in silent code. Bioluminescent thoughts pulse through the dark, a language of light.  \nValves open in the deep, turbines hum where the sun\u2019s rays are devoured. Salt and sunlight feed the metabolism of the abyss.  \nFishing nets snag the memory of whales, their songs now static in the plastic. Colonizers etched their borders into the seabed, a ledger of bones\u2014each line a scar, each page a tomb.  \nThe ocean\u2019s skin, a circuit board of sediment, bears the fingerprints of oil, the etching of drill bits, the ghostly ink of sunscreen.  \nAnd still, the currents remember\u2014each wave a data stream, each tide a slow, relentless rewrite of the world.",
+      "critique": "**What's alive:**  \nThe neural network and machine metaphors (plankton as neurons, sediment as circuit board) anchor the ocean as a living archive. The tension between human intrusion (plastic, drill bits) and the ocean\u2019s persistence (currents, tides) is visceral. The line \u201cColonizers etched their borders into the seabed, a ledger of bones",
+      "iteration": 1
+    },
+    {
+      "draft": "The ocean is a neural network, its currents synapses\u2014plankton, the neurons, firing in silent code. Bioluminescent thoughts pulse through the dark, a language of light.  \nValves open in the deep, turbines hum where the sun\u2019s rays are devoured. Salt and sunlight feed the metabolism of the abyss.  \nFishing nets snag the memory of whales, their songs now static in the plastic. Colonizers etched their borders into the seabed, a ledger of bones\u2014each line a scar, each page a tomb.  \nThe ocean\u2019s skin, a circuit board of sediment, bears the fingerprints of oil, the etching of drill bits, the ghostly ink of sunscreen.  \nAnd still, the currents remember\u2014each wave a data stream, each tide a slow, relentless rewrite of the world.",
+      "critique": "**What's alive:**  \nThe neural network and machine metaphors (plankton as neurons, sediment as circuit board) anchor the ocean as a living archive. The tension between human intrusion (plastic, drill bits) and the ocean\u2019s persistence (currents, tides) is visceral. The line \u201cColonizers etched their borders into the seabed, a ledger of bones\u201d merges metaphor and history with precision.  \n\n**Issues:**  \n- **Abstraction**: \u201cBioluminescent thoughts pulse through the dark, a language of light\u201d floats without grounding. Replace with a concrete image (e.g., \u201ca language of light flickering in the dark like a dying star\u201d).  \n- **Weak line break**: \u201cColonizers etched their borders into the seabed, a ledger of bones\u2014each line a scar, each page a tomb\u201d relies on a dash to split meaning.",
+      "iteration": 2
+    }
+  ],
+  "final_poem": "The ocean is a neural network, its currents synapses\u2014plankton, the neurons, firing in silent code. Bioluminescent thoughts pulse through the dark, a language of light.  \nValves open in the deep, turbines hum where the sun\u2019s rays are devoured. Salt and sunlight feed the metabolism of the abyss.  \nFishing nets snag the memory of whales, their songs now static in the plastic. Colonizers etched their borders into the seabed, a ledger of bones\u2014each line a scar, each page a tomb.  \nThe ocean\u2019s skin, a circuit board of sediment, bears the fingerprints of oil, the etching of drill bits, the ghostly ink of sunscreen.  \nAnd still, the currents remember\u2014each wave a data stream, each tide a slow, relentless rewrite of the world.",
+  "metadata": {
+    "revisions": 3,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "ollama:qwen3:8b",
+    "model_poet": "ollama:qwen3:8b"
+  }
+}

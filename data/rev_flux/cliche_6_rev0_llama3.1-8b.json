@@ -1,0 +1,24 @@
+{
+  "user_request": "A love poem about eyes meeting across a crowded room.",
+  "category": "cliche",
+  "prompt_idx": 6,
+  "max_revisions": 0,
+  "model_id": "llama3.1-8b",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "Eyes met in chaos, amidst sound\nA sea of faces, moving round\nTwo gazes locked, like magnets strong\nA spark flew out, where hearts belong\n\nIn crowded rooms, we often stray\nLost in a haze, from day to day\nBut then she saw him, and he her too\nTheir eyes connected, with love shining through\n\nTime stood still, as moments passed by\nTwo souls collided, reaching the sky\nNo words were spoken, no sounds did rise\nJust two pairs of eyes, burning with surprise\n\nIn that crowded room, they found a place\nWhere their hearts could meet, in time and space\nA fleeting glance, yet forever true\nA love connection made, just for you.",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "ollama:llama3.1:8b",
+    "perf_total_sec": 3.51,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

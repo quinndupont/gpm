@@ -1,0 +1,24 @@
+{
+  "user_request": "A romantic poem about two hearts beating as one.",
+  "category": "cliche",
+  "prompt_idx": 2,
+  "max_revisions": 0,
+  "model_id": "qwen2.5-7b",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "In twilight's gentle embrace,\nTwo hearts began to trace\nA rhythm soft and sweet,\nAs if meant, it did greet\nThe night with eager beats.\n\nSide by side they throbbed in tune,\nEach pulse a whisper of love profound.\nIn silent harmony they sang,\nOf promises that no winds could shake,\nNor time erase from their hopeful range.\n\nWith every breath, a bond more tight,\nTheir spirits intertwined with light.\nLike stars aligning for the cosmos' delight,\nTwo souls found their celestial flight.\n\nHeartbeats merged in this tender dance\u2014\nA symphony of love's eternal stance.",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "ollama:qwen2.5:7b-instruct",
+    "perf_total_sec": 2.81,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

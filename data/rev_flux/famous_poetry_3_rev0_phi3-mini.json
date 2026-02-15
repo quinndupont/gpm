@@ -1,0 +1,24 @@
+{
+  "user_request": "A poem about stopping by woods on a snowy evening, with promises to keep.",
+  "category": "famous_poetry",
+  "prompt_idx": 3,
+  "max_revisions": 0,
+  "model_id": "phi3-mini",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "Beneath winter's silent shroud I tread in delight (A)  \n\nIn woods that whisper tales of frosted twilight, pure and bright; (A)    \n\nWhere silver birches stand guard with snowflakes lightly draped below their form. As night enfolds the forest scene so fairy-told time'in this silent snowscape where shadows dance on icy ground in a waltz of frostbite cold; (B)  \n\nI tread unchecked by fear, my heart is soft as moss - yet firm resolve keeps its hold. The crunch underfoot echoes through the hushed expanse like laughter lost to time's encroaching chill that grips both wood and soul with an icy embrace; (B)  \n\nPromises linger in each snowflake, swirling down as nature paints its masterpiece beneath a sky so gray. A canvas of pure white where secrets hide like whispers lost to time's relentless rush and promises held close within the folds that shroud my heart; (C)  \n\nTo keep them I vow, under moonlight\u2019s gentle kiss or sunbeam sneaking through branches bare. Here in this eternal moment where earth meets heaven with a seam so fine - memories interlace like threads woven by fate's own hand to bind my essence forever entwined within these woods that mirror life itself; (C)",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "ollama:phi3:mini",
+    "perf_total_sec": 3.76,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

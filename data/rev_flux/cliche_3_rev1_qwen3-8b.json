@@ -1,0 +1,24 @@
+{
+  "user_request": "A Christmas poem about the magic of the season and family togetherness.",
+  "category": "cliche",
+  "prompt_idx": 3,
+  "max_revisions": 1,
+  "model_id": "qwen3-8b",
+  "revisions_actual": 1,
+  "change_pcts": [],
+  "revision_history": [
+    {
+      "draft": "The ornament\u2019s weight hangs between us\u2014  \na silent pendulum of years,  \nits metal cool against your palm,  \na relic of hands that came before.  \n\nSteam from your mug curls into the window\u2019s frost,  \na breath held in glass,  \nfogging the edge of your reflection  \nuntil you\u2019re both there,  \nblurred and whole.  \n\nPine resin and cinnamon blur,  \ntwo ghosts in the same breath\u2014  \nthe scent of a fire that wasn\u2019t ours,  \nyet lingers, stubborn,  \non the wool of your scarf.  \n\nLight fractures through icicles,  \na thousand fractured memories  \nspilling into the room\u2014  \neach shard a flicker,  \na pause,  \na quiet yes.  \n\nWe hold the cold,  \nand in it,  \nthe shape of what we\u2019ve kept.",
+      "critique": "",
+      "iteration": 0
+    }
+  ],
+  "final_poem": "The ornament\u2019s weight hangs between us\u2014  \na silent pendulum, years suspended,  \nits metal cool against your palm,  \na relic of hands that came before.  \n\nSteam from your mug curls into the window\u2019s frost,  \na breath held in glass, fogging your reflection  \nuntil you\u2019re both there\u2014  \nblurred and whole,  \na shared exhale.  \n\nPine resin and cinnamon blur,  \ntwo ghosts in the same breath\u2014  \nthe scent of a fire that never was ours,  \nyet lingers, stubborn,  \non the wool of your scarf.  \n\nLight fractures through icicles,  \na thousand memories, shattered  \ninto the room\u2014  \neach shard a flicker,  \na pause,  \na quiet yes.  \n\nWe hold the cold,  \nand in it,  \nthe shape of what we\u2019ve kept.",
+  "metadata": {
+    "revisions": 1,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "ollama:qwen3:8b",
+    "model_poet": "ollama:qwen3:8b"
+  }
+}

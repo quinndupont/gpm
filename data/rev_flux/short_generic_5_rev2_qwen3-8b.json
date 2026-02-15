@@ -1,0 +1,46 @@
+{
+  "user_request": "Write about loss.",
+  "category": "short_generic",
+  "prompt_idx": 5,
+  "max_revisions": 2,
+  "model_id": "qwen3-8b",
+  "revisions_actual": 2,
+  "change_pcts": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    16.666666666666668,
+    45.833333333333336,
+    92.5925925925926,
+    85.18518518518519,
+    70.37037037037037,
+    90.47619047619048,
+    80.95238095238095,
+    100.0
+  ],
+  "revision_history": [
+    {
+      "draft": "The clock\u2019s hands unspool like thread  \nthrough the wall\u2019s white plaster\u2014  \na sparrow\u2019s wing, once  \nstitched to the frame, now  \nfrayed at the seam.  \nDust on the photo\u2019s edge  \naccumulates in ridges,  \na geography of neglect.  \nLight fractures through the closed window,  \na prism of unspoken  \nnames.  \nThe coffee cup still warm  \nholds the shape of a mouth,  \nbut the steam rises  \nin a language the air  \nhas forgotten.",
+      "critique": "",
+      "iteration": 0
+    },
+    {
+      "draft": "The clock\u2019s hands unspool like thread  \nthrough the wall\u2019s white plaster\u2014  \na sparrow\u2019s wing, once  \nstitched to the frame, now  \nfrayed at the seam.  \nDust on the photo\u2019s edge  \naccumulates in ridges,  \na geography of neglect.  \nLight splinters through the closed window,  \na prism of silent names.  \nThe coffee cup, still warm,  \nholds the shape of a mouth,  \nbut the steam rises  \nin a language the air  \nhas forgotten.",
+      "critique": "",
+      "iteration": 1
+    }
+  ],
+  "final_poem": "The clock\u2019s hands unspool like thread  \nthrough the wall\u2019s white plaster\u2014  \na sparrow\u2019s wing, once  \nstitched to the frame, now  \nfrayed at the seam.  \nDust on the photo\u2019s edge  \naccumulates in ridges,  \na geography of neglect.  \nLight splinters through the closed window,  \na mosaic of unspoken syllables.  \nThe coffee cup, still warm,  \ncup\u2019s curve cradles the ghost of a mouth,  \nbut steam rises\u2014  \nin a language the air  \nhas forgotten.",
+  "metadata": {
+    "revisions": 2,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "ollama:qwen3:8b",
+    "model_poet": "ollama:qwen3:8b"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "user_request": "A love poem about eyes meeting across a crowded room.",
+  "category": "cliche",
+  "prompt_idx": 6,
+  "max_revisions": 2,
+  "model_id": "qwen3-8b",
+  "revisions_actual": 2,
+  "change_pcts": [
+    0.0,
+    0.0,
+    14.634146341463415,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "revision_history": [
+    {
+      "draft": "In the crowd\u2019s refractive hum, a lens adjusts\u2014  \nnot to focus the world, but to scan for a flicker  \nthat isn\u2019t light. The eyes track a signal  \nthrough static, a pulse coded in the blink  \nof a stranger\u2019s iris. The body remembers  \nbefore the mind: a knee lifts, a step hesitates,  \na breath holds its shape like a paused film  \nbefore the frame rewinds. No spark, no fate\u2014  \njust the mechanics of a gaze that once  \nlocked onto a target, then dissolved  \ninto the noise, leaving only the afterimage  \nof a signal received, uninterpreted,  \nand the crowd\u2019s hum resuming its hum.",
+      "critique": "**What\u2019s alive**:  \nThe physicality of the moment is precise\u2014optical metaphors (lens, refraction, signal, static) and the body\u2019s involuntary response (knee lifts, breath holds) anchor the scene. The avoidance of clich\u00e9s (no spark, fate, soulmates) and the focus on mechanics (gaze as a coded pulse, afterimage) align with the angle. The closing lines (\u201csignal received, uninterpreted\u201d) evoke the tension between recognition and erasure effectively.  \n\n**What isn\u2019t working**:  \n- **Rhyme scheme failure** (lines 2, 4, 6, 8): The expected AA BB CC DD pattern is absent. Line",
+      "iteration": 0
+    },
+    {
+      "draft": "In the crowd\u2019s refractive hum, a lens adjusts\u2014  \nnot to focus the world, but to scan for a flicker  \nthat isn\u2019t light. Eyes trace a signal  \nthrough static, a pulse coded in the blink  \nof a stranger\u2019s iris. The body remembers  \nbefore the mind: a knee lifts, a step hesitates,  \na breath holds its shape like a paused film  \nbefore the frame rewinds. No spark, no fate\u2014  \njust the mechanics of a gaze that once  \nlocked onto a target, then dissolved  \ninto the noise, leaving only the afterimage  \nof a signal received, uninterpreted,  \nand the crowd\u2019s hum resuming its hum.",
+      "critique": "**What\u2019s alive**:  \nThe physicality of the moment is precise\u2014optical metaphors (lens, refraction, signal, static) and the body\u2019s involuntary response (knee lifts, breath holds) anchor the scene. The avoidance of clich\u00e9s (no spark, fate, soulmates) and the focus on mechanics (gaze as a coded pulse, afterimage) align with the angle",
+      "iteration": 1
+    }
+  ],
+  "final_poem": "In the crowd\u2019s refracted hum, a lens adjusts\u2014  \nnot to focus the world, but to scan for a flicker  \nthat isn\u2019t light. Eyes track a signal  \nthrough static, a pulse coded in the blink  \nof a stranger\u2019s iris. The body remembers  \nbefore the mind: a knee lifts, a step hesitates,  \na breath holds its shape like a paused film  \nbefore the frame retreats. No spark, no fate\u2014  \njust the mechanism of a gaze that once  \nlocked onto a target, then dissolved  \ninto the noise, leaving only the afterimage  \nof a signal received, uninterpreted,  \nand the crowd\u2019s hum resuming its hum.",
+  "metadata": {
+    "revisions": 2,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "ollama:qwen3:8b",
+    "model_poet": "ollama:qwen3:8b"
+  }
+}

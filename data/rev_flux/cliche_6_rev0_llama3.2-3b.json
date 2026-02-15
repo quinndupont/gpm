@@ -1,0 +1,24 @@
+{
+  "user_request": "A love poem about eyes meeting across a crowded room.",
+  "category": "cliche",
+  "prompt_idx": 6,
+  "max_revisions": 0,
+  "model_id": "llama3.2-3b",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "In seas of strangers' faces worn,\nTwo oceans met, and worlds were born.\nEyes like lanterns in the night\nCrossed paths, and time took flight.\n\nA smile crept up, a spark was lit,\nTwo souls collided, hearts hit.\nThe hum of crowds began to fade,\nAs gaze upon gaze, love displayed.\n\nIn that fleeting moment's hold,\nTheir hearts beat as one, young and bold.\nLike magnets drawn to secret places,\nThey locked in sight, warm, gentle spaces.\n\nA flush rose high on cheeks so fair,\nAnd whispers spoke a silent prayer.\nThe noise receded, and they were alone\nTwo eyes meeting, love made home.",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "ollama:llama3.2:3b",
+    "perf_total_sec": 1.62,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

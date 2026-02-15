@@ -1,0 +1,24 @@
+{
+  "user_request": "A poem about a road not taken and the difference it made.",
+  "category": "famous_poetry",
+  "prompt_idx": 7,
+  "max_revisions": 0,
+  "model_id": "phi3-mini",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "In paths untrodden, under skies of gray  \nI find myself lost within my own dismayed array;   \nA fork in time's relentless march lay before me grand \u2013 a choice to make or break it all:    \nTo take the road less walked on this land. \n\nYet here I stand, paralyzed by fear\u2019 endlessly swings  \nThe weight of impending decisions clinks and rings;   \nA chasm divides where once stood a single tree \u2013 now two diverging roads lay bare within my eyes:    \nOne path leads to uncertainty. \n\nI hesitate, then choose the lesser known route ahead with quiet resolve in heart  \nAs weaved through each bygone year\u2019s silent strife and art;   \nA different road beckons \u2013 one of untold promise filled potential:    \nMy decision felt like a betrayal. \nToday, this choice has gifted me time - an hour I would've otherwise squandered on mundane toil  \nThe humdrum reality that my life once seemed so steep;   \nI find joy in the beauty of unexpected sights before eyes blind:    \nMy heart whispers gratitude for a simpler, kinder fate.",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "ollama:phi3:mini",
+    "perf_total_sec": 3.16,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

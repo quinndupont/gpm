@@ -1,0 +1,88 @@
+{
+  "user_request": "A poem for spring.",
+  "category": "short_generic",
+  "prompt_idx": 2,
+  "max_revisions": 4,
+  "model_id": "qwen3-8b",
+  "revisions_actual": 4,
+  "change_pcts": [
+    0.0,
+    0.0,
+    22.22222222222222,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    16.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    14.285714285714286,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "revision_history": [
+    {
+      "draft": "Crunch of ice underfoot\u2014  \na memory\u2019s sharp edge,  \ntongue catching on the metallic tang  \nof rain that splits the sky.  \nLight fractures through frost,  \nshards of a broken mirror,  \neach shard a prism of what\u2019s left.  \nThe snowpack, a visceral weight,  \nnow dissolves to a sigh\u2014  \nthaw\u2019s sudden lightness,  \na breath before the thaw.  \nIce cracks in the stream,  \na sound like a blade\u2019s whisper,  \nand beneath dead leaves,  \nthe earth exhales\u2014  \ndamp, a ghost of green.",
+      "critique": "**What's alive:**  \nThe poem succeeds in evoking tactile and visual specifics: the \"crunch of",
+      "iteration": 0
+    },
+    {
+      "draft": "Crunch of ice underfoot\u2014  \na memory\u2019s sharp edge,  \ntongue snagged on the metallic tang  \nof rain that splits the sky.  \nLight fractures through frost,  \nshards of a broken mirror,  \neach shard a prism of what\u2019s left.  \nThe snowpack, a visceral weight,  \nnow dissolves to a sigh\u2014  \nthaw\u2019s sudden lightness,  \na breath before the thaw.  \nIce cracks in the stream,  \na sound like a blade\u2019s whisper,  \nand beneath dead leaves,  \nthe earth exhales\u2014  \ndamp, a ghost of green.",
+      "critique": "",
+      "iteration": 1
+    },
+    {
+      "draft": "Crunch of ice underfoot\u2014  \na memory\u2019s sharp edge,  \ntongue snagged on the metallic tang  \nof rain that splits the sky.  \nLight fractures through frost,  \nshards of a broken mirror,  \neach shard a prism of what\u2019s left.  \nThe snowpack, a visceral weight,  \nnow dissolves to a sigh\u2014  \nthaw\u2019s sudden lightness,  \na breath before the melt.  \nIce cracks in the stream,  \na sound like a blade\u2019s whisper,  \nand beneath dead leaves,  \nthe earth exhales\u2014  \ndamp, a ghost of green.",
+      "critique": "",
+      "iteration": 2
+    },
+    {
+      "draft": "Crunch of ice underfoot\u2014  \na memory\u2019s sharp edge,  \ntongue caught on the metallic tang  \nof rain that splits the sky.  \nLight fractures through frost,  \nshards of a broken mirror,  \neach shard a prism of what\u2019s left.  \nThe snowpack, a visceral weight,  \nnow dissolves to a sigh\u2014  \nthaw\u2019s sudden lightness,  \na breath before the melt.  \nIce cracks in the stream,  \na sound like a blade\u2019s whisper,  \nand beneath dead leaves,  \nthe earth exhales\u2014  \ndamp, a ghost of green.",
+      "critique": "",
+      "iteration": 3
+    }
+  ],
+  "final_poem": "Crunch of ice underfoot\u2014  \na memory\u2019s sharp edge,  \ntongue tied to the metallic tang  \nof rain that splits the sky.  \nLight fractures through frost\u2014  \nshards of a broken mirror,  \neach shard a prism of what\u2019s left.  \nThe snowpack, a visceral weight,  \nnow dissolves to a sigh\u2014  \nthaw\u2019s sudden lightness,  \na breath before the melt.  \nIce cracks in the stream,  \na sound like a blade\u2019s whisper,  \nand beneath dead leaves,  \nthe earth exhales\u2014  \ndamp, a whisper of green.",
+  "metadata": {
+    "revisions": 4,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "ollama:qwen3:8b",
+    "model_poet": "ollama:qwen3:8b"
+  }
+}

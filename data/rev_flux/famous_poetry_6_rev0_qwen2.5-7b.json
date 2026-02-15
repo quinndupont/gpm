@@ -1,0 +1,24 @@
+{
+  "user_request": "A poem where the speaker hears America singing, each worker their own song.",
+  "category": "famous_poetry",
+  "prompt_idx": 6,
+  "max_revisions": 0,
+  "model_id": "qwen2.5-7b",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "In fields of dawn's first light, I hear them sing,\nEach worker with a tune that runs like silver rings.\nFrom steel mills' roar to farmers' bountiful yield\u2014\nEvery voice, a melody for this land unfurled.\n\nA seamstress sews by moonlight, threads in sync,\nWhispering strength through fabric's gentle bend and link.\nIn bustling cities, voices rise like morning dew,\nEach one claiming space beneath the vast American blue.\n\nAt construction sites where sunlight dries hardworking hands,\nWorkers sing of homes they build that touch the clouds.\nTheir songs blend with the whirring blades of endless toil\u2014\nA chorus of hope in the heart of every coal and soil.\n\nOn factory floors, under fluorescent lights aglow,\nAssembly lines hum while voices softly flow.\nThey tell tales of dreams born from humble start\u2014\nPioneering spirits that still steer America's art.\n\nIn libraries where minds gather like eager bees,\nScholars hum their findings amidst ancient trees.\nTheir whispers weave into knowledge vast and wide,\nEchoing through ages in the quiet, steady tide.\n\nAnd on college campuses, young minds take flight,\nWhere dreams of change and promise sing without a fight.\nThey dream aloud, imagining futures bright\u2014\nFuturists charting courses that cut across the night.",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "ollama:qwen2.5:7b-instruct",
+    "perf_total_sec": 5.84,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

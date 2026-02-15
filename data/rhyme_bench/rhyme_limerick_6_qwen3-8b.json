@@ -1,0 +1,20 @@
+{
+  "user_request": "Write a limerick about a poet who forgot to rhyme.",
+  "form": "limerick",
+  "variant": null,
+  "prompt_idx": 6,
+  "model_id": "qwen3-8b",
+  "max_revisions": 0,
+  "final_poem": "There once was a poet named Ray,  \nWhose rhymes never quite came to play.  \nHe wrote lines that were bright,  \nBut they never could fight  \nThe curse of a meter that's quite gay.",
+  "rhyme_analysis": {
+    "strict_rhyme_density": 1.0,
+    "rhyme_density": 1.0,
+    "matches_form": true,
+    "deviations_count": 0,
+    "strict_rhyme_pairs": 4,
+    "rhyme_pairs": 4,
+    "line_count": 5,
+    "detected_scheme": "AABB A",
+    "expected_scheme": "AABBA"
+  }
+}

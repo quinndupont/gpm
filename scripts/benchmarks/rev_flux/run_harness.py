@@ -14,7 +14,12 @@ sys.path.insert(0, str(ROOT))
 MODELS_CONFIG = ROOT / "config" / "rev_flux_models.yaml"
 
 from scripts.benchmarks.rev_flux.prompts import CATEGORIES
-from scripts.benchmarks.rev_flux.line_change import revision_round_changes, aggregate_line_changes
+from scripts.benchmarks.rev_flux.line_change import (
+    revision_round_changes,
+    aggregate_line_changes,
+    revised_lines_per_round,
+    lines_changed_per_round,
+)
 
 
 def _load_models_config() -> list[dict]:
@@ -45,9 +50,11 @@ def run_single(
         verbose=verbose,
         interactive=False,
     )
-    rounds = revision_round_changes(result["revision_history"])
-    change_pcts = aggregate_line_changes(rounds)
     hist = result["revision_history"]
+    rounds = revision_round_changes(hist)
+    change_pcts = aggregate_line_changes(rounds)
+    revised_per_round = revised_lines_per_round(rounds)
+    lines_changed = lines_changed_per_round(rounds)
     meta = result.get("metadata", {})
     return {
         "user_request": user_request,
@@ -55,8 +62,11 @@ def run_single(
         "prompt_idx": prompt_idx,
         "max_revisions": max_revisions,
         "model_id": model_id,
-        "revisions_actual": len(hist),
+        "revisions_actual": len([h for h in hist if h.get("critique")]),
         "change_pcts": change_pcts,
+        "per_round_changes": rounds,
+        "revised_lines_per_round": [[[i, p] for i, p in r] for r in revised_per_round],
+        "lines_changed_per_round": lines_changed,
         "revision_history": hist,
         "final_poem": result["final_poem"],
         "metadata": {**meta, "approved": meta.get("approved", False), "approved_at_round": meta.get("approved_at_round")},
@@ -78,8 +88,13 @@ def main():
         "--max-revisions",
         nargs="+",
         type=int,
-        default=[1, 2, 3, 4],
-        help="Revision cycle lengths to test (e.g. 1 2 3 4)",
+        default=[0, 1, 3, 5],
+        help="Revision cycle lengths (0=poet only). Trained: 0,1,3,5. Vanilla: 0.",
+    )
+    parser.add_argument(
+        "--test",
+        action="store_true",
+        help="Short test: trained only, limit 1 prompt per category",
     )
     parser.add_argument(
         "--limit",
@@ -136,10 +151,13 @@ def main():
 
     if args.dry_run:
         total = 0
-        for cat in args.categories:
-            prompts = CATEGORIES[cat]
-            n = min(len(prompts), args.limit or len(prompts))
-            total += n * len(args.max_revisions) * len(models_to_run)
+        limit = 1 if args.test else (args.limit or 999)
+        for m in models_to_run:
+            if args.test and m["id"] != "trained":
+                continue
+            n_prompts = sum(min(len(CATEGORIES[cat]), limit) for cat in args.categories)
+            n_revs = len(args.max_revisions) if m["id"] == "trained" else 1
+            total += n_prompts * n_revs
         print(f"Would run {total} pipeline invocations")
         print(f"Categories: {args.categories}")
         print(f"Max revisions: {args.max_revisions}")
@@ -161,12 +179,16 @@ def main():
             educator_model_override=edu_override,
             poet_model_override=poet_override,
         )
+        # Only trained model gets revision analysis; vanilla models get rev0 only
+        revs_to_run = args.max_revisions if mid == "trained" else [0]
+        if args.test and mid != "trained":
+            continue
         for category in args.categories:
             prompts = CATEGORIES[category]
-            limit = args.limit or len(prompts)
-            for idx, request in enumerate(prompts[:limit]):
-                for max_rev in args.max_revisions:
-                    print(f"[{mid}] [{category}] prompt {idx + 1}/{limit}, max_revisions={max_rev}...", flush=True)
+            n_prompts = 1 if args.test else (args.limit or len(prompts))
+            for idx, request in enumerate(prompts[:n_prompts]):
+                for max_rev in revs_to_run:
+                    print(f"[{mid}] [{category}] prompt {idx + 1}/{n_prompts}, max_revisions={max_rev}...", flush=True)
                     run = run_single(
                         pipeline,
                         request,
@@ -189,6 +211,9 @@ def main():
                                 "model_id": run["model_id"],
                                 "revisions_actual": run["revisions_actual"],
                                 "change_pcts": run["change_pcts"],
+                                "per_round_changes": run["per_round_changes"],
+                                "revised_lines_per_round": run["revised_lines_per_round"],
+                                "lines_changed_per_round": run["lines_changed_per_round"],
                                 "revision_history": run["revision_history"],
                                 "final_poem": run["final_poem"],
                                 "metadata": run["metadata"],
@@ -203,7 +228,7 @@ def main():
         "categories": args.categories,
         "max_revisions_tested": args.max_revisions,
         "models_tested": model_ids,
-        "aggregate_change_pcts": [p for r in runs for p in r["change_pcts"]],
+        "aggregate_change_pcts": [p for r in runs for p in r.get("change_pcts", [])],
     }
     summary_path = args.output_dir / "summary.json"
     with open(summary_path, "w") as f:

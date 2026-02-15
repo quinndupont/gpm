@@ -1,0 +1,62 @@
+{
+  "user_request": "Write a poem about a traveler at a fork in a yellow wood who chooses the less-traveled path.",
+  "category": "famous_poetry",
+  "prompt_idx": 0,
+  "max_revisions": 2,
+  "model_id": "trained",
+  "revisions_actual": 2,
+  "change_pcts": [
+    0.0,
+    22.413793103448278,
+    0.0,
+    47.5,
+    0.0,
+    8.695652173913043,
+    42.5,
+    14.035087719298245,
+    44.23076923076923,
+    74.13793103448276,
+    74.35897435897436,
+    76.92307692307692,
+    77.77777777777777,
+    82.0,
+    78.43137254901961,
+    80.48780487804878,
+    67.34693877551021,
+    75.0,
+    79.06976744186046,
+    77.55102040816327,
+    79.06976744186046,
+    91.42857142857143,
+    71.73913043478261,
+    73.46938775510205,
+    77.55102040816327,
+    80.55555555555556,
+    85.71428571428571,
+    79.06976744186046,
+    81.08108108108108,
+    76.59574468085107,
+    77.55102040816327,
+    100.0
+  ],
+  "revision_history": [
+    {
+      "draft": "The fog doesn't know where the path ends.\nIt clings to everything \u2014 the hem of someone's coat,\nthe rusted rail, each breath drawn slow\nand visible against a gray overhead.\n\nRain on leather is not sound but pressure.\nEach drop flattens into the boot like a finger\npressing a name it can't read. The world\nhas cooled past anything that might be called beautiful \u2014\n\nthat word belongs to rooms and bedsheets,\nto days folded neatly inside cups of tea.\nHere, the air has contracted. Something\nhas been taken from the atmosphere.\n\nSomeone's jacket zipper catches \u2014 teeth\ngrinding together in a sound like small fireworks.\nThe rain keeps coming sideways, heavy,\nand nothing in this valley promises exit.\n\nThere is a turn. There always are.\nBut neither shoulder turns. Both hands\nstay in their pockets where cold has mapped\nits message sharp as copper wire across the skin.\n\nA heron stands where water pooled last hour\nstill hasn't drained away \u2014 patient\nas whatever slows you down enough\nto notice what's been quiet all along.\n\nThe temperature dropped while nobody was looking.\nYou can feel it now in your toes,\nin how your jacket rides your spine\nand holds a shape that isn't yours anymore.\n\nThere is no fork. There are only feet\nalready slipping from the wet wood,\neach one leaving something like a question mark \u2014\nthin, pale, lifting from the dark.",
+      "critique": "## Workshop Response\n\n### 1. What's Alive\n\nThe poem earns its strongest moments through sensory precision and restraint:\n\n- **\"Rain on leather is not sound but pressure.\"** This line does real work \u2014 it redefines what rain on a surface can be, and the negation (\"is not\") creates genuine tension against expectation.\n- **\"A heron stands where water pooled last hour / still hasn't drained away \u2014 patient\"** \u2014 the image of standing water that persists is concrete and earns its weight. The final word \"patient\" risks sentimentality but lands because it's attached to something visible, physical.\n- **The closing four lines** (\"no fork,\" \"feet slipping from the wet wood,\" \"thin, pale, lifting\") achieve what the brief asked for \u2014 a final image that arrives without explanation and resists paraphrase. The question mark metaphor is compact enough to feel inevitable rather than decorative.\n\nThe compression of form (short lines, tight rhythm) is doing real structural work. Lines like \"the rusted rail, each breath drawn slow\" use enjambment to create rhythmic pressure \u2014 the short line *is* the breath catching on something.\n\n### 2. What Isn't Working\n\n**Clich\u00e9: \"copper wire across the skin\" (line 18).** This is a dead metaphor. Copper wire does not map onto cold in any lived experience that I've encountered. It reads as decorative and archaic. Direction \u2014 find a simile from the physical world of rain, fog, or whatever this landscape actually contains.\n\n**Abstraction: \"something has been taken from the atmosphere\" (line 12).** This is the poem's weakest line because it abandons concrete imagery for vague philosophical gesture. It says *nothing* specific that isn't already said by what precedes and follows it. Direction \u2014 cut or replace with a sensory detail about what actually changes in the air.\n\n**Sentimentality: \"how your jacket rides your spine / and holds a shape that isn't yours anymore\" (lines 26-27).** The jacket holding a shape is close to the heron standing in water \u2014 both are physical, specific. But this line then anthropomorphizes the jacket into self-awareness (\"isn't yours anymore\"), which tips toward sentimentality. Direction \u2014 stay with what the body *actually* does. What does wet leather or fabric actually do against skin?\n\n**Repetition without escalation: \"sideways\" (line 15) and \"slipping\" (line 27).** Both words are doing similar work in similar lines, which flattens the ending's compression. Direction \u2014 if one of those is necessary for rhythm, find a stronger word.\n\n### 3. Revision Credo\n\nThe poem is close to being strong across the board. The final third needs less and less revision; the opening third needs more precision where it currently",
+      "iteration": 0
+    },
+    {
+      "draft": "The fog doesn't know where the path ends.\nIt presses against everything \u2014 the hem of someone's coat,\nthe rusted rail, each breath drawn slow\nand visible as if the air could read it.\n\nRain on leather is not sound but pressure.\nEach drop flattens into the boot like a tongue\ntesting what it finds. The world\nhas cooled past anything that might be called warm \u2014\n\nthat word belongs to days folded inside cups of tea,\nto how steam rises slow from milk before a latte's poured.\nHere, fog eats the edges off all light.\n\nSomeone's jacket zipper catches \u2014 teeth\nfiring small reports like gunshots in cotton.\nThe rain keeps hitting the leather shin-high,\nand nowhere in this valley does water promise exit.\n\nThere is a turn. Neither shoulder turns.\nBoth hands stay in pockets where cold has pressed\nits thin steel message against the knuckles,\na nail biting its own question.\n\nA heron stands where water pooled an hour ago\nstill hasn't drained \u2014 patient\nas whatever slows you down enough\nto notice how fog flattens sound into nothing.\n\nThe temperature dropped while nobody was looking.\nYou can feel it now in your toes,\nin how the wet leather holds a shape\nthat wasn't yours to begin with.\n\nThere is no fork. There are only feet\nalready slipping from the wet wood,\neach one leaving behind that thin, pale print \u2014\na trail of asking.",
+      "critique": "## Workshop Response\n\n### 1. What's Alive\n\nThe closing four lines are the strongest work here. \"There is no fork.\" / \"There are only feet / already slipping from the wet wood, / each one leaving something like a question mark \u2014 / thin, pale, lifting\" achieves what the brief asked: compression, ambiguity, no explanation, and an image that resists paraphrase. The final word \"lifting\" gives the print upward motion without stating \"this is metaphorical.\" That's genuine craft.\n\nThe heron stanza (lines 19\u201324) also earns its place \u2014 standing water not drained yet, patient as whatever slows you down. The personified stillness works because it follows concrete physical images of jacket zippers and rain on leather rather than floating above them in abstraction.\n\n\"Rain on leather is not sound but pressure.\" This line does real work \u2014 redefining the relationship between surface and liquid through negation.\n\n### 2. What Isn't Working\n\n**Clich\u00e9: \"copper wire across the skin\" (line 18).**\nThis is a dead metaphor. Copper wire mapped onto cold is archaic, decorative, not lived experience. Direction \u2014 find a simile from the wet, foggy world. What does cold leather actually feel like against skin? Something frictional, slightly abrasive.\n\n**Abstraction: \"something has been taken from the atmosphere\" (line 12).**\nThis line retreats entirely into vagueness after concrete images of coat, rail, breath. It says nothing specific and costs rhythm without earning anything. Direction \u2014 cut or replace with a sensory detail about what actually changes in the air before this point.\n\n**Sentimentality: \"how your jacket rides your spine / and holds a shape that isn't yours anymore\" (lines 26\u201327).**\nThe jacket holding a shape is close to physical, but \"isn't yours anymore\" reads as self-awareness the poem hasn't built toward. Direction \u2014 stay with what the fabric actually does \u2014 flattening against moisture, changing drape.\n\n**Redundancy: \"sideways\" (line 15) and \"slipping\" (line 27).**\nBoth words do similar work in adjacent lines, which deflates the ending's compression. Direction \u2014 if one is necessary for rhythm, find a stronger word. \"Slipping\" already appears in line 24 (\"feet / already slipping from the wet wood\"), so cut or sharpen.\n\n**Weak line break: \"to days folded neatly inside cups of tea\" (line 13).**\nThis line breaks on an abstraction that doesn't connect with the physical world established by coat, rail, breath. Direction \u2014 anchor this in something material \u2014 the texture of a hand gripping a cup, steam rising faintly.\n\n**Line break: \"cold has mapped / its message sharp as copper wire across the skin\" (lines 1",
+      "iteration": 1
+    }
+  ],
+  "final_poem": "The fog doesn't know\nwhere the path ends. It tests\n\neach surface \u2014 jacket, rail,\nthe breath a visible prayer.\n\nRain on leather is not sound\nbut pressure. Each drop flattens\ninto the boot like a tongue\ntrying the word again.\n\nHere, water has no exit.\nThe valley holds its wet load,\n\nand fog sits on everything\nit touches, drinking slow.\n\nSomeone's zipper catches \u2014 teeth\nfiring small reports in cotton,\nthe report so minor it could\nbe mistaken for static.\n\nRain keeps hitting. Cold\nhas already locked its message\ninto the knuckles, thin\nsteel biting itself.\n\nA heron stands where water pooled\nan hour ago still hasn't moved.\nIt waits as if for whatever\nslows you down enough\n\nto notice \u2014 how sound\nflattens into nothing here,\nhow rail and rock become\nindistinguishable.\n\nYour toes have cooled. The wet leather\nholds a shape that wasn't yours,\nthe way water finds its own\ndefinition in a puddle's edge.\n\nThere is no turn marked.\nBoth shoulders stay sunk\n\nin the same weight \u2014 cold\nalready inside your bones, already\nowning them. Feet slip\nfrom the wet wood,\n\neach print pale and specific \u2014\na trail of asking, each mark\na small mouth opening\nwhere water entered.",
+  "metadata": {
+    "revisions": 2,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "qwen2.5-7b-educator-Q4_K_M",
+    "model_poet": "qwen2.5-7b-poet-Q4_K_M"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "user_request": "Write a villanelle about the loss of time.",
+  "form": "villanelle",
+  "variant": null,
+  "prompt_idx": 3,
+  "model_id": "phi3-mini",
+  "max_revisions": 0,
+  "final_poem": "Within our hands, we hold but shadows fleeting fast\u2014  \nWe chase after hours as they slip through fingers wide; such lamentations cast!    \nFor time is gone and in its place a silence grows vast:   \n\u201cWhere has the moments passed?\u201d We ask with hearts astray.       \nWithin our hands, we hold but shadows fleeting fast\u2014  \nWe try to grasp at lost seconds where they may not last; thus life'ths discontented cast?    \nFor time is gone and in its place a silence grows vast:   \n\u201cAwake the memories of what\u2019s past,\u201d say voices, \u201cand find solace therein we might.\u201d     \nWithout forgetting that each tick was but borrowing fast\u2014  \nWe chase after hours as they slip through fingers wide; such lamentations cast!    \nFor time is gone and in its place a silence grows vast:   \n\u201cRecall the cherished now,\u201d say voices, \u201cand let not sorrow\u2019s grip hold you tight.\u201d      \nWithout forgetting that each tick was but borrowing fast\u2014 ",
+  "rhyme_analysis": {
+    "strict_rhyme_density": 0.77,
+    "rhyme_density": 0.62,
+    "matches_form": false,
+    "deviations_count": 8,
+    "strict_rhyme_pairs": 21,
+    "rhyme_pairs": 10,
+    "line_count": 13,
+    "detected_scheme": "ABBC ABBD ABBD A",
+    "expected_scheme": "ABA ABA ABA ABA ABA ABAA"
+  }
+}

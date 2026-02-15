@@ -1,0 +1,24 @@
+{
+  "user_request": "Something about night.",
+  "category": "short_generic",
+  "prompt_idx": 3,
+  "max_revisions": 0,
+  "model_id": "trained",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "The night comes down like a wet shawl,\ndrawing every color from the land.\nThe river goes gray as if it were swallowed\nby some vast throat that does not demand.\n\nEven the stars, those punctual singers,\ntire by ten. The sky softens its frame\nuntil the earth is just a softness\nbeneath a deepening of blue and black.\n\nA dog barks once \u2014 three miles away or more \u2014\nand the quiet swallows it like breath.\nThe world does not wait for anything.\nIt simply dissolves into dark's thick skin.\n\nThere is a kind of peace in this.\nNot the fake peace before dinner,\nbut the real settling, the full weight\nof darkness holding everything still.\n\nI keep the house warm with a low fire.\nOutside, whatever happened, however often,\nhas finished. The trees stand patient,\neach one breathing just above its bark.\n\nThis is the hour that doesn't ask anything of you.\nYou can sit on a porch swing or lie down\nin tall grass and let the earth take shape\nthrough your eyelids \u2014 dark, then darker,\nblack with a thin thread of moon\nthat even in absence keeps its name.",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "qwen2.5-7b-poet-Q4_K_M",
+    "perf_total_sec": 6.33,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

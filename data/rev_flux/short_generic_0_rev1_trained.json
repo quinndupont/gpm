@@ -1,0 +1,185 @@
+{
+  "user_request": "A poem about rain.",
+  "category": "short_generic",
+  "prompt_idx": 0,
+  "max_revisions": 1,
+  "model_id": "trained",
+  "revisions_actual": 1,
+  "change_pcts": [
+    85.0,
+    83.87096774193549,
+    80.64516129032258,
+    73.07692307692308,
+    77.77777777777777,
+    71.42857142857143,
+    74.07407407407408,
+    85.71428571428571,
+    82.14285714285714,
+    77.77777777777777,
+    77.77777777777777,
+    76.66666666666667,
+    86.66666666666667,
+    71.42857142857143,
+    73.33333333333333,
+    76.66666666666667,
+    79.3103448275862,
+    74.19354838709677,
+    74.19354838709677,
+    84.0,
+    78.57142857142857,
+    100.0,
+    100.0
+  ],
+  "per_round_changes": [
+    [],
+    [
+      85.0,
+      83.87096774193549,
+      80.64516129032258,
+      73.07692307692308,
+      77.77777777777777,
+      71.42857142857143,
+      74.07407407407408,
+      85.71428571428571,
+      82.14285714285714,
+      77.77777777777777,
+      77.77777777777777,
+      76.66666666666667,
+      86.66666666666667,
+      71.42857142857143,
+      73.33333333333333,
+      76.66666666666667,
+      79.3103448275862,
+      74.19354838709677,
+      74.19354838709677,
+      84.0,
+      78.57142857142857,
+      100.0,
+      100.0
+    ]
+  ],
+  "revised_lines_per_round": [
+    [],
+    [
+      [
+        0,
+        85.0
+      ],
+      [
+        1,
+        83.87096774193549
+      ],
+      [
+        2,
+        80.64516129032258
+      ],
+      [
+        3,
+        73.07692307692308
+      ],
+      [
+        4,
+        77.77777777777777
+      ],
+      [
+        5,
+        71.42857142857143
+      ],
+      [
+        6,
+        74.07407407407408
+      ],
+      [
+        7,
+        85.71428571428571
+      ],
+      [
+        8,
+        82.14285714285714
+      ],
+      [
+        9,
+        77.77777777777777
+      ],
+      [
+        10,
+        77.77777777777777
+      ],
+      [
+        11,
+        76.66666666666667
+      ],
+      [
+        12,
+        86.66666666666667
+      ],
+      [
+        13,
+        71.42857142857143
+      ],
+      [
+        14,
+        73.33333333333333
+      ],
+      [
+        15,
+        76.66666666666667
+      ],
+      [
+        16,
+        79.3103448275862
+      ],
+      [
+        17,
+        74.19354838709677
+      ],
+      [
+        18,
+        74.19354838709677
+      ],
+      [
+        19,
+        84.0
+      ],
+      [
+        20,
+        78.57142857142857
+      ],
+      [
+        21,
+        100.0
+      ],
+      [
+        22,
+        100.0
+      ]
+    ]
+  ],
+  "lines_changed_per_round": [
+    0,
+    23
+  ],
+  "revision_history": [
+    {
+      "draft": "# Inside\n\nThe vent pushes cold\nacross my forearm like a mouth.\n\nMy breath fogs the window,\nmakes a face I'm not\nstarring for. Someone else's\ndrama stuck behind plastic.\n\nRain on shingles clicks\nits uneven beat on the roof.\nI count four taps between\n\nmy ribs and the heat vent's\nsigh \u2014 the way air exhales\nin a room where no one speaks.\n\nThe glass goes white,\nthen darker, then\nalmost human. I press my cheek\n\nagainst the fog and feel\nthe car skinning heat off me,\ntaking it back the way it came,\n\nand what's left is just\nthe hum, the plastic smell,\nmy palm on something warm\n\nthat was never mine to keep.",
+      "critique": "## Workshop Response\n\n### 1. What's Alive\n\nThe central conceit \u2014 that the car itself is the poem, and everything in it carries weight because no one else will see it \u2014 is genuinely strong. The line \"the way air exhales / in a room where no one speaks\" earns its abstraction because it arrives after concrete sensory material has built the scene. The closing image of palm on something warm that was never mine to keep lands with real compression.\n\nThe detail of counting taps between ribs is specific, surprising, and does genuine perceptual work \u2014 it makes the body feel like a container for attention rather than just a vessel of sensation.\n\nThe line \"the car skinning heat off me\" has physical texture. That verb choice (skinning) gives the abstract exchange of temperature something to bite down on.\n\n### 2. What Isn't Working\n\n**Sentimentality / thin emotional layering \u2014 lines 13\u201314:**\n> The glass goes white, / then darker, then\n> almost human. I press my cheek\n> against the fog and feel\n> the car skinning heat off me,\n> taking it back the way it came,\n\nThe poem is doing something genuinely interesting in the middle of this sequence \u2014 the glass becoming \"almost human\" is a real image that earns its strangeness, then the pressing of the cheek. But \"feeling / the car skinning heat off me\" flattens what was building. The verb *skinning* works because it's physical; here the line breaks after \"skin\" and the next line says \"I feel.\" That second gesture is redundant \u2014 the verb already did the feeling. Direction: cut or collapse lines 13\u201314 into one or two moves, let the skinning do its own work.\n\n**Abstraction creeping in \u2014 line 9:**\n> My breath fogs the window,\n> makes a face I'm not\n> starring for.\n\n\"Starring for\" is vague. What does this stranger's face look like? The poem names the failure (it's private, unwatched) but doesn't *show* the image. Direction: give the face one detail \u2014 an angle of mouth, a line of forehead \u2014 so the reader shares the isolation.\n\n**Line breaks becoming decorative \u2014 lines 5\u20136:**\n> Someone else's\n> drama stuck behind plastic.\n\nThe break on \"else's\" is doing nothing that a comma wouldn't. It slows the line without earning it. Direction: if keeping the enjambment, make the word \"plastic\" do more visual work (it already does some) \u2014 find a reason the line ends there that has to do with how light hits the surface.\n\n**Redundancy \u2014 lines 17\u201318:**\n> what's left is just\n> the hum, the plastic smell,\n> my palm on something warm\n> that was never mine to keep.\n\n\"",
+      "iteration": 0
+    },
+    {
+      "draft": "The vent pushes cold\nacross my forearm like a mouth.\n\nMy breath fogs the window,\nmakes a face I'm not\nstarring for: one lip curve\ndripping grain of water.\n\nRain on shingles clicks\nits uneven beat on the roof.\nI count four taps between\n\nmy ribs and the heat vent's\nsigh \u2014 the way air exhales\nin a room where no one speaks.\n\nThe glass goes white,\nthen darker, then\nalmost human. I press my cheek\n\nagainst the fog and feel\nthe car skinning heat off me,\ntaking it back the way it came,\n\nand what's left is just\nmy palm on something warm\nthat was never mine to keep.",
+      "critique": null,
+      "iteration": "final"
+    }
+  ],
+  "final_poem": "The vent pushes cold\nacross my forearm like a mouth.\n\nMy breath fogs the window,\nmakes a face I'm not\nstarring for: one lip curve\ndripping grain of water.\n\nRain on shingles clicks\nits uneven beat on the roof.\nI count four taps between\n\nmy ribs and the heat vent's\nsigh \u2014 the way air exhales\nin a room where no one speaks.\n\nThe glass goes white,\nthen darker, then\nalmost human. I press my cheek\n\nagainst the fog and feel\nthe car skinning heat off me,\ntaking it back the way it came,\n\nand what's left is just\nmy palm on something warm\nthat was never mine to keep.",
+  "metadata": {
+    "revisions": 1,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "qwen2.5-7b-educator-Q4_K_M",
+    "model_poet": "qwen2.5-7b-poet-Q4_K_M",
+    "perf_total_sec": 53.24,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

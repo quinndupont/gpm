@@ -1,0 +1,24 @@
+{
+  "user_request": "A poem for Valentine's Day about true love lasting forever.",
+  "category": "cliche",
+  "prompt_idx": 0,
+  "max_revisions": 0,
+  "model_id": "llama3.2-3b",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "Timeless hearts that beat as one,\nIn love's pure flame, forever shone.\nA bond of trust, a tie so strong,\nThrough laughter and tears, where'er we belong.\n\nThe seasons pass, yet love remains,\nUnfaltering soulmate, through joyous refrains.\nTogether we dance beneath starry skies,\nForever bound by love's sweet surprise.\n\nIn every moment, our hearts entwine,\nA love that deepens with each passing time.\nWith you, my forever, I am free,\nEternal love, wild and carefree.",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "ollama:llama3.2:3b",
+    "perf_total_sec": 1.36,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

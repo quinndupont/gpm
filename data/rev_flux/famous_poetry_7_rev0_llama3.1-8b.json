@@ -1,0 +1,24 @@
+{
+  "user_request": "A poem about a road not taken and the difference it made.",
+  "category": "famous_poetry",
+  "prompt_idx": 7,
+  "max_revisions": 0,
+  "model_id": "llama3.1-8b",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "Two paths diverged in morning's hush\nThe one I took, a winding rush\nThrough familiar hills and verdant space\n Led me to where I now pace\n\nBut on that dawn, another road did lie\nA route less traveled, whispered by the sky\nIt beckoned with a siren's call\nTo leave the known and take it all\n\nIf I had taken that unseen way\nWould I have found a brighter day?\nPerhaps in distant fields I'd roam\nFree from the choices made back home\n\nOr maybe not. Maybe I would've strayed\nInto darker woods, lost in dismay\nThe road not taken, an unknown fate\nA mystery we can never participate",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "ollama:llama3.1:8b",
+    "perf_total_sec": 3.34,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "user_request": "Write three rhyming couplets about a broken promise.",
+  "form": "couplets",
+  "variant": null,
+  "prompt_idx": 10,
+  "model_id": "phi3-mini",
+  "max_revisions": 0,
+  "final_poem": "In twilight's hush, I whispered my vow so divine,  \nYet dawn greets me with a promise left behind in disguise.  \n\nA pact unkept shadows over hearts that once aligned; silence now replaces cheerful cries\u2014  \nAn echo of trust lost beneath the guile and lies within our own eyes' reprieve confined by sighs so near, we fear to tread through heartache-torn skies.",
+  "rhyme_analysis": {
+    "strict_rhyme_density": 0.5,
+    "rhyme_density": 0.5,
+    "matches_form": false,
+    "deviations_count": 2,
+    "strict_rhyme_pairs": 1,
+    "rhyme_pairs": 1,
+    "line_count": 4,
+    "detected_scheme": "ABCB",
+    "expected_scheme": "AA BB CC DD"
+  }
+}

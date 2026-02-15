@@ -1,0 +1,47 @@
+{
+  "user_request": "A romantic poem about two hearts beating as one.",
+  "category": "cliche",
+  "prompt_idx": 2,
+  "max_revisions": 3,
+  "model_id": "qwen3-8b",
+  "revisions_actual": 3,
+  "change_pcts": [
+    0.0,
+    16.39344262295082,
+    8.108108108108109,
+    8.19672131147541,
+    13.20754716981132,
+    7.8125,
+    11.290322580645162,
+    0.0,
+    0.0,
+    7.936507936507937,
+    13.20754716981132,
+    7.6923076923076925
+  ],
+  "revision_history": [
+    {
+      "draft": "Gears mesh in the dark, their teeth a silent Morse code  \nEach gear a stubborn orbit, each spring a coiled confession  \nThe moon\u2019s pull on tides, a gravitational whisper\u2014no touch, just alignment  \nMetronomes blink in their cages, ticks carving time into dust  \nThey spin, yet no two rhythms share the same fracture  \nA clockwork hymn, where every part is both a thread and a blade",
+      "critique": "",
+      "iteration": 0
+    },
+    {
+      "draft": "Gears mesh in the dark, their teeth a silent Morse code  \nEach gear a relentless orbit, each spring a coiled confession  \nThe moon\u2019s pull on tides, a gravitational sigh\u2014no touch, just alignment  \nMetronomes pulse in their cages, ticks carving time into dust  \nThey spin, yet no two rhythms share the same split  \nA clockwork dirge, where every part is both a thread and a blade",
+      "critique": "",
+      "iteration": 1
+    },
+    {
+      "draft": "Gears mesh in the dark, their jagged teeth a silent Morse code  \nEach gear a relentless orbit, each spring a coiled confession  \nThe moon\u2019s pull on tides, a gravitational sigh\u2014no touch, just alignment  \nMetronomes pulse in their cages, ticks sculpting time into dust  \nThey spin, yet no two rhythms share the same fraction  \nA clockwork dirge, where every part is both a thread and a dagger",
+      "critique": "",
+      "iteration": 2
+    }
+  ],
+  "final_poem": "Gears mesh in the dark, their jagged teeth a silent Morse  \nEach gear a relentless orbit, each spring a coiled confession  \nThe moon\u2019s pull on tides, a gravitational sigh\u2014no touch, just alignment  \nMetronomes pulse in their cages, ticks carve time into dust  \nThey spin, yet no two rhythms share the same fractional measure  \nA clockwork dirge, where every part is both a thread and a dagger",
+  "metadata": {
+    "revisions": 3,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "ollama:qwen3:8b",
+    "model_poet": "ollama:qwen3:8b"
+  }
+}

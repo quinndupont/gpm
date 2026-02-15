@@ -1,0 +1,24 @@
+{
+  "user_request": "Something about silence.",
+  "category": "short_generic",
+  "prompt_idx": 7,
+  "max_revisions": 0,
+  "model_id": "trained",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "# The Stillness\n\nNot the end but the beginning \u2014 that quiet\nwhere words are not necessary and neither are\nthe shadows they carry on their shoulders.\nThis is the kind of space where hands\ncan touch without meaning, where the breath\nmoves through the body's temple almost\nas an accident. Not emptiness,\nbut the kitchen before anyone arrives,\nthe light incoming but not yet\na subject for anybody's picture.\n\nA dog turns in the hallway and the floor\naccepts her \u2014 that soft landing, that\nagreement between four bones and wooden planks.\nSilence does not ask to be invited.\nIt is the third rail beneath the conversation\nthat keeps heating up, the thing\nthe thermostat never registers.\n\nI have spent whole afternoons sitting\nin a field doing nothing \u2014 not meditating,\nnot waiting for anything \u2014 just\nthe weight of grass on my legs and the fact\nthat no sound was too small to matter.\nA beetle's legs against a leaf. The rust\nof distant metal learning its own song.\nAll of it kept inside its own speed.\n\nThere is a difference between being quiet\nand belonging to the sound you make\nwhen you finally stop talking.\nThe latter is more like an animal,\nthe former a room you can hear the door in.\n\nI carry silence the way I carry\na coat I've outgrown \u2014 loosely,\nnot because it's empty but because\nthere's nowhere else I need to hold it.",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "qwen2.5-7b-poet-Q4_K_M",
+    "perf_total_sec": 7.77,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

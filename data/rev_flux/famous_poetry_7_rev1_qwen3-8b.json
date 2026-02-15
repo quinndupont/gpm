@@ -1,0 +1,24 @@
+{
+  "user_request": "A poem about a road not taken and the difference it made.",
+  "category": "famous_poetry",
+  "prompt_idx": 7,
+  "max_revisions": 1,
+  "model_id": "qwen3-8b",
+  "revisions_actual": 1,
+  "change_pcts": [],
+  "revision_history": [
+    {
+      "draft": "The unchosen path hums  \na whisper in the corner where light refuses to stay  \neach choice etches a groove, a hollow where the silence sways  \nthe shadow lingers, a fossil in the dust of now  \nwe walk the surface, but the echo is the undergrowth\u2014  \na map of what was not, inked in the breath of the untraveled  \nthe road is not where we go, but where we are carried by the weight of the unspoken",
+      "critique": "**What\u2019s alive:**  \nThe metaphor of choices as grooves etched into silence is vivid and original. The whisper and shadow imagery effectively convey the lingering echo of unchosen paths. The fragmented lines and enjambment mirror the branching, unresolved tension of decision-making. The final line\u2019s focus on the \u201cweight of the unspoken\u201d ties the metaphor to the present, avoiding literal road tropes.  \n\n**Issues:**  \n- **Weak line break** (line 2): The comma after \u201cgroove\u201d splits the image prematurely, weakening the connection between \u201cgroove\u201d and \u201chollow where the silence sways.\u201d Move the comma to after \u201chollow\u201d for stronger rhythm and imagery.  \n- **Abstraction** (line 6): \u201cFossil in the dust of now\u201d is vague. Replace \u201cfossil\u201d with a more concrete metaphor (e.g., \u201cghost",
+      "iteration": 0
+    }
+  ],
+  "final_poem": "The unchosen path hums  \na whisper in the corner where light refuses to stay  \neach choice etches a groove, a hollow where the silence sways  \nthe shadow lingers, a fossil in the dust of now  \nwe walk the surface, but the echo is the undergrowth\u2014  \na map of what was not, inked in the breath of the untraveled  \nthe road is not where we go, but where we are carried by the weight of the unspoken",
+  "metadata": {
+    "revisions": 1,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "ollama:qwen3:8b",
+    "model_poet": "ollama:qwen3:8b"
+  }
+}

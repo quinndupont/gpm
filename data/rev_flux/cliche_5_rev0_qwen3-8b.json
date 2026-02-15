@@ -1,0 +1,24 @@
+{
+  "user_request": "A Father's Day poem about a dad being a hero and role model.",
+  "category": "cliche",
+  "prompt_idx": 5,
+  "max_revisions": 0,
+  "model_id": "qwen3-8b",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "Beneath the weight of endless skies,  \nHe lifts the world with silent sighs,  \nA compass forged in steady hands,  \nA lighthouse where his children stand.  \n\nThrough storms he walks, a shield unbroken,  \nIn every scar, a story spoken\u2014  \nNot of the brave, but those who stay,  \nTo mend the cracks of yesterday.  \n\nHis laughter rings in midnight air,  \nA spark that turns the dark to care,  \nHis patience, deep as ancient stone,  \nA fortress where his children own.  \n\nNo cape, no sword, yet still he leads,  \nWith love as fierce as any creed.  \nA hero\u2019s heart, a father\u2019s grace\u2014  \nThe world is built on his unswayed face.  \n\nSo here\u2019s to dads who bear the light,  \nWho turn the ordinary into right.  \nIn every step, a legacy\u2014  \nThe greatest gift is being free.",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "ollama:qwen3:8b",
+    "perf_total_sec": 8.73,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

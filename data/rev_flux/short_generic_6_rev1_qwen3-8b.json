@@ -1,0 +1,24 @@
+{
+  "user_request": "A poem on time.",
+  "category": "short_generic",
+  "prompt_idx": 6,
+  "max_revisions": 1,
+  "model_id": "qwen3-8b",
+  "revisions_actual": 1,
+  "change_pcts": [],
+  "revision_history": [
+    {
+      "draft": "The clock\u2019s gears gnaw their own bones  \ninto a dust of silver, each tooth  \na scar where seconds once clung.  \nA tree\u2019s rings, fragile as a moth\u2019s wing,  \nhold the weight of storms\u2014  \neach circle a question mark  \nin the ledger of its breath.  \n\nTime carves its name in the door\u2019s hinge,  \nrust blooming like a second skin,  \nwhile the key, worn smooth as a sigh,  \nforges its own oblivion.  \nA hand, once bold in its grip,  \nnow trembles\u2014  \na map of erosion,  \neach line a bridge to nowhere.  \n\nIn the mirror\u2019s cracked glass, a face  \nis both sculpture and ghost,  \nits edges blurred by the hands  \nthat once molded it.  \nWe are all relics of the same chisel,  \ncarving our own decay  \ninto the marble of the moment.",
+      "critique": "",
+      "iteration": 0
+    }
+  ],
+  "final_poem": "The clock\u2019s gears gnaw their own bones  \ninto a dust of silver, each tooth  \na scar where seconds once clung.  \nA tree\u2019s rings, delicate as a moth\u2019s wing,  \nhold the weight of storms\u2014  \neach circle a silent query  \nin the ledger of its breath.  \n\nTime carves its name in the door\u2019s hinge,  \nrust blooming like a second skin,  \nwhile the key, worn smooth as a sigh,  \nforges its own erasure.  \nA hand, once bold in its grip,  \nnow trembles\u2014  \na cartography of erosion,  \neach line a bridge to nowhere.  \n\nIn the mirror\u2019s cracked glass, a face  \nis both sculpture and specter,  \nits edges blurred by the hands  \nthat once molded it.  \nWe are all relics of the same chisel,  \ncarving our own decay  \ninto the marble of the present.",
+  "metadata": {
+    "revisions": 1,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "ollama:qwen3:8b",
+    "model_poet": "ollama:qwen3:8b"
+  }
+}

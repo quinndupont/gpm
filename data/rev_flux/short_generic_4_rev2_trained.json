@@ -1,0 +1,67 @@
+{
+  "user_request": "A poem about memory.",
+  "category": "short_generic",
+  "prompt_idx": 4,
+  "max_revisions": 2,
+  "model_id": "trained",
+  "revisions_actual": 2,
+  "change_pcts": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    3.0303030303030303,
+    8.0,
+    0.0,
+    0.0,
+    65.95744680851064,
+    78.04878048780488,
+    73.91304347826087,
+    84.84848484848484,
+    48.07692307692308,
+    46.51162790697674,
+    74.28571428571429,
+    74.35897435897436,
+    80.64516129032258,
+    60.46511627906977,
+    85.71428571428571,
+    68.96551724137932,
+    72.22222222222223,
+    76.92307692307692,
+    79.06976744186046,
+    77.41935483870968,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0
+  ],
+  "revision_history": [
+    {
+      "draft": "Steam rises slow\noff the mug where you pressed your thumb\n\nthe way only children press\u2014\na dent, a question\n\nthe kitchen light makes everything\nthe color of weak tea\n\nwater running in the sink\nand under my fingers cold\n\nthat sound again\u2014the faucet's particular\ncough, like it coughs when no one is listening\u2014\n\nI put my face close to the glass\nsteam thins your outline\n\nyour coffee cup a hand held up\nto block the sun from the table\n\nthe radio on low\nsomething almost classical\na cello section I don't recognize\n\nmy teeth cold against each other\nthe way you clench them when thinking hard\n\nyou turned and said something\nbut my mouth is dry now, years here\n\nI hold the mug and it has cooled\ninto a shape like your absence\u2014\na shape I keep finding\n\nbreath on glass, breath off coffee,\nsame vapor, different seconds\n\ndawn in the kitchen\nnothing I can set down and say finished\n\njust the sound of water\nand my breathing beside it",
+      "critique": "## Workshop Response\n\n### 1. What's Alive\n\nThe closing four lines have genuine structural power:\n\n> just the sound of water / and my breathing beside it\n\nThat line break between \"water\" and \"my breathing\" is doing real work \u2014 it enacts the separation, the inability to fold those sounds together into a single memory. The poem earns its ending there.\n\n> Same vapor, different seconds\n\nThis line has compressed philosophical weight without reaching for abstraction. It stays in the subject: water vapor behaving physically but carrying temporal meaning. That's the kind of observation only this poem could make about this scene.\n\nThe physical detail of steam thinning a person's outline on glass \u2014 that's precise and strange enough to anchor the whole piece inside one domestic image rather than drifting into summary.\n\n### 2. What Isn't Working\n\n**Sentimentality / self-conscious emotional restraint (lines 13-16):**\n> I put my face close to the glass / steam thins your outline\n> \n> your coffee cup a hand held up / to block the sun from the table\n>\n> the radio on low / something almost classical / a cello section I don't recognize\n\nThe first two lines are strong \u2014 physical, specific, earned. The third line collapses into vagueness: \"something almost classical\" is a dead metaphor for vague memory. \"A cello section I don't recognize\" is closer but still soft; what did you actually hear? What piece? The specificity isn't precise enough to feel like discovery.\n\n**Clich\u00e9 / near-clich\u00e9 (throughout):**\n- \"Steam rises slow\" \u2014 this is decorative, not observed.\n- \"the way only children press\u2014 / a dent, a question\" \u2014 the personification of the dent into a question reads as a gesture toward profundity rather than something noticed. Direction: cut or replace with what actually happened in that moment of pressing and releasing.\n- \"my mouth is dry now, years here\" \u2014 this tells us about nostalgia instead of staying inside sensation. What does a dry mouth feel like physically? The poem earns the right to name \"years\" only if it has built enough physical pressure first.\n\n**Syntactic slack (line 10):**\n> that sound again\u2014the faucet's particular / cough, like it coughs when no one is listening\u2014\n\nThe parenthetical structure flattens what could be an interesting sonic image. Direction: make the comparison its own line or phrase so it doesn't diffuse into the sentence.\n\n**Repetition without escalation (line 23):**\n> Same vapor, different seconds\n\nThis restates the closing idea without deepening it. The poem's final move should push further \u2014 this one retreats slightly into vagueness (\"different seconds\").\n\n### Direction\n\nThe draft has found its shape in the last eight lines. Revise outward from there: sharpen the physical details that earn the emotional weight, and trust the",
+      "iteration": 0
+    },
+    {
+      "draft": "Steam rises slow\noff the mug where you pressed your thumb\n\nthe way only children press\u2014\na dent, a question\n\nthe kitchen light makes everything\nthe color of weak tea\n\nwater running in the sink\nand under my fingers cold\n\nthat sound again\u2014the faucet's particular\ncough, like it coughs when no one is listening\u2014\n\nI put my face close to the glass.\nSteam thins your outline,\nyour coffee cup a hand held up\nto block the sun from the table\n\nthe radio says something almost Stravinsky now\u2014\na muted cello section I can't name whole,\n\njust the second violins under everything else,\nthat dark entry behind the piano.\n\nMy teeth clench, that way you do when thinking hard.\nYou turned and said *more coffee* but meant\nthe mug itself, still warm,\nstill the shape of where your hand was.\n\nCold water on my fingertips\u2014\na small percussion section I keep repeating\nwith just one knuckle. The kitchen\nholds its ordinary sounds\n\nand I hold the mug and it has cooled\ninto a shape like your absence\u2014\nnot grief, not yet, but the particular dent\nyour thumb made, that question,\n\nthat dent.\n\nBreath on glass,\na fog I smear with my palm until nothing's clear.\nBreath off coffee,\nvapor white, almost angry,\nrising thin as an accent\n\nI can't take back.",
+      "critique": "## Workshop Response\n\n### 1. What's Alive\n\nThe closing eight lines are the strongest writing in this draft, and they're doing what the brief asked for:\n\n> **My teeth clench, that way you do when thinking hard.** \u2014 The specificity of the bodily gesture earns its place; it doesn't name \"thinking hard,\" it *is* the clenching.\n>\n> **the radio says something almost Stravinsky now\u2014 / a muted cello section I can't name whole, / just the second violins under everything else, / that dark entry behind the piano.** \u2014 The attention to what's actually audible in a domestic background is precise and strange. The reader feels the half-listening.\n>\n> **I put my face close to the glass. / Steam thins your outline,** \u2014 That line break between \"glass\" and \"Steam thins\" is doing real structural work: the steam literally erases the person before the speaker's eyes, and the break enacts that disappearance on the page.\n>\n> **a small percussion section I keep repeating / with just one knuckle.** \u2014 The final image of a single finger creating sound has quiet authority; it earns its place through physical specificity.\n\nThe poem is most alive when it stays inside sensory memory without naming what those memories *mean*.\n\n---\n\n### 2. What Isn't Working\n\n**Clich\u00e9 and near-clich\u00e9 (throughout):**\n\n- **\"Steam rises slow\" / \"off the mug where you pressed your thumb\"** \u2014 These are decorative, not observed. The draft revises this to something sharper (\"slow off\"), but it's still generic. Direction: cut or replace with what actually happened in that moment of pressing and releasing.\n- **\"the way only children press\u2014 / a dent, a question\"** \u2014 Personifying the dent into a question reads as a gesture toward profundity rather than something noticed. The revision tightens this but doesn't fully resolve it; \"a dent, that question\" is closer to what's alive without the abstraction.\n- **\"water running in the sink / and under my fingers cold\"** \u2014 This is fine. Direction: build outward from here with similar physical attention.\n\n**Syntactic slack (line 10):**\n\n> *that sound again\u2014the faucet's particular / cough, like it coughs when no one is listening\u2014*\n\nThe parenthetical structure flattens what could be an interesting sonic image. Direction: make the comparison its own line or phrase so it doesn't diffuse into the sentence.\n\n**Repetition without escalation (line 23):**\n\n> **Same vapor, different seconds**\n\nThis restates the closing idea without deepening it. The poem's final move should push further \u2014 this one retreats slightly into vagueness (\"different seconds\").\n\n**Structural weakness: lines 17\u201324**\n\nThe section from \"I hold the mug and it has",
+      "iteration": 1
+    }
+  ],
+  "final_poem": "Steam rises slow\noff the mug where you pressed your thumb\n\nthe way only children press\u2014\na dent, a question\n\nCold water on my fingertips.\nI keep tapping with one knuckle,\nlight percussion, a small\npercussion section no one calls.\n\nThe kitchen light makes everything\nthe color of weak tea. Water running\nin the sink and under my fingers cold,\n\nand under them, the particular\ncough of the faucet\u2014like it's saying something\nto the tile while nobody watches.\n\nI put my face close to the glass.\nSteam thins your outline,\nyour coffee cup a hand held up\nto block the sun from the table\n\nThe radio says almost Stravinsky now:\na muted cello section I can't name whole,\njust the second violins under everything else\u2014\nthat dark entry behind the piano.\n\nMy teeth clench. You turned and said *more coffee* but meant\nthe mug itself, still warm,\nstill the shape of where your hand was.\n\nThat dent stays in the cup now,\nthat question your thumb asked of it.\nSteam on glass\u2014a fog I smear with my palm until nothing's clear,\n\nthen let return: each breath a new\natmosphere. Vapor white, almost angry,\nrising thin as an accent\nI can't take back.\n\nThe mug is nearly cold. It sits\non the table like your chair when you leave early\u2014\na shape the room holds wrong, a dent\nyour absence makes before it has a name.\n\nThat's not it. The glass lets through\nthe first light, thin as a blade,\nand I can see the countertop again,\nits ordinary surface, its ordinary\nstain. My thumb pressed deep. That's all.\nThe faucet still coughs. Cold water still runs.\nI hold the mug and it is only\nmetal and my hand and the dent\nyour absence made before it had a name.\n\nI will keep drinking from this cup.",
+  "metadata": {
+    "revisions": 2,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "qwen2.5-7b-educator-Q4_K_M",
+    "model_poet": "qwen2.5-7b-poet-Q4_K_M"
+  }
+}

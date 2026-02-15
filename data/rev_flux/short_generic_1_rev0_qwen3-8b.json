@@ -1,0 +1,24 @@
+{
+  "user_request": "Write something about the ocean.",
+  "category": "short_generic",
+  "prompt_idx": 1,
+  "max_revisions": 0,
+  "model_id": "qwen3-8b",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "Beneath the moon\u2019s unblinking eye,  \nthe ocean hums a ancient cry,  \nits waves a lullaby of salt and stone,  \nwhere time dissolves in tides unknown.  \n\nThe depths hold secrets, cold and vast,  \nwhere shadows dance on shifting glass,  \nand coral kings in silent pride  \nguard treasures lost in sunlit tide.  \n\nA whale\u2019s low song through midnight air  \nechoes the bones of every shore,  \nwhile ships, like dreams, are swallowed whole  \nby waters that both give and take.  \n\nOh, restless heart of blue and white,  \nyou mirror skies, yet wear their weight\u2014  \na mirror cracked with endless lore,  \nwhere every soul is bound to shore.",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "ollama:qwen3:8b",
+    "perf_total_sec": 8.95,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

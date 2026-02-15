@@ -1,0 +1,53 @@
+{
+  "user_request": "A poem where the speaker hears America singing, each worker their own song.",
+  "category": "famous_poetry",
+  "prompt_idx": 6,
+  "max_revisions": 3,
+  "model_id": "qwen3-8b",
+  "revisions_actual": 3,
+  "change_pcts": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    11.363636363636363,
+    42.622950819672134,
+    9.523809523809524,
+    0.0,
+    0.0,
+    10.869565217391305,
+    10.638297872340425,
+    4.25531914893617,
+    22.22222222222222
+  ],
+  "revision_history": [
+    {
+      "draft": "The moon, a silver coin, drops from the sky  \nto buy a cup of night. Stars spill their coins  \ninto the dark, and silence hums its hymn.  \nA breeze counts the leaves\u2014each one a note  \nin the tree\u2019s slow, green symphony.  \nSomewhere, a clock\u2019s gears chew time to dust,  \nand the world breathes in rhythm with the tide.  \nWe are all just echoes, borrowed from the void,  \nlearning to love the dark before it learns to love us.",
+      "critique": "What's alive: The moon as a \"silver coin\" and the stars as \"coins\" create a tactile, metaphor-driven economy of light. The breeze counting leaves as \"notes\" in a \"green symphony\" builds a sonic, organic rhythm. The clock's gears \"chewing time to dust\" gives physicality to abstraction. The final line's tension between \"echoes\" and \"the void\" is emotionally resonant.  \n\nIssues:  \n- **Abstraction**: \"Buy a cup of night\" is vague; the verb \"buy\" lacks concrete action.  \n- **Weak line break**: The line \"Stars spill their",
+      "iteration": 0
+    },
+    {
+      "draft": "The moon, a silver coin, drops from the sky  \nto buy a cup of night. Stars spill their coins  \ninto the dark, and silence hums its hymn.  \nA breeze counts the leaves\u2014each one a note  \nin the tree\u2019s slow, green symphony.  \nSomewhere, a clock\u2019s gears chew time to dust,  \nand the world breathes in rhythm with the tide.  \nWe are all just echoes, borrowed from the void,  \nlearning to love the dark before it learns to love us.",
+      "critique": "What's alive: The moon as a \"silver coin\" and the stars as \"coins\" create a tactile, metaphor-driven economy of light. The breeze counting leaves as \"notes\" in a \"green symphony\" builds a sonic, organic rhythm. The clock's gears \"chewing time to dust\" gives physicality to abstraction. The final line's tension between \"echoes\" and \"the void\" is emotionally resonant.  \n\nIssues:  \n- **Abstraction**: \"Buy a cup of night\" is vague; the verb \"buy\" lacks concrete action.  \n- **Weak line break**: The line \"Stars spill their\" is cut mid-phrase, creating a jarring pause that undermines the flow of the metaphor.  \n- **Clich\u00e9**: \"Learning to love the dark before it learns to love us\" relies on overused sentimentality; the emotional arc feels predictable.  \n- **Sentimentality**:",
+      "iteration": 1
+    },
+    {
+      "draft": "The moon, a silver coin, spills from the sky  \nto sell the night a cup of silence. Stars scatter their coins  \ninto the dark, and silence sings its hymn.  \nA breeze counts the leaves\u2014each one a note  \nin the tree\u2019s slow, green symphony.  \nSomewhere, a clock\u2019s gears grind time to dust,  \nand the world breathes in time with the tide.  \nWe are all but echoes, borrowed from the void,  \nlearning to love the dark before it claims us.",
+      "critique": "What's alive: The moon as a \"silver coin\" and the stars as \"coins\" create a tactile, metaphor-driven economy of light. The breeze counting leaves as \"notes\" in a \"green symphony\" builds a sonic, organic rhythm. The clock's gears \"chewing time to dust\" gives physicality to abstraction. The final line's tension between \"echoes\" and \"the void\" is emotionally resonant.  \n\nIssues:  \n- **Abstraction**: \"Buy a cup of night\" is vague; the verb \"buy\" lacks concrete action.  \n- **Weak line break**: The line \"Stars spill their\" is cut mid-phrase, creating a jarring pause that undermines the flow of the metaphor.  \n- **Clich\u00e9**: \"Learning to love the dark before it learns to love",
+      "iteration": 2
+    }
+  ],
+  "final_poem": "The moon, a silver coin, spills its light  \nto sell the night a cup of silence. Stars scatter their light  \ninto the dark, and silence hums its hymn.  \nA breeze counts the leaves\u2014each one a note  \nin the tree\u2019s slow, green symphony.  \nSomewhere, a clock\u2019s gears grind time to dust,  \nand the world breathes in time with the tide.  \nWe are all but echoes, borrowed from the void,  \nlearning to love the dark before it claims us.",
+  "metadata": {
+    "revisions": 3,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "ollama:qwen3:8b",
+    "model_poet": "ollama:qwen3:8b"
+  }
+}

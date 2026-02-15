@@ -1,0 +1,20 @@
+{
+  "user_request": "Write a Shakespearean sonnet comparing a lover to a summer day.",
+  "form": "sonnet",
+  "variant": "shakespearean",
+  "prompt_idx": 1,
+  "model_id": "qwen3-8b",
+  "max_revisions": 0,
+  "final_poem": "My love is like to summer's breath so sweet,  \nYet in her gaze, the golden light doth stay.  \nThough tempests roar and clouds their shadows beat,  \nHer radiance shines through every passing day.  \nThe sun, though fierce, in her soft touch is mended,  \nNo scorching heat can dim her gentle flame.  \nWhile summer fades with dusk's reluctant thread,  \nShe blooms eternal, unbound by time's tame.  \nThough seasons wane and fleeting blooms decay,  \nHer constancy outshines the summer's pride.  \nIn her, I find both warmth and endless day\u2014  \nA lover's muse, beyond the sun's demise.  \nFor she is spring, and summer, and the sky,  \nA timeless dawn that never knows the night.",
+  "rhyme_analysis": {
+    "strict_rhyme_density": 0.5,
+    "rhyme_density": 0.79,
+    "matches_form": false,
+    "deviations_count": 3,
+    "strict_rhyme_pairs": 5,
+    "rhyme_pairs": 10,
+    "line_count": 14,
+    "detected_scheme": "ABAB CDCD BCEF GA",
+    "expected_scheme": "ABAB CDCD EFEF GG"
+  }
+}

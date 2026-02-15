@@ -1,0 +1,24 @@
+{
+  "user_request": "A poem for spring.",
+  "category": "short_generic",
+  "prompt_idx": 2,
+  "max_revisions": 0,
+  "model_id": "trained",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "# Verbatim\n\nThe first day came and I didn't recognize it\u2014\nthe thermometer's shy crook, the pavement\nsoftening under the weight of its own memory.\n\nBirds. They were always there but now they\nhad something to say about it. A sound\nless like speech than the mechanism of a gate\nlifting. The yard was alive with tuck and call,\neach one placing a stone on top of another\nin that stack we keep without deciding to.\n\nI cut the grass once and it looked wrong\u2014\na silence afterward, the sort of quiet\nthat makes you think someone is watching.\nBut no one. Just the lawn, flat under its white coat,\nwaiting for rain to give it color back.\n\nThe river found its banks again,\nwhich was not the same as saying\nit settled into them. The water moved\nlike a sentence that has finally landed on a period\u2014\ncomplete but still going somewhere.\n\nI held a dandelion stem and watched\nthe clock inside it open, each puff\nmore precise than mine had ever been.\nThat's how spring is: not the doing,\nbut the witnessing of what already knows\nhow to happen. The asterions letting go,\nthe ice breaking in one place only\nso the lake can breathe while still holding together.\n\nI put my coat on without thinking about it.\nThe season must have claimed my hands\nwhile I was sleeping. And when you sleep\ninside a season long enough, something happens\nto the way you open your eyes\u2014\nyou notice the light before you notice being awake,\nand that is almost religious,\nisn't it, that almost?\n\nI walked to the garden gate.\nIt hadn't been locked. The yard was green\nin patches now, the grasses pushing up through\nwhat remained of last year's argument.\n\nI sat on the step. A cardinal hopped across\nthe path and did not flinch at me\u2014\nonly adjusted its red, as if saying:\n*You're here already?*\n\nThe air tasted like it meant something.\nLike a sentence that has rehearsed itself\nacross all of January, February,\nand now March is just the part\nwhere you catch your breath in the middle.\n\nI stayed there until five o'clock,\nwhich was dark. The dark was particular\u2014\nnot the dark before but the one\nthat agrees, that nods its whole body\ntoward silence and stays.\n\nAnd after dark, the first frogs.\nThey had been practicing all winter\nin some deep pond under everything,\nand now they were ready to say it clean,\nthe way only animals can, without\nonce sounding like anything else\u2014\njust the sound, which is almost godlike,\nwhich is almost the definition of permission.\n\nI stood up. The step was cold.\nThe dandelion still in my hand\nhad gone ahead and done what I couldn't\u2014\nit had opened into something\nneither flower nor cloud but the idea\nof going soft enough to rise.",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "qwen2.5-7b-poet-Q4_K_M",
+    "perf_total_sec": 16.2,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

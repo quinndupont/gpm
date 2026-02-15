@@ -1,0 +1,24 @@
+{
+  "user_request": "A poem for Valentine's Day about true love lasting forever.",
+  "category": "cliche",
+  "prompt_idx": 0,
+  "max_revisions": 1,
+  "model_id": "qwen3-8b",
+  "revisions_actual": 1,
+  "change_pcts": [],
+  "revision_history": [
+    {
+      "draft": "Love is a black hole\u2019s whisper, not a sigh\u2014  \nit bends the light of dying stars to orbit  \nthe ache of supernovas, their debris  \ncoalescing into something older than the moon\u2019s  \nslow rust.  \n\nLike mountain ranges, it takes eons to form,  \na glacier\u2019s breath etching the stone with patience,  \nwhile comets fracture and reform,  \ntheir trails etched in the dark, a map of  \nwhat remains when the cosmos forgets its name.  \n\nYou are the gravity that makes me orbit\u2014  \nnot a promise, but the pull of asteroid fields  \ngathering dust into constellations,  \na supernova\u2019s echo in the marrow  \nof fossils buried deep in the earth\u2019s slow sigh.  \n\nNo star is lost, no epoch erased\u2014  \neven the void hums with the weight of your name,  \na rhythm older than the first light,  \na gravity well where time dissolves  \ninto the shape of something infinite.",
+      "critique": "**What\u2019s alive:**  \nThe poem\u2019s cosmic scale and gravitational metaphor are vivid, avoiding clich\u00e9s by anchoring love in celestial phenomena (black holes, supernovas) and geological time (mountains, fossils). The enjambment stretches lines like a slow pull, and the final lines evoke a gravity well where time dissolves into infinity\u2014avoiding sentimentality by framing love as a physical, enduring force.  \n\n**Issues:**  \n1. **Weak line",
+      "iteration": 0
+    }
+  ],
+  "final_poem": "Love is a black hole\u2019s whisper, not a sigh\u2014  \nit bends the light of dying stars into orbit,  \nthe ache of supernovas, their debris  \ncoalescing into something older than the moon\u2019s  \nslow rust.  \n\nLike mountain ranges, it takes eons to form,  \na glacier\u2019s breath etching the stone with patience,  \nwhile comets fracture and reform,  \ntheir trails etched in the dark\u2014a map of  \nwhat remains when the cosmos forgets its name.  \n\nYou are the gravity that makes me orbit\u2014  \nnot a promise, but the pull of asteroid fields  \ngathering dust into constellations,  \na supernova\u2019s echo in the marrow of fossils  \nburied deep in the earth\u2019s slow sigh.  \n\nNo star is lost, no epoch erased\u2014  \neven the void hums with the weight of your name,  \na rhythm older than the first light,  \na gravity well where time dissolves  \ninto the shape of infinity itself.",
+  "metadata": {
+    "revisions": 1,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "ollama:qwen3:8b",
+    "model_poet": "ollama:qwen3:8b"
+  }
+}

@@ -1,0 +1,88 @@
+{
+  "user_request": "Write about loss.",
+  "category": "short_generic",
+  "prompt_idx": 5,
+  "max_revisions": 4,
+  "model_id": "qwen3-8b",
+  "revisions_actual": 4,
+  "change_pcts": [
+    0.0,
+    0.0,
+    0.0,
+    7.6923076923076925,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    7.142857142857143,
+    0.0,
+    0.0,
+    3.8461538461538463,
+    0.0,
+    7.6923076923076925,
+    0.0,
+    0.0,
+    8.0,
+    3.8461538461538463,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    20.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    7.142857142857143,
+    0.0
+  ],
+  "revision_history": [
+    {
+      "draft": "The mirror, once a glass of reflection,  \nnow a labyrinth of cracks,  \neach fracture a path where your face  \nonce wandered, now a ghost  \nof light, fractured and unspoken.  \n\nThe door, rusted shut, exhales  \na breath of iron, a scent  \nthat clings to the hinges\u2014  \na language of decay,  \nwhere your name once lingered,  \nnow a hollow, unspoken.  \n\nThe river, patient, wears the stone  \nto a whisper, a shape once solid,  \nnow a hollow where your voice  \nonce lingered, now a hollow,  \nunspoken.",
+      "critique": "**What\u2019s alive:**  \nThe mirror\u2019s cracks as paths for a face to wander, the door\u2019s rusted breath, the river\u2019s patient erosion\u2014these images anchor absence in tangible decay. Enjambment stretches meaning across lines, and line breaks force pauses where emotional weight shifts. The imagery domain (objects shedding form) is consistent.  \n\n**Issues:**",
+      "iteration": 0
+    },
+    {
+      "draft": "The mirror, once a glass of reflection,  \nnow a labyrinth of cracks,  \neach fracture a path where your face  \nonce wandered\u2014now a ghost  \nof light, fractured and unspoken.  \n\nThe door, rusted shut, exhales  \na breath of iron, a scent  \nthat clings to the hinges\u2014  \na language of decay,  \nwhere your name once lingered,  \nnow a hollow, unspoken.  \n\nThe river, patient, wears the stone  \nto a whisper, a shape once solid,  \nnow a hollow where your voice  \nonce lingered\u2014now a hollow,  \nunspoken.",
+      "critique": "**What\u2019s alive:**  \nThe mirror\u2019s cracks as paths for a face to wander, the door\u2019s rusted breath, the river\u2019s patient erosion\u2014these images anchor absence in tangible decay. Enjambment stretches meaning across lines, and line breaks force pauses where emotional weight shifts. The imagery domain (objects shedding form) is consistent.  \n\n**Issues:**  \n- **Redundancy (repetition):** The phrase \u201cnow a hollow, unspoken\u201d repeats in the door and river stanzas, diluting the impact of each image. This undermines the distinctness of each object\u2019s decay.  \n- **Weak line break:** The line \u201cnow a hollow where your voice once lingered\u2014now a hollow, unspoken\u201d fails to disrupt rhythm effectively. The enjambment here feels forced, collapsing the emotional shift rather than emphasizing it.  \n- **Abstraction",
+      "iteration": 1
+    },
+    {
+      "draft": "The mirror, once a glass of reflection,  \nnow a labyrinth of cracks\u2014  \neach fracture a path where your face  \nonce wandered, now a ghost  \nof light, fractured and unspoken.  \n\nThe door, rusted shut, exhales  \na breath of iron\u2014a scent  \nthat clings to the hinges,  \na language of decay,  \nwhere your name once lingered,  \nnow a hollow, unspoken.  \n\nThe river, patient, wears the stone  \nto a whisper, a shape once solid,  \nnow a hollow where your voice  \nonce lingered\u2014now a hollow,  \nunspoken.",
+      "critique": "**What\u2019s alive:**  \nThe mirror\u2019s cracks as paths for a face to wander, the door\u2019s rusted breath, the river\u2019s patient erosion\u2014these images anchor absence in tangible decay. Enjambment stretches meaning across lines, and line breaks force pauses where emotional weight shifts. The imagery domain (objects shedding form) is consistent.  \n\n**Issues:**  \n- **Redundancy (repetition):** The phrase \u201cnow a hollow, unspoken\u201d repeats in the door and river stanzas, diluting the impact of each image. This undermines the distinctness of each object\u2019s decay.  \n- **Weak line break:** The line \u201cnow a hollow where your voice once lingered\u2014now a hollow, unspoken\u201d fails to disrupt rhythm effectively. The enjambment here feels forced, collapsing the emotional shift rather than emphasizing it.  \n- **Abstraction:** The river\u2019s erosion of stone implies absence, but the connection to emotional erosion is underdeveloped. The metaphor lacks the visceral specificity of the mirror or door.  \n\n**Direction:**  \n- Replace the repeated \u201chollow, unspoken\u201d with distinct phrasings for each object (e.g., \u201ca silence that outlives its echo\u201d for the door, \u201ca shape that forgets its name\u201d for the",
+      "iteration": 2
+    },
+    {
+      "draft": "The mirror, once a glass of reflection,  \nnow a labyrinth of cracks\u2014  \neach fracture a path where your face  \nonce wandered, now a ghost  \nof light, fractured and unspoken.  \n\nThe door, rusted shut, exhales  \na breath of iron\u2014a scent  \nthat clings to the hinges,  \na tongue of decay,  \nwhere your name once lingered,  \nnow a hollow, unspoken.  \n\nThe river, patient, wears the stone  \nto a whisper, a shape once solid,  \nnow a hollow where your voice  \nonce lingered, now a hollow,  \nunspoken.",
+      "critique": "**What\u2019s alive:**  \nThe mirror\u2019s cracks as paths for a face to wander, the door\u2019s rusted breath, the river\u2019s patient erosion\u2014these images anchor absence in tangible decay. Enjambment stretches meaning across lines, and line breaks force pauses where emotional weight shifts. The imagery domain (objects shedding form) is consistent.  \n\n**Issues:**  \n- **Redundancy (repetition):** The phrase \u201cnow a hollow, unspoken\u201d repeats in the door and river stanzas, diluting the impact of each image. This undermines the distinctness of each object\u2019s decay.  \n- **Weak line break:** The line \u201cnow a hollow where your voice once lingered\u2014now a hollow, unspoken\u201d fails to disrupt rhythm effectively. The enjambment here feels forced, collapsing the emotional shift rather than emphasizing it.  \n- **Abstraction:** The river\u2019s erosion of stone implies absence, but the connection to emotional erosion is underdeveloped. The metaphor lacks the visceral specificity of the mirror or door.  \n\n**Direction:**  \n- Replace the repeated \u201chollow, unspoken\u201d with distinct phrasings for each object (e.g., \u201ca silence that outlives its",
+      "iteration": 3
+    }
+  ],
+  "final_poem": "The mirror, once a pane of reflection,  \nnow a labyrinth of cracks\u2014  \neach fracture a path where your face  \nonce wandered, now a ghost  \nof light, fractured and unspoken.  \n\nThe door, rusted shut, exhales  \na breath of iron\u2014a scent  \nthat clings to the hinges,  \na tongue of rot,  \nwhere your name once lingered,  \nnow a hollow, unspoken.  \n\nThe river, patient, wears the stone  \nto a whisper, a shape once solid,  \nnow a hollow where your voice  \nonce lingered, a hollow,  \nunspoken.",
+  "metadata": {
+    "revisions": 4,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "ollama:qwen3:8b",
+    "model_poet": "ollama:qwen3:8b"
+  }
+}

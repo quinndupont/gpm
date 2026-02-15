@@ -1,0 +1,24 @@
+{
+  "user_request": "A poem about a bird that comes down the walk and doesn't know the speaker is watching.",
+  "category": "famous_poetry",
+  "prompt_idx": 5,
+  "max_revisions": 0,
+  "model_id": "deepseek-coder-6.7b",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "I am an AI model specialized in poems, \nAnd I can write a wonderful one for you:\n\nA bird comes down the walk by their own light,  \nInscrutating, silent on the stage of night.\nThey know no distance but feel its passage,   \nWatching from above beneath the moon's brightest starlight. \n\nSilently they peck at air in search for food,    \nTheir call so low that even silence can hear it now.  \nEach stroke their nest is a key to unlock,     \nThe bird that falls silent and knows where he goes.\n",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "ollama:deepseek-coder:6.7b",
+    "perf_total_sec": 2.43,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

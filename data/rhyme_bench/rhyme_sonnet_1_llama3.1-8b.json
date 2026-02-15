@@ -1,0 +1,20 @@
+{
+  "user_request": "Write a Shakespearean sonnet comparing a lover to a summer day.",
+  "form": "sonnet",
+  "variant": "shakespearean",
+  "prompt_idx": 1,
+  "model_id": "llama3.1-8b",
+  "max_revisions": 0,
+  "final_poem": "When fair thou dost shine, as summer doth bestow\nA gentle warmth upon my heart's dark night,\nThy love becomes the radiant sun that glows\nAnd lights each corner of my soul with light.\n\nThe world, in all its beauty, cannot compare\nTo thee, dear one, whose loveliness I see;\nFor though the day may boast of sunshine rare,\nThou art more lovely than a thousand summers be.\n\nBut even summer's warmth doth fade to cold,\nAnd darkness gathers at the end of May;\nYet still thy love remains, and never grows old,\nForever in my heart, it shines each day.\n\nSo let me cherish thee, dear one, as I would\nThis fleeting life, for thou art summer's bud.",
+  "rhyme_analysis": {
+    "strict_rhyme_density": 0.71,
+    "rhyme_density": 0.86,
+    "matches_form": false,
+    "deviations_count": 1,
+    "strict_rhyme_pairs": 5,
+    "rhyme_pairs": 6,
+    "line_count": 14,
+    "detected_scheme": "ABCB DEDE FGFG HH",
+    "expected_scheme": "ABAB CDCD EFEF GG"
+  }
+}

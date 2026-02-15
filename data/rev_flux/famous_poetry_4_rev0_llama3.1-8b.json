@@ -1,0 +1,24 @@
+{
+  "user_request": "A poem where the speaker addresses death as not proud, and sleep is but a short rest.",
+  "category": "famous_poetry",
+  "prompt_idx": 4,
+  "max_revisions": 0,
+  "model_id": "llama3.1-8b",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "Death, you're not so bold,\nPride dwells in mortal fold.\nYou creep, a thief in night,\nTaking all from empty sight.\n\nSleep's just a fleeting dream,\nA short reprieve, no rest to redeem.\nThe mind keeps turning, still and cold,\nAs darkness wraps the soul.",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "ollama:llama3.1:8b",
+    "perf_total_sec": 1.61,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

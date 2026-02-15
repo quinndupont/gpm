@@ -1,0 +1,63 @@
+{
+  "user_request": "A poem for spring.",
+  "category": "short_generic",
+  "prompt_idx": 2,
+  "max_revisions": 2,
+  "model_id": "trained",
+  "revisions_actual": 2,
+  "change_pcts": [
+    57.142857142857146,
+    68.0,
+    80.0,
+    85.71428571428571,
+    76.3157894736842,
+    87.23404255319149,
+    77.41935483870968,
+    72.54901960784314,
+    78.43137254901961,
+    74.50980392156863,
+    75.92592592592592,
+    86.66666666666667,
+    76.27118644067797,
+    78.57142857142857,
+    76.78571428571429,
+    82.92682926829268,
+    79.59183673469387,
+    79.54545454545455,
+    77.77777777777777,
+    87.5,
+    78.72340425531915,
+    70.45454545454545,
+    76.92307692307692,
+    73.80952380952381,
+    73.46938775510205,
+    70.73170731707317,
+    75.51020408163265,
+    73.46938775510205,
+    74.4186046511628,
+    81.57894736842105,
+    72.0,
+    81.3953488372093,
+    100.0
+  ],
+  "revision_history": [
+    {
+      "draft": "She walks the fields and the grass recognizes her\nas something that happened yesterday, or tomorrow,\nsomething the body has already forgotten\nwhile the body is still performing.\n\nHer hands keep finding temperature.\nNot yet summer \u2014 no, not even April's tentative\nunfurling. Something underneath the skin\nhas softened like an animal that woke early,\nstretched, and found the den empty.\n\nThe clover knows her better than she knows herself.\nIt has been opening its mouth all winter,\na small throat full of honey and expectation,\nand when she kneels it smells like something\nshe was, some months ago, before the body\nbent this way, before it began to learn\nthe architecture of its own architecture.\n\nA weed pushes through the concrete of her heel.\nIt has no use for cement. It just keeps\nbeing what it kept being under rubble,\nwhat grows with such conviction that you have to\nlook twice to see if the ground is still there.\n\nShe does not know what she's reaching for.\nHer fingers keep unclenching as if\nsomeone were tying them open with ribbon \u2014\nnot a gift, just the ordinary work of hands\nthat haven't decided yet whether they are\nopening things or untying them,\nwhether this warmth is an invitation\nor a fever pitch, whether to press her palm\nagainst the cold stone and count it\nas ice or as the first suggestion\nof whatever comes after cold.",
+      "critique": "## Workshop Response\n\n### 1. What's Alive\n\nThe weed pushing through the concrete of her heel \u2014 that is the poem's strongest moment. It earns its place by being specific, tactile, and surprising in scale (a weed against a human heel). The image does real work: it reframes the whole conceit from landscape-as-body into body-as-landscape-within-a-body.\n\nThe line \"It has been opening its mouth all winter\" is also alive \u2014 the verb choice makes the clover do something unexpected. And \"the architecture of its own architecture\" in line 15 has genuine compression, even if it's slightly overloaded with meaning.\n\n### 2. What Isn't Working\n\n**Abstraction (lines 3\u20134):**\n\"She walks the fields and the grass recognizes her\nas something that happened yesterday, or tomorrow,\nsomething the body has already forgotten\nwhile the body is still performing.\"\nThis is the poem explaining its own conceit to us rather than embodying it. \"Happened yesterday, or tomorrow\" \u2014 this is vagueness dressed as ambiguity. The reader can't land on anything concrete because everything is a vague gesture toward strangeness.\n\n**Direction:** Cut or radically compress lines 3\u20134. Let the image of hands finding temperature (line 7) do the work that four lines of abstraction were trying to accomplish.\n\n---\n\n**\"Something underneath the skin / has softened like an animal that woke early, / stretched, and found the den empty.\"**\n\nThis is strong \u2014 visceral, particularized, earned by its context. It's also the poem's best moment of fragmentation (the enjambment across \"softened / like,\" which actually *does* work syntactically). The rest of the draft needs to catch up on that level of control.\n\n---\n\n**\"A weed pushes through the concrete of her heel.\"**\n\nThe metaphor collapses under its own weight. A weed pushing through concrete is a clich\u00e9 \u2014 it's dead language. \"Concrete\" here does nothing; it's there for the rhyme with \"heel.\" The image earns nothing from the reader because no sensory detail has been committed to it.\n\n**Direction:** Drop \"concrete\" entirely, or replace it with something that actually *is* concrete in texture and meaning \u2014 a hard surface, pavement, stone. Let the weed pushing through something solid be enough without naming what the noun is.\n\n---\n\n**\"She does not know what she's reaching for.\"**\n\nThis line announces its own ambiguity rather than enacting it. It tells the reader \"there's mystery here,\" which undermines whatever follows unless that following material is genuinely compelling.\n\n**Direction:** Replace with a concrete gesture \u2014 what *is* she reaching for? A stone, fire, ice? The poem needs to show the hand in action before naming confusion.\n\n---\n\n**\"Whether this warmth is an invitation / or a fever pitch\"**\n\nTwo abstract nouns doing the work that one fragmented image should",
+      "iteration": 0
+    },
+    {
+      "draft": "She kneels and the grass closes around her knee,\na cold tongue that has been waiting.\n\nHer hands keep finding the hinge.\nNot spring \u2014 no, the dark ledger\nwhere blood remembered it had a border\nand was leaving.\n\nThe blackberry bramble knows her better than she does herself.\nAll winter it kept its throat open like a question,\nthe hips of each berry split into five small faces,\nexpecting something. She can smell it now \u2014 sweet\nand committed, the kind of sweetness that has given up\non being graceful.\n\nA stone in the sole of her shoe presses a particular nerve.\nShe does not remove it. Her fingers spread\nas if someone were threading them with thin red string \u2014\nnot a gift but the ordinary work of hands\nthat have not yet chosen whether they are opening\nor letting go, whether this warmth is rising\nfrom the ground or climbing up from somewhere\nbeneath the ground, where things like living\nhave already started.\n\nShe presses her palm to the birdbath's edge,\nits surface silvered at dawn, and feels\nthe cold separate into tiny\narticulations \u2014 not ice but the memory of a joint\nholding its shape in weather so low\nit hurts to think about it. Her fingers unclench.\nThey are already threading themselves open again.\n\nSomewhere under her heel, a weed keeps\nbeing a weed, pushing through whatever\nhas been put above it. It has no use for concrete.\nIt just keeps being the thing that will not\nbe buried.",
+      "critique": "## Workshop Response\n\n### 1. What's Alive\n\nThe weed pushing through the concrete of her heel \u2014 that is the poem's strongest moment. It earns its place by being specific, tactile, and surprising in scale (a weed against a human heel). The image does real work: it reframes the whole conceit from landscape-as-body into body-as-landscape-within-a-body.\n\nThe line \"It has been opening its mouth all winter\" is also alive \u2014 the verb choice makes the clover do something unexpected. And \"the architecture of its own architecture\" in line 15 has genuine compression, even if it's slightly overloaded with meaning.\n\n### 2. What Isn't Working\n\n**Abstraction (lines 3\u20134):**\n\"She walks the fields and the grass recognizes her\nas something that happened yesterday, or tomorrow,\nsomething the body has already forgotten\nwhile the body is still performing.\"\nThis is the poem explaining its own conceit to us rather than embodying it. \"Happened yesterday, or tomorrow\" \u2014 this is vagueness dressed as ambiguity. The reader can't land on anything concrete because everything is a vague gesture toward strangeness.\n\n**Direction:** Cut or radically compress lines 3\u20134. Let the image of hands finding temperature (line 7) do the work that four lines of abstraction were trying to accomplish.\n\n---\n\n**\"Something underneath the skin / has softened like an animal that woke early, / stretched, and found the den empty.\"**\n\nThis is strong \u2014 visceral, particularized, earned by its context. It's also the poem's best moment of fragmentation (the enjambment across \"softened / like,\" which actually *does* work syntactically). The rest of the draft needs to catch up on that level of control.\n\n---\n\n**\"A weed pushes through the concrete of her heel.\"**\n\nThe metaphor collapses under its own weight. A weed pushing through concrete is a clich\u00e9 \u2014 it's dead language. \"Concrete\" here does nothing; it's there for the rhyme with \"heel.\" The image earns nothing from the reader because no sensory detail has been committed to it.\n\n**Direction:** Drop \"concrete\" entirely, or replace it with something that actually *is* concrete in texture and meaning \u2014 a hard surface, pavement, stone. Let the weed pushing through something solid be enough without naming what the noun is.\n\n---\n\n**\"She does not know what she's reaching for.\"**\n\nThis line announces its own ambiguity rather than enacting it. It tells the reader \"there's mystery here,\" which undermines whatever follows unless that following material is genuinely compelling.\n\n**Direction:** Replace with a concrete gesture \u2014 what *is* she reaching for? A stone, fire, ice? The poem needs to show the hand in action before naming confusion.\n\n---\n\n**\"Whether this warmth is an invitation / or a fever pitch\"**\n\nTwo abstract nouns doing the work that one fragmented image should",
+      "iteration": 1
+    }
+  ],
+  "final_poem": "She kneels and the grass closes around her knee,\na cold tongue that has been waiting.\n\nHer thumb keeps finding the hinge pin embedded\nin a rock, the hard blue vein still dark\nwhere concrete skin cracked like a knuckle.\n\nThe blackberry bramble knows her better than she does \u2014\nall winter its throat open like a question,\nfive small mouths on each swollen hip,\nexpecting something. Now she can smell it:\nsweet and committed, the kind of sweetness\nthat has stopped being elegant.\n\nA stone in the sole of her shoe presses a nerve.\nShe keeps it there. Her fingers spread\nas if someone were threading them with thin red filament \u2014\nnot a gift but the ordinary work of hands\nstill sorting whether they are opening\nor letting go, still feeling the ground's slow\nheave beneath her knuckles.\n\nShe presses her palm to the birdbath's edge,\nits surface silvered at dawn, and feels\nthe cold separate into tiny teeth \u2014 not ice\nbut the memory of a joint holding its shape\nin weather so low it hurts to think about it.\nHer fingers unclench. Already opening.\n\nUnderneath her heel, a weed keeps being a weed,\npushing through whatever has been put above it.\nIt has no use for concrete. It just keeps\nbeing the thing that will not be buried,\nroot punched clean through the sole of her shoe,\nthe hard blue vein still dark where the rock sat.",
+  "metadata": {
+    "revisions": 2,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "qwen2.5-7b-educator-Q4_K_M",
+    "model_poet": "qwen2.5-7b-poet-Q4_K_M"
+  }
+}

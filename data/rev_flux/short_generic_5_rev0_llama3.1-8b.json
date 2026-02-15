@@ -1,0 +1,24 @@
+{
+  "user_request": "Write about loss.",
+  "category": "short_generic",
+  "prompt_idx": 5,
+  "max_revisions": 0,
+  "model_id": "llama3.1-8b",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "Echoes of emptiness remain\nA silence that refuses to wane\nThe ache within, a hollowed space\nWhere laughter once resounded in its place\n\nFading light on forgotten days\n Memories suspended, lost in haze\nRegret and longing intertwined like vines\nAs I am left with only shadows that decline\n\nIn the mirror's gaze, a ghostly face\nA reflection of what time cannot erase\nThe pain of loss, a sorrow so divine\nA heart once full now an endless chasm deep within",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "ollama:llama3.1:8b",
+    "perf_total_sec": 2.57,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

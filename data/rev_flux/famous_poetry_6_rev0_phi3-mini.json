@@ -1,0 +1,24 @@
+{
+  "user_request": "A poem where the speaker hears America singing, each worker their own song.",
+  "category": "famous_poetry",
+  "prompt_idx": 6,
+  "max_revisions": 0,
+  "model_id": "phi3-mini",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "In fields of emerald green and gold arrayed with ease,  \nA chorus forms in every toil-laden breeze;   \nFrom dawn till night's embrace is tenderly spread within earshot wide\u2014    \nAmerica sings on shoulders strong as sturdy oak. \n\nThe farmer humming hymns of soil that feeds,  \nA serene refrain the rustling wheat repeats;   \nHis hands in earth\u2019th yoke he finds his worthwhile plea\u2014     \n\u201cI till and toil for sustenance.\u201d    \nThrough sun's blaze or rainfall sprayed with ease,  \nIntoxicating is the farmer's steady song.   \nHis labor yields a golden sea that feeds; \nBeneath starlight\u2019s glow in which dreamers strive\u2014    \nLullabies of hope and future bright he sings to be free:        \u201cIt dawned, day broke new.\u201d  \nUpon the seaside docks where fishermen stand strong with ease.   \nWith every splash their hearts sing a sea-bound tale;      \"Here I am homeward bound!\u201d     The salty tides on which they sail bring forth songs of heartfelt plea, \u201cFrom depths to daylight's light\u201d\u2014these mariners brave and bold. Their nets bear the ocean\u2019s unseen gold:       Each catch a victory forged in hardship fought;        And yet within their chests beats rhythm pure as bellflower bloom under open sky, \u201cFrom darkness to dawn.\u201d  \nIn bustling cities where workers' voices rise high\u2014     Amidst the clanging of industry\u2019s song.       Forged iron echoes in factory hall;  From sweat and spark there is no room for sigh:      \"I labor with heart, I earn my bread,\u201d  \nTheir anthem bold amid noise's din - a testament to tenacity true\u2014     Their dreams are steeled within the furnace of life.       In every task their spirit stands aloof from greed\u2019s siren song;    Each note sung is strength forged in unity as they join hands together:  \u201cFrom sunrise till dusk,\u201d through struggle,  \nThey craft a nation's chorus that echoes ever on\u2014\"With every breath I draw.\"",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "ollama:phi3:mini",
+    "perf_total_sec": 6.12,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

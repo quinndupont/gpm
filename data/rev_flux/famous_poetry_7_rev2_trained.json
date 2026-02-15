@@ -1,0 +1,60 @@
+{
+  "user_request": "A poem about a road not taken and the difference it made.",
+  "category": "famous_poetry",
+  "prompt_idx": 7,
+  "max_revisions": 2,
+  "model_id": "trained",
+  "revisions_actual": 2,
+  "change_pcts": [
+    0.0,
+    65.78947368421052,
+    71.73913043478261,
+    80.55555555555556,
+    71.7948717948718,
+    76.47058823529412,
+    83.33333333333333,
+    78.78787878787878,
+    80.55555555555556,
+    72.34042553191489,
+    78.57142857142857,
+    85.29411764705883,
+    80.43478260869566,
+    85.0,
+    79.54545454545455,
+    71.05263157894737,
+    73.33333333333333,
+    80.95238095238095,
+    70.0,
+    78.57142857142857,
+    80.95238095238095,
+    78.125,
+    80.55555555555556,
+    82.5,
+    82.05128205128206,
+    79.48717948717949,
+    100.0,
+    100.0,
+    100.0,
+    100.0
+  ],
+  "revision_history": [
+    {
+      "draft": "# What the Boots Left Behind\n\nThere was a choice and after it\nthe tread stayed deeper in one soil,\nnot from heaviness but humidity\u2014\nsome small sequestration, the way water\nholds a thumbprint after the hand.\n\nFollow this depression backward:\nit is not a path. It is the story\nof what does not evaporate: the clay\nremembered each pressure as a kind of argument,\neach heel a proposition it did not reject.\n\nAfter years the boot-prints became\nthe topography. Moss moved in\nnot by accident but by strategy\u2014\nthe crease a microclimate, a name\nwe will never learn for any creature\n\nthat made its home between leather and earth.\nThe mud remembered those exact dimensions,\nheld them looser now, the way a river\nforgets its banks in flood, then lets them\nreturn at low tide as if nothing happened.\n\nThis is what I mean by choosing:\nnot the direction but the damp spot,\nthe place where water learned a shape\nso well it became the landscape's\nonly reason for staying wet.",
+      "critique": "## Workshop Response\n\n### 1. What's Alive\n\nThe central conceit \u2014 that a choice is registered not in the walker's departure but in the persistence of their wet footprint, which becomes an ecosystem for moss and salamanders \u2014 is genuinely original. The poem earns its argument through specific sensory detail: \"the way water / holds a thumbprint after the hand,\" \"a crease a microclimate,\" \"mud remembered those exact dimensions.\" These are images that belong only to this poem.\n\nThe line \"it is not a path. It is the story\" \u2014 that's a real pivot, and it arrives with enough distance from clich\u00e9 (\"fork in the road\") that it lands.\n\nThe closing four lines do the most interesting work: \"the landscape's / only reason for staying wet.\" That deflation does what the rest of the poem has been building toward. The world doesn't care about meaning; it just sits there wet. That's a powerful reversal, and it arrives with restraint.\n\n### 2. What Isn't Working\n\n**Clich\u00e9: \"a thumbprint after the hand\" (line 9).** This is the poem reaching for its own best line and then immediately diluting it by echoing it in almost identical terms later (\"the way water / holds a shape\"). The second instance of this metaphor \u2014 \"each heel a proposition it did not reject\" \u2014 is weaker because it's abstracted from the physical. Direction: Cut or radically rework either instance. The poem doesn't need to say \"thumbprint\" twice, especially when once would do.\n\n**Abstraction creeping in (lines 13\u201316).** \"Moss moved in / not by accident but by strategy \u2014 / the crease a microclimate.\" Strategy is an abstraction dressed as agency. This is where the poem stops trusting its own argument and starts explaining it. Direction: Stay with the physical. What does moss actually do at a footprint? Root depth, pH change, moisture gradient. Name those.\n\n**Sentimentality / explanatory note (lines 17\u201320).** \"A name / we will never learn for any creature\" \u2014 this is the poet narrating their own meaning back to the reader. The poem has already shown us that no single animal claims the footprint; it's a place where many small things live together. Telling the reader \"it's complicated\" is the opposite of earning complexity. Direction: Cut entirely or replace with observed detail.\n\n**Weak line break (line 12).** \"the way water / holds a shape\" \u2014 breaking on \"a\" is doing nothing that enjambment can't do elsewhere more cleanly. Direction: Try breaking on \"shape\" instead, or find a shorter line before it so the break carries tension.\n\n**Tonal flatness in the middle.** Lines 13\u201320 read at a constant low pitch \u2014 moss, microclimate, creatures, landscape",
+      "iteration": 0
+    },
+    {
+      "draft": "# What the Boots Left Behind\n\nAfter the choice, a single indentation\nin the field\u2014 not from weight but from the way\nmud holds a argument against drying.\n\nFollow this. It is not a path.\nIt is the story of what stays:\neach sole pressed into clay the size\nof a small debate, a proposition\nthe earth did not dismiss.\n\nYears later the print became\nthe topography. Moss moved in\nnot by accident but by preference\u2014\nroot systems thickening at the leather's edge,\npH shifting slightly where water stopped\nand started its slow negotiation with stone.\n\nThis is what I mean: not the direction\nbut the damp spot, the place where mud\nlearned a shape so well it became\nthe only reason for the ground to remain\nslightly lifted, slightly argumentative,\nthe way a river forgets its banks in flood\nthen gives them back at low tide\nas if the holding meant nothing.\n\nThe footprint is still saying something.\nWater remembers. It does not evaporate\u2014\nit integrates, becoming the landscape's\nonly reason for staying wet: a bowl\nno one poured into, a pocket\nthe earth keeps making room for,\nline by damp line.",
+      "critique": "## Revision Workshop Response\n\n---\n\n### 1. What's Alive\n\nThe central conceit \u2014 that a choice is registered not in the walker's departure but in the persistence of their wet footprint, which becomes an ecosystem for moss and salamanders \u2014 is genuinely original. The poem earns its argument through specific sensory detail: \"the way water / holds a thumbprint after the hand,\" \"a crease a microclimate,\" \"mud remembered those exact dimensions.\" These are images that belong only to this poem.\n\nThe line \"it is not a path. It is the story\" \u2014 that's a real pivot, and it arrives with enough distance from clich\u00e9 (\"fork in the road\") that it lands.\n\nThe closing four lines do the most interesting work: \"the landscape's / only reason for staying wet.\" That deflation does what the rest of the poem has been building toward. The world doesn't care about meaning; it just sits there wet. That's a powerful reversal, and it arrives with restraint.\n\n---\n\n### 2. What Isn't Working\n\n**Clich\u00e9: \"a thumbprint after the hand\" (line 9).** This is the poem reaching for its own best line and then diluting it by echoing it in almost identical terms later (\"the way water / holds a shape\"). The second instance of this metaphor \u2014 \"each heel a proposition it did not reject\" \u2014 is weaker because it's abstracted from the physical. Direction: Cut or radically rework either instance. The poem doesn't need to say \"thumbprint\" twice, especially when once would do.\n\n**Abstraction creeping in (lines 13\u201316).** \"Moss moved in / not by accident but by strategy \u2014 / the crease a microclimate.\" Strategy is an abstraction dressed as agency. This is where the poem stops trusting its own argument and starts explaining it. Direction: Stay with the physical. What does moss actually do at a footprint? Root depth, pH change, moisture gradient. Name those.\n\n**Sentimentality / explanatory note (lines 17\u201320).** \"A name / we will never learn for any creature\" \u2014 this is the poet narrating their own meaning back to the reader. The poem has already shown us that no single animal claims the footprint; it's a place where many small things live together. Telling the reader \"it's complicated\" is the opposite of earning complexity. Direction: Cut entirely or replace with observed detail.\n\n**Weak line break (line 12).** \"the way water / holds a shape\" \u2014 breaking on \"a\" is doing nothing that enjambment can do elsewhere more cleanly. Direction: Try breaking on \"shape\" instead, or find a shorter line before it so the break carries tension.\n\n**Tonal flatness in the middle (lines 13\u201320).** The poem loses its edge here. After the sharp physical turn at",
+      "iteration": 1
+    }
+  ],
+  "final_poem": "After the choice, a small\ndent\u2014in the field not from weight but from\nthe way mud holds an argument against drying.\n\nFollow this. It is not a path.\nIt is the story of what stays:\n\neach sole pressed into clay the size\nof a small debate\u2014a proposition\nthe earth did not dismiss\n\nYears later the print became\na new topography: moss moved in\nnot by strategy but by preference\u2014roots\nthinning out, then thickening at the leather's edge,\npH shifting slightly where water stopped\nand started its slow negotiation with stone.\n\nThis is what I mean:\n\nthe damp shape a sole left once\nbecame the only reason for the ground to remain\nslightly lifted, slightly argumentative\u2014\n\na river forgets its banks in flood\nthen gives them back at low tide\nas if the holding meant nothing\n\nThe footprint still says something.\nWater does not evaporate\u2014\nit integrates, becoming the landscape's\nonly crease: a held shape\nno one poured into. The earth keeps making room for it,\nline by damp line, root deepening where the shoe met mud.\n\nThis is what I mean:\n\nmoss arrives uninvited, moss\narrives at the edge of leather,\npores closing over the sole's outline\nso thoroughly a hand could have done it\u2014\na palm pressed flat and removed.",
+  "metadata": {
+    "revisions": 2,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "qwen2.5-7b-educator-Q4_K_M",
+    "model_poet": "qwen2.5-7b-poet-Q4_K_M"
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "user_request": "Something about night.",
+  "category": "short_generic",
+  "prompt_idx": 3,
+  "max_revisions": 1,
+  "model_id": "trained",
+  "revisions_actual": 1,
+  "change_pcts": [
+    79.41176470588235,
+    84.0,
+    84.84848484848484,
+    73.80952380952381
+  ],
+  "per_round_changes": [
+    [],
+    [
+      79.41176470588235,
+      84.0,
+      84.84848484848484,
+      73.80952380952381
+    ]
+  ],
+  "revised_lines_per_round": [
+    [],
+    [
+      [
+        0,
+        79.41176470588235
+      ],
+      [
+        1,
+        84.0
+      ],
+      [
+        2,
+        84.84848484848484
+      ],
+      [
+        3,
+        73.80952380952381
+      ]
+    ]
+  ],
+  "lines_changed_per_round": [
+    0,
+    4
+  ],
+  "revision_history": [
+    {
+      "draft": "Air conditioning\nunits cough into gutters,\neach drop a sentence\nno one reads.",
+      "critique": "## Workshop Response\n\n### 1. What's alive\n\nThe gutters-as-rivers image in line 2 is genuinely surprising \u2014 it takes the expected \"water running down\" and makes it geological, almost apocalyptic at zero gravity. That verb \"coughs\" does real work: it personifies without overreaching, and the sound of the word echoes the action. The final line's conceit (a sentence no one reads) lands with compression \u2014 it earns its abstraction by surrounding itself in concrete detail.\n\n### 2. What isn't working\n\n**Line 1: \"Air conditioning units\" is too generic to do heavy lifting here.** This is a category, not an image. The prompt asked for \"no 'night' as noun.\" That directive was pointing toward something more specific \u2014 the actual brand or model of unit that carries this weight. Direction: replace with a name-brand unit, make it particular enough that the reader can see it.\n\n**Line 3-4: The abstraction creeps back in.** \"A sentence / no one reads\" is the poem explaining itself. It tells the reader what to feel rather than letting the image generate that response. The stain-on-concrete angle from the brief could be deployed here \u2014 what does this dropped water actually resemble? Something the reader can touch or misread? Direction: cut lines 3-4 entirely, or replace them with a sensory detail that *is* the absence. Let the image carry its own weight of meaning.\n\n**Line 2 still needs sharpening:** \"Into gutters\" is doing nothing \u2014 it's syntactic scaffolding. What does the water hit? Where does it pool? Direction: give the drop at least one surface before it becomes a river.\n\n### Revision direction\n\nThe seed here is strong \u2014 the relationship between air conditioning, water, silence, and absence. Rebuild from 2-3 concrete images only; let the reader infer night and absence without naming them. The poem's power lives in what it *withholds* at zero gravity.\n\n---\n\nWhen revising, ask: what does each word see with? Every noun should answer back.",
+      "iteration": 0
+    },
+    {
+      "draft": "Frigidus units cough into gutters,\neach drop a white bead\nrolling off the lip of metal pan,\nweightless in a world no one is breathing.",
+      "critique": null,
+      "iteration": "final"
+    }
+  ],
+  "final_poem": "Frigidus units cough into gutters,\neach drop a white bead\nrolling off the lip of metal pan,\nweightless in a world no one is breathing.",
+  "metadata": {
+    "revisions": 1,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "qwen2.5-7b-educator-Q4_K_M",
+    "model_poet": "qwen2.5-7b-poet-Q4_K_M",
+    "perf_total_sec": 35.81,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

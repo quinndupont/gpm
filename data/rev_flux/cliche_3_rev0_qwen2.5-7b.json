@@ -1,0 +1,24 @@
+{
+  "user_request": "A Christmas poem about the magic of the season and family togetherness.",
+  "category": "cliche",
+  "prompt_idx": 3,
+  "max_revisions": 0,
+  "model_id": "qwen2.5-7b",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "Beneath the holly, beneath the pine,\nWhere whispers of snow fill every cranny divine.\nFamilies gather, hearts entwined in cheer,\nUnder lights that sparkle like celestial sphere.\n\nCarols echo through each cozy nook,\nAs mittened hands reach out with love and look.\nMistletoe hung where fate might intervene,\nA kiss beneath it for the new year to begin.\n\nGloves left by firelight on chairs so warm,\nCookies baking, cinnamon in the room's form.\nChildren laugh as they chase the ice outside,\nWhile stories are shared from a grandfather's side.\n\nSanta\u2019s arrival brings delight and wonder,\nToys hidden just out of sight under the shrouded curtain.\nLaughter rings through halls where joy is known,\nIn every soul that feels this Christmas\u2019 own.",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "ollama:qwen2.5:7b-instruct",
+    "perf_total_sec": 3.68,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

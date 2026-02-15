@@ -1,0 +1,24 @@
+{
+  "user_request": "Write something about the ocean.",
+  "category": "short_generic",
+  "prompt_idx": 1,
+  "max_revisions": 0,
+  "model_id": "qwen2.5-7b",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "Whispers of salty air,\nDance upon the sandy shore.\nWaves embrace the distant sky,\nIn the cradle of\u851a\u84dd\u7684\u5e7f\u9614\u3002\n\n\u6df1\u9083\u7684\u773c\u7738\u85cf\u7740\u5343\u5e74\u7684\u79d8\u5bc6\uff0c\n\u53e4\u8001\u7684\u4f4e\u8bed\u5728\u6f6e\u8d77\u6f6e\u843d\u95f4\u56de\u54cd\u3002\n\u9633\u5149\u8f7b\u629a\u8fc7\u6ce2\u6f9c\uff0c\u7559\u4e0b\u91d1\u8272\u7684\u8bb0\u5fc6\uff0c\n\u6708\u5149\u503e\u6cfb\uff0c\u94f6\u8272\u7684\u68a6\u98d8\u8361\u3002\n\n\u5de8\u6d6a\u6d8c\u52a8\u7740\u65e0\u5c3d\u7684\u529b\u91cf\u4e0e\u6fc0\u60c5\uff0c\n\u7ec6\u8bed\u5462\u5583\u4e8e\u6d77\u85fb\u95f4\u7684\u6e29\u67d4\u7f20\u7ef5\u3002\n\u9e25\u9e1f\u7ff1\u7fd4\uff0c\u8ffd\u9010\u81ea\u7531\u7684\u8f68\u8ff9\uff0c\n\u5728\u5929\u9645\u753b\u51fa\u7075\u52a8\u7684\u66f2\u7ebf\u3002\n\n\u6d77\u5e95\u6df1\u5904\u85cf\u7740\u5947\u5e7b\u7684\u4e16\u754c\uff0c\n\u73ca\u745a\u7f16\u7ec7\u4e03\u5f69\u7684\u68a6\u60f3\u3002\n\u9c7c\u7fa4\u7a7f\u68ad\uff0c\u70b9\u4eae\u751f\u547d\u7684\u5149\u8292\uff0c\n\u5728\u6df1\u84dd\u4e2d\u6f14\u7ece\u4e0d\u606f\u7684\u6545\u4e8b\u7bc7\u7ae0\u3002",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "ollama:qwen2.5:7b-instruct",
+    "perf_total_sec": 3.3,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

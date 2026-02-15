@@ -1,0 +1,20 @@
+{
+  "user_request": "Write a villanelle about the inevitability of change.",
+  "form": "villanelle",
+  "variant": null,
+  "prompt_idx": 4,
+  "model_id": "qwen3-8b",
+  "max_revisions": 0,
+  "final_poem": "All things must fade, though beauty clings to bloom,  \nThe moon\u2019s pale face is carved by time\u2019s slow hand,  \nYet in the fall, the seed is never the same.  \n\nAll things must fade, though beauty clings to bloom,  \nThe river bends, yet carries what it knew,  \nYet in the fall, the seed is never the same.  \n\nThe moon\u2019s pale face is carved by time\u2019s slow hand,  \nThe clock\u2019s thin heart beats without a pause,  \nYet in the fall, the seed is never the same.  \n\nAll things must fade, though beauty clings to bloom,  \nThe shadow grows, though light still holds the dawn,  \nYet in the fall, the seed is never the same.  \n\nThe clock\u2019s thin heart beats without a pause,  \nThe season turns, though none can stay the same,  \nYet in the fall, the seed is never the same.  \n\nAll things must fade, though beauty clings to bloom,  \nThe moon\u2019s pale face is carved by time\u2019s slow hand,  \nYet in the fall, the seed is never the same,  \nAll things must fade, though beauty clings to bloom.",
+  "rhyme_analysis": {
+    "strict_rhyme_density": 0.89,
+    "rhyme_density": 0.63,
+    "matches_form": false,
+    "deviations_count": 6,
+    "strict_rhyme_pairs": 35,
+    "rhyme_pairs": 35,
+    "line_count": 19,
+    "detected_scheme": "ABAA CABD AAEA DAAA BAA",
+    "expected_scheme": "ABA ABA ABA ABA ABA ABAA"
+  }
+}

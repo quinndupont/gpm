@@ -1,0 +1,24 @@
+{
+  "user_request": "A Mother's Day poem about how a mother's love is unconditional.",
+  "category": "cliche",
+  "prompt_idx": 1,
+  "max_revisions": 0,
+  "model_id": "trained",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "# Unconditional\n\nAt six-thirteen in the morning, your name\nleft my lips the way it always does\u2014\nno precondition, no particular urgency,\njust the ordinary habit of a heart\nthat has forgotten it is practice-making.\n\nYou were not born into that sentence.\nNo contract was ever signed.\n\nI loved you before I could say it,\nthe way a dog knows snow means certain things without being taught.\n\nAll those years\u2014you in your high chair\ncruising left on repetition, laughing\nat the red truck we'd seen once\u2014\nmy love for you did not require me to name it.\n\nIt sat with its backpack full of quiet\nin the back of every room,\nsturdier than my vows, loyaler\nthan any promise I could make because\npromise is a thing I have to do.\nLove just does what loves do\u2014\n\nit stays.\n\nEven when I was afraid for things\nI didn't understand\u2014vaccines,\nthe word *stranger* separated from safety by only one syllable\u2014\neven then, your posture was enough.\nThe way the dog knows, the way a building holds its shape through earthquakes:\nnothing shakes it into not-being.\n\nNow you're thirteen and you roll your eyes\nat whatever I'm reading. You'd rather\nbe outside. Fair enough.\n\nBut somewhere in that irreverence,\nsomewhere beneath the sassed dispatch,\nthere's still a girl who wakes at dark\nand invents mothers in the attic\nbecause love so vast has no other place to live but fiction\u2014\nand fiction is permitted.\n\nI could not give you unconditional.\nThat phrase is for God, or for rent,\nsomething due on a certain day.\nBut I can tell you what happens:\nevery morning. Every not-yet-sunlight hour\nwhen sleep still has its own country.\nI am there before the word for love arrives,\nshaking it out like a wet towel\u2014\n*here,* I'll say, *here is more.*\nAnd you will take it or set me right.\n\nBecause that's how it works with mothers:\nthe goods arrive early. Always\nin the excess packaging of extra breaths,\nanatomical surpluses, the way the body\nlearns to make milk before it knows\nwhat child might use it.\n\nUnconditional doesn't mean I stop\ncorrecting your grammar or loading the dishwasher.\nIt means I keep doing those things\nthe way a spouse keeps showing up at dinner\u2014\nnot out of duty but because the table is set,\nbecause someone has to sit there,\nand nobody else volunteers.\n\nThis is not a feeling with legs.\nIt lives in actions. The small, unavoidable ones:\nlaundry on Tuesday, doctor's appointments,\nsinging *you're special* into your pillow at sleepovers\neven though you are already standing\nin the fullness of whatever you will be,\n\nwhich has nothing to do with me\nand everything to do with being.\n\nI could not give you that.\nBut I can keep trying\u2014not because it's earned,\nnot because I'm practicing a skill,\nbut because some days you need someone\nat the gate, just past the property line,\nholding open what amounts to little more than a fence,\n\nand that is still enough. That is still\nthe whole definition of being\nunconditional.",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "qwen2.5-7b-poet-Q4_K_M",
+    "perf_total_sec": 17.97,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

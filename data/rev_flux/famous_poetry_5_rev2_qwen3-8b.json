@@ -1,0 +1,44 @@
+{
+  "user_request": "A poem about a bird that comes down the walk and doesn't know the speaker is watching.",
+  "category": "famous_poetry",
+  "prompt_idx": 5,
+  "max_revisions": 2,
+  "model_id": "qwen3-8b",
+  "revisions_actual": 2,
+  "change_pcts": [
+    13.461538461538462,
+    4.444444444444445,
+    0.0,
+    0.0,
+    20.833333333333332,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    14.285714285714286,
+    0.0,
+    39.130434782608695
+  ],
+  "revision_history": [
+    {
+      "draft": "Preening a feather caught in the streetlight\u2019s halo,  \nit tilts, a comma in the asphalt\u2019s monologue.  \nI hold my breath\u2014  \na fogging glass, a held note.  \nFeathers brush concrete\u2014  \na whisper, not a sound.  \nIt pecks at the plastic wrapper tangled in its beak,  \nwhile I trace the arc of its indifference,  \na hollow where the eye once lived.  \nSomewhere, a car horn blares\u2014  \nthe bird flaps, a jagged line  \nthrough the smog\u2019s slow unraveling.  \nI am here, a shadow in the margins,  \nlearning how to vanish.",
+      "critique": "**What\u2019s alive:**  \nThe tactile details (\u201cfeathers brush concrete,\u201d \u201cbreath fogging glass\u201d) anchor the poem in the urban environment. The contrast between the bird\u2019s natural actions (pecking, preening) and the detritus (plastic wrapper, streetlight) sharpens the tension between presence and absence. The free verse\u2019s abrupt lines and enjambment mimic the bird\u2019s erratic flight, with the speaker\u2019s intrusion creating rhythmic interruptions.  \n\n**Issues:**  \n- **Abstraction**: \u201cA comma in the asphalt\u2019s monologue\u201d is vague; the metaphor fails to ground the bird\u2019s movement in concrete imagery.  \n- **Sentimentality**: \u201cLearning how",
+      "iteration": 0
+    },
+    {
+      "draft": "Preening a feather in the streetlight\u2019s halo,  \nit tilts\u2014a comma in the asphalt\u2019s monologue.  \nI hold my breath\u2014  \na fogging glass, a held note.  \nFeathers skim concrete\u2014  \na whisper, not a sound.  \nIt pecks at the plastic wrapper tangled in its beak,  \nwhile I trace the arc of its indifference,  \na hollow where the eye once lived.  \nSomewhere, a car horn blares\u2014  \nthe bird flaps, a jagged line  \nthrough the smog\u2019s slow unfolding.  \nI am here, a shadow in the margins,  \nlearning to fade.",
+      "critique": "**What\u2019s alive:**  \nThe tactile details (\u201cfeathers brush concrete,\u201d \u201cbreath fogging glass\u201d) anchor the poem in the urban environment. The contrast between the bird\u2019s natural actions (pecking, preening) and the detritus (plastic wrapper, streetlight) sharpens the tension between presence and absence. The free verse\u2019s abrupt lines and enjambment mimic the bird\u2019s erratic flight, with the speaker\u2019s intrusion creating rhythmic interruptions.  \n\n**Issues:**  \n- **Abstraction",
+      "iteration": 1
+    }
+  ],
+  "final_poem": "Preening a feather in the streetlight\u2019s glow,  \nit tilts\u2014a comma in the asphalt\u2019s silence.  \nI hold my breath\u2014  \na fogged glass, a held note.  \nFeathers glide concrete\u2014  \na whisper, not a sound.  \nIt pecks at the plastic wrapper tangled in its beak,  \nwhile I trace the arc of its indifference,  \na hollow where the eye once lived.  \nSomewhere, a car horn blares\u2014  \nthe bird flaps, a jagged line  \nthrough the smog\u2019s slow descent.  \nI am here, a shadow in the margins,  \nlearning to fade.",
+  "metadata": {
+    "revisions": 2,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "ollama:qwen3:8b",
+    "model_poet": "ollama:qwen3:8b"
+  }
+}

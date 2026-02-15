@@ -1,0 +1,20 @@
+{
+  "user_request": "Write a villanelle about the loss of time.",
+  "form": "villanelle",
+  "variant": null,
+  "prompt_idx": 3,
+  "model_id": "llama3.1-8b",
+  "max_revisions": 0,
+  "final_poem": "In fleeting hours, I lose my way\nMoments stolen like fallen leaves from sight\nTime's passage whispers through each passing day\n\n Memories lost in shifting gray\nFleeting joys that vanish with the night\nIn fleeting hours, I lose my way\n\nSummer sunbeams brighten up our stay\nBut autumn brings a fading light\nTime's passage whispers through each passing day\n\nWith every breath, time slips away\nAnd leaves me searching for what's lost in flight\nIn fleeting hours, I lose my way\n\nMoments stolen like fallen leaves from sight\nFleeting joys that vanish with the night\nTime's passage whispers through each passing day",
+  "rhyme_analysis": {
+    "strict_rhyme_density": 1.0,
+    "rhyme_density": 1.0,
+    "matches_form": false,
+    "deviations_count": 1,
+    "strict_rhyme_pairs": 51,
+    "rhyme_pairs": 43,
+    "line_count": 15,
+    "detected_scheme": "ABAA BAAB AABA BBA",
+    "expected_scheme": "ABA ABA ABA ABA ABA ABAA"
+  }
+}

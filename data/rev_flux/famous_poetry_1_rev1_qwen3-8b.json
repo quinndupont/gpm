@@ -1,0 +1,24 @@
+{
+  "user_request": "A poem where the speaker compares a lover to a summer day but concludes the beloved outlasts it.",
+  "category": "famous_poetry",
+  "prompt_idx": 1,
+  "max_revisions": 1,
+  "model_id": "qwen3-8b",
+  "revisions_actual": 1,
+  "change_pcts": [],
+  "revision_history": [
+    {
+      "draft": "At three o\u2019clock, the shadow stretches  \nlike a question mark in the grass,  \nits tip brushing the edge of the fence  \nwhere the cicadas\u2019 hum fractures  \ninto silence. The air holds  \nthe scent of rain on dry earth,  \na memory the soil hasn\u2019t forgotten.  \n\nYou are the hum of roots beneath the pavement,  \na fossilized echo, still vibrating  \nin the marrow of the season\u2019s last gasp.  \nYour voice, a shard of ice in the throat of summer,  \nmelts only to become the river  \nthat carries the season\u2019s breath away.  \n\nEven when the heat dissolves to dust,  \nyou remain\u2014the quiet pulse  \nwhere the earth remembers how to love.",
+      "critique": "**What\u2019s alive:**  \nThe poem succeeds in grounding the metaphor through specific, sensory details (shadow as a question mark, cicadas\u2019 hum fracturing into silence, scent of rain on dry earth). The lover\u2019s presence is evoked through fossilized echo and root systems, aligning with the angle. The final lines tie the earth\u2019s memory to love, avoiding sentimentality by anchoring it in geological time.  \n\n**Issues:**  \n- **Weak line break** (line 5): The break after \u201cair holds\u201d disrupts the flow of the scent metaphor, which could be more fluid.  \n- **Abstraction** (line 7): \u201cFossilized echo\u201d is vague; the poem needs to clarify how this echo *specifically* relates to the lover\u2019s endurance.  \n- **",
+      "iteration": 0
+    }
+  ],
+  "final_poem": "At three o\u2019clock, the shadow stretches  \nlike a question mark in the grass,  \nits tip brushing the edge of the fence  \nwhere the cicadas\u2019 hum fractures  \ninto silence. The air holds  \nthe scent of rain on dry earth,  \na memory the soil hasn\u2019t forgotten.  \n\nYou are the hum of roots beneath the pavement,  \na fossilized echo, still vibrating  \nin the marrow of the season\u2019s last gasp.  \nYour voice, a shard of ice in the throat of summer,  \nmelts only to become the river  \nthat carries the season\u2019s breath away.  \n\nEven when the heat dissolves to dust,  \nyou remain\u2014the quiet pulse  \nwhere the earth remembers how to love.",
+  "metadata": {
+    "revisions": 1,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "ollama:qwen3:8b",
+    "model_poet": "ollama:qwen3:8b"
+  }
+}

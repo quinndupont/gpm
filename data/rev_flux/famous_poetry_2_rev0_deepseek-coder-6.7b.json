@@ -1,0 +1,24 @@
+{
+  "user_request": "A short poem about a raven that visits a grieving man and repeats one word.",
+  "category": "famous_poetry",
+  "prompt_idx": 2,
+  "max_revisions": 0,
+  "model_id": "deepseek-coder-6.7b",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "Raven's cry, so dearly heard,\nEchoes in darkened night, deep and still.\nBeneath a starlit sky above, softly weeping,\nThe man in grief lost his voice \u2013\n\nIn the silent dusk, on the grey strewn earthly brink,\nA raven with its tale now repeating: \"Deep into the heart of hearts I've seen.\"\n",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "ollama:deepseek-coder:6.7b",
+    "perf_total_sec": 1.73,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

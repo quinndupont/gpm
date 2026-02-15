@@ -1,0 +1,39 @@
+{
+  "user_request": "A poem about stopping by woods on a snowy evening, with promises to keep.",
+  "category": "famous_poetry",
+  "prompt_idx": 3,
+  "max_revisions": 2,
+  "model_id": "qwen3-8b",
+  "revisions_actual": 2,
+  "change_pcts": [
+    52.63157894736842,
+    0.0,
+    53.84615384615385,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    25.806451612903224
+  ],
+  "revision_history": [
+    {
+      "draft": "Beneath the bruise of twilight\u2019s hand,  \nthe river stitches silver thread  \nthrough the quilt of moss.  \nA heron, ghost in motion,  \ncarves the sky\u2019s breath into water\u2014  \neach ripple, a forgotten name.  \nThe world holds its breath,  \na single note humming  \nbetween the stars and the soil.",
+      "critique": "**What's alive:**  \nThe poem thrives on vivid, tactile imagery (\"river stitches silver thread,\" \"heron, ghost in motion\") and a quiet, meditative rhythm. The metaphor of the river as a seamstress and the heron as a \"ghost in motion\" creates a haunting, almost sacred atmosphere. The final image of the world holding its breath between stars and soil evokes a visceral connection to the natural world.  \n\n**What isn't working:**  \n- **Abstraction:** The line \"carves the sky\u2019s breath into water\u2014 / each ripple, a forgotten name\" relies on vague metaphor (\"sky\u2019s breath\") and sentimentalizes the ripple as a \"forgotten name,\" which risks over-romanticizing natural phenomena.  \n- **Clich\u00e9:** \"Beneath the bruise of twilight\u2019s hand\" uses metaphorical language that feels overworked (e.g., \"bruise\" as a metaphor for twilight is common).  \n- **Weak line breaks:** The line \"the river stitches silver thread / through the quilt of moss\" could be split differently to emphasize the contrast between",
+      "iteration": 0
+    },
+    {
+      "draft": "Beneath twilight\u2019s bruised hand,  \nthe river stitches silver thread  \nthrough moss\u2019s quilt.  \nA heron, ghost in motion,  \ncarves the sky\u2019s breath into water\u2014  \neach ripple, a forgotten name.  \nThe world holds its breath,  \na single note humming  \nbetween stars and soil.",
+      "critique": "**What's alive:**  \nThe poem thrives on vivid, tactile imagery (\"river stitches silver thread,\" \"heron, ghost in motion\") and a quiet, meditative rhythm. The metaphor of the river as a seamstress and the her, as a \"ghost in motion\" creates a haunting, almost sacred atmosphere. The final image of the world holding its breath between stars and soil evokes a visceral connection to the natural world.  \n\n**What isn't working:**  \n- **Abstraction:** The line \"carves the sky\u2019s breath into water\u2014 / each ripple, a forgotten name\" relies on vague metaphor",
+      "iteration": 1
+    }
+  ],
+  "final_poem": "Beneath twilight\u2019s veiled hand,  \nthe river weaves silver thread  \nthrough moss\u2019s emerald quilt.  \nA phantom in motion,  \ncarves the sky\u2019s breath into water\u2019s glass\u2014  \neach ripple, a name lost to time.  \nThe world holds its breath\u2014a single note humming  \nbetween stars and soil.",
+  "metadata": {
+    "revisions": 2,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "ollama:qwen3:8b",
+    "model_poet": "ollama:qwen3:8b"
+  }
+}

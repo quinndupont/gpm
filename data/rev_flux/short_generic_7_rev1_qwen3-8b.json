@@ -1,0 +1,24 @@
+{
+  "user_request": "Something about silence.",
+  "category": "short_generic",
+  "prompt_idx": 7,
+  "max_revisions": 1,
+  "model_id": "qwen3-8b",
+  "revisions_actual": 1,
+  "change_pcts": [],
+  "revision_history": [
+    {
+      "draft": "Inside the drum, silence coils like a spring  \nWaiting for the strike that will unspool its breath  \nBetween the strings, a vacuum hums\u2014  \nnot absence, but the weight of a note  \nsuspended in the throat of the instrument  \n\nThe pause in the heartbeat is not a gap\u2014  \nit\u2019s the drum itself, the space  \nwhere the pulse becomes a question  \nA door shuts without sound\u2014  \nthe friction is the silence,  \nthe hinge a held breath  \n\nIn the clock\u2019s tick, silence counts  \nthe seconds it takes for the next  \ntick to become a breath  \nWe are the space between  \nthe strike and the sound,  \nthe breath that holds the drum  \nin its silent, waiting hand",
+      "critique": "",
+      "iteration": 0
+    }
+  ],
+  "final_poem": "Inside the drum, silence coils like a spring,  \nits breath held tight beneath the skin of sound.  \nBetween the strings, a vacuum hums\u2014  \nnot absence, but the weight of a note  \nsuspended in the throat of the instrument.  \n\nThe pause in the heartbeat is not a gap\u2014  \nit\u2019s the drum itself, the space  \nwhere the pulse becomes a question.  \nA door shuts without sound\u2014  \nthe friction is the silence,  \nthe hinge a held breath.  \n\nIn the clock\u2019s tick, silence counts  \nthe seconds it takes for the next  \ntick to become a breath.  \nWe are the space between  \nthe strike and the sound,  \nthe breath that holds the drum  \nin its silent, waiting hand.",
+  "metadata": {
+    "revisions": 1,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "ollama:qwen3:8b",
+    "model_poet": "ollama:qwen3:8b"
+  }
+}

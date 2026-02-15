@@ -1,0 +1,20 @@
+{
+  "user_request": "Write a villanelle about the inevitability of change.",
+  "form": "villanelle",
+  "variant": null,
+  "prompt_idx": 4,
+  "model_id": "deepseek-coder-6.7b",
+  "max_revisions": 0,
+  "final_poem": "In all my tales, a theme shines bright,\nUnderstanding that reality is unfolding and changing \u2014\nFate\u2019s wheel turns, time's clock ticks, and tomorrow we begin.\nChange unfolds its power in the chaos of daylight. \n\nA new chapter begins for all things that live or die, \nAnd every living thing shudders to hear the story unfolded\u2014\nEvery moment it seems so fleeting, yet this change grows strong.\nInnovation grows faster than we could imagine.\n\nFrom the ashes of past lives emerges a new dawn,\nA beacon in the chaos that guides our journey through time \u2014\nWe stand tall on hope's shores where truth and freedom reign,\nAs change inevitably unfolds its unending power.\n",
+  "rhyme_analysis": {
+    "strict_rhyme_density": 0.17,
+    "rhyme_density": 0.5,
+    "matches_form": false,
+    "deviations_count": 9,
+    "strict_rhyme_pairs": 1,
+    "rhyme_pairs": 7,
+    "line_count": 12,
+    "detected_scheme": "ABCA DEFC CBCG",
+    "expected_scheme": "ABA ABA ABA ABA ABA ABAA"
+  }
+}

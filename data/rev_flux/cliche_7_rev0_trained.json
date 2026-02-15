@@ -1,0 +1,24 @@
+{
+  "user_request": "A poem about friendship being a gift that lasts a lifetime.",
+  "category": "cliche",
+  "prompt_idx": 7,
+  "max_revisions": 0,
+  "model_id": "trained",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "# A Gift That Keeps on Giving\n\nYou gave me your friendship when I was young,\na gift wrapped in a simple card board box\u2014\nnot labeled, not dated. I opened it\nand found the kind of paper no one folds.\n\nIt held its shape through all the years.\nI kept it under things that needed\nkeeping: a locket, a letter from somewhere\nI'd since moved past. The crease\nwent deeper with each shifting,\nheld there like a bone in the jaw.\n\nThirty years later I found it\nstacked with t-shirts, below the kettle bell.\nMy hands were shaking\u2014not with age,\nbut with the particular way you touch me:\nwithout looking up, without explanation,\n\njust keeping hold of what I needed. I unfolded it.\nThe crease was still a mouth,\nand through that opening came the wind\nof whatever season we'd both survived.\n\nWe didn't say *forever*. Neither do bees.\nBut your laugh is the frequency I tune to\u2014\nthat particular hum across several octaves,\nstill landing on my name even when I'm\nsaying something no one else could,\n\nwhich is most of it. The gift keeps giving:\nnot the paper, not the crease but the act\nof offering without calendar,\n\nthe way you taught me how to fold things carefully.\nTo keep the creases open. To hold\nwhat we're given in whatever shape\n\nit comes back in\u2014crumpled, wet,\nor carried like a jacket down the stairs,\nstill smelling of the season we earned it from.\n\nThat's what lasts: not the wrapping but the practice.\nNot the gift itself, which anyone could choose,\nbut how I use my hands when I open it\u2014\n\nas if I were the first person ever\nto try. And you're still standing there,\nsmiling like you practiced it,\n\nbecause that's who you are:\nthe kind of friend whose gift keeps arriving\nin whatever package fits the occasion,\n\nfolded carefully, without tape or glue,\njust the crease\u2014deep as a riverbed\u2014in memory.",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "qwen2.5-7b-poet-Q4_K_M",
+    "perf_total_sec": 11.12,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}

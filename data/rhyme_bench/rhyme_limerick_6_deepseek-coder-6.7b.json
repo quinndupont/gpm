@@ -1,0 +1,20 @@
+{
+  "user_request": "Write a limerick about a poet who forgot to rhyme.",
+  "form": "limerick",
+  "variant": null,
+  "prompt_idx": 6,
+  "model_id": "deepseek-coder-6.7b",
+  "max_revisions": 0,
+  "final_poem": "Beware, my son, of poems that don't rhyme,  \nStraining with words, in tune but unsolemnly;   \nA poet who forgot to quaint itself. (Apologies) \u2014 A limerick indeed.\n",
+  "rhyme_analysis": {
+    "strict_rhyme_density": 0.0,
+    "rhyme_density": 0.0,
+    "matches_form": false,
+    "deviations_count": 1,
+    "strict_rhyme_pairs": 0,
+    "rhyme_pairs": 0,
+    "line_count": 3,
+    "detected_scheme": "ABC",
+    "expected_scheme": "AABBA"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "user_request": "Something about silence.",
+  "category": "short_generic",
+  "prompt_idx": 7,
+  "max_revisions": 2,
+  "model_id": "qwen3-8b",
+  "revisions_actual": 2,
+  "change_pcts": [
+    0.0,
+    14.583333333333334,
+    0.0,
+    0.0,
+    0.0,
+    35.294117647058826,
+    0.0,
+    37.142857142857146,
+    0.0,
+    0.0,
+    0.0,
+    85.71428571428571,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "revision_history": [
+    {
+      "draft": "The pause between heartbeats is a line  \nin the geometry of a paused conversation.  \n\nA breath held mid-exhalation,  \na taut thread of air\u2014  \nthe texture of what trembles  \nbefore the next sound.  \n\nThe room\u2019s architecture hums  \nwith the weight of what isn\u2019t said.  \n\nSilence is the space between  \nthe word and its meaning,  \na hollow where the unspoken  \nlives,  \nnot in absence,  \nbut in the architecture  \nof the gap.",
+      "critique": "**What's alive:**  \nThe poem successfully frames silence as spatial and tactile, using geometry, breath, and room acoustics to evoke the \"",
+      "iteration": 0
+    },
+    {
+      "draft": "The pause between heartbeats is a line  \netched in the geometry of a paused conversation.  \n\nA breath held mid-exhalation,  \na taut thread of air\u2014  \nthe texture of what trembles  \nin the hush before the next sound.  \n\nThe room\u2019s architecture hums  \nwith the weight of unsaid words.  \n\nSilence is the space between  \nthe word and its meaning,  \na hollow where the unspoken  \ndwells\u2014  \nnot in absence,  \nbut in the architecture  \nof the gap.",
+      "critique": "",
+      "iteration": 1
+    }
+  ],
+  "final_poem": "The pause between heartbeats is a line  \ncarved in the geometry of a paused conversation.  \n\nA breath held mid-exhalation\u2014  \na taut thread of air,  \nthe texture of a trembling thread  \nin the hush before the next sound.  \n\nThe room\u2019s architecture hums  \nwith the weight of unsaid words.  \n\nSilence is the space between  \nthe word and its meaning,  \na cavity where the unspoken  \ndwells\u2014not in absence,  \nbut in the scaffolding  \nof the gap.",
+  "metadata": {
+    "revisions": 2,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "ollama:qwen3:8b",
+    "model_poet": "ollama:qwen3:8b"
+  }
+}

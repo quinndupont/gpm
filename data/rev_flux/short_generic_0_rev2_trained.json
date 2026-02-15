@@ -1,0 +1,64 @@
+{
+  "user_request": "A poem about rain.",
+  "category": "short_generic",
+  "prompt_idx": 0,
+  "max_revisions": 2,
+  "model_id": "trained",
+  "revisions_actual": 2,
+  "change_pcts": [
+    0.0,
+    0.0,
+    75.0,
+    84.21052631578948,
+    87.5,
+    93.75,
+    90.0,
+    88.88888888888889,
+    78.26086956521739,
+    84.61538461538461,
+    81.81818181818181,
+    86.36363636363636,
+    82.6086956521739,
+    88.0952380952381,
+    79.3103448275862,
+    80.0,
+    77.77777777777777,
+    84.61538461538461,
+    84.21052631578948,
+    76.19047619047619,
+    73.6842105263158,
+    68.18181818181819,
+    76.0,
+    84.0,
+    82.6086956521739,
+    80.0,
+    64.28571428571429,
+    80.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0,
+    100.0
+  ],
+  "revision_history": [
+    {
+      "draft": "## Front Seat\n\nRain\u2014\n    pressed glass\n        distorts everything\n\nEngine tick\n    back seat breath\n        HVAC hum\n\nPhone glow\n    lip sync blurs\n        1080p sobriety\n\nFingers on the wheel\n    adjusting\n        something no one checks\n\nWindow fog\n    my exhale   my wipe   my view\n            gone as soon as made\n\nDrip from the visor light\n    highlights nothing\n        I memorize the dash\n\nTurn signal clicks\n    every lane a choice\n        nobody sees me slowing\n\nWipers     wipers\n    redraw the same landscape\n        each sweep new evidence\n\nI lean in closer to the screen\n    the world outside\n        just wet paint",
+      "critique": "## Workshop Response\n\n### 1. What's Alive\n\nThe poem has genuine momentum in its second half, where the repetition of \"Wipers / wipers\" earns its place \u2014 it enacts the act of watching over and over without changing anything. The closing image (line 26) lands because \"wet paint\" does real work: it makes the world look temporary, provisional, freshly made.\n\nThe line \"I memorize the dash\" is precise and quiet; it stays inside the body's knowledge rather than explaining itself.\n\nThe structural move \u2014 starting with external observation then pulling inward toward emotional awareness \u2014 has logic and pacing.\n\n### 2. What Isn't Working\n\n**Clich\u00e9: \"pressed glass / distorts everything.\"** This is a stock optical trick, not discovered perception. It reads as if chosen from a list of rainy-car images. Direction: make the distortion specific to this car or this weather. What does one thing look bent? A license plate? A hair?\n\n**Line: \"lip sync blurs / 1080p sobriety.\"** This is the poem's most cluttered line \u2014 four elements in a row, none of them landing cleanly. \"Sobriety\" doesn't belong here; it's the one word that reaches for meaning above what the image can carry. Direction: cut or replace. What does the screen actually do when rain hits glass? The blurring is happening to *something*, but we don't see what.\n\n**Line: \"Fingers on the wheel / adjusting / something no one checks.\"** This gesture (fidgeting with climate controls) risks being generic lonely-car-adjacency-filler. What does \"no one checks\" mean in this scene? The driver is alone, yes \u2014 but that's given rather than earned. Direction: find a detail inside the adjustment itself that suggests something. Is it temperature? Is it moisture on skin meeting plastic?\n\n**Line: \"my exhale   my wipe   my view / gone as soon as made.\"** This works well rhythmically and imagistically, but \"gone as soon as made\" is doing too much \u2014 it gestures toward meaning without committing. The poem already knows this moment; the line restates rather than advances. Direction: let the image do its own work. If wiping fog from glass is the thing, stay there.\n\n**Repetition: \"Wipers / wipers.\"** This repetition earns its weight because it's isolated and rhythmic. But \"Wipers     wipers\" \u2014 the whitespace before and after flattens it into a caption, which weakens",
+      "iteration": 0
+    },
+    {
+      "draft": "## Front Seat\n\nRain\u2014\n    smeared license, backwards A\n\nEngine tick\n    back seat breath\n        HVAC's cool lint\n\nPhone glow\n    filter face    blurred name\n            pixel fog the dashboard\n\nLeft thumb dials the vents\n    clockwise tilt   counterclockwise\n        heat seeps the leather\n\nWindow fog\n    my exhale a ghost   my wipe   nothing left\n                except the dark\n\nWipers     wipers\n    redrawn each sweep   same wet margin\n\nI press the screen's sleep button twice\n    the world outside\n        turns blue then holds\n\nTurn signal clicks\n    every lane a line\n        I slow for the white line\n\nWipers     wipers\n    redraw the grey again\n        each pass new blind spot\n\nThe wiper blade catches rain\n    leaves a ribbon   lets it fill\n            the glass keeps moving\n\nI lean in closer to the sleep-\n    the world outside\n        is just wet paint\n---\nThis version cuts the abstract and replaces it with specific, sensory detail\u2014distorted license plate, filter face, cool lint. The repeated \"wipers\" lines now carry weight through silence before the final reveal: the glass keeps moving while everything inside stops observing it.",
+      "critique": "## Revision Workshop Response\n\n---\n\n### 1. What's Alive\n\nThe closing image \u2014 \"the world outside / just wet paint\" \u2014 is the poem's strongest moment. It's concrete, surprising, and earns its weight through accumulation of detail above it.\n\n\"Wipers / wipers\" in lines 20\u201323 works because repetition here enacts the futility it describes: the action repeats but nothing changes. The sound of the word scraping against silence is almost visible on the page.\n\nThe dashcam quality angle (distorted license plate, water on glass) is being genuinely developed and that's where the poem finds its shape.\n\n### 2. What Isn't Working\n\n**Line: \"Rain\u2014 / pressed glass\"**\n*Issue:* The em-dash opening creates a dramatic pause that undermines the urgency of what follows. \"Pressed glass\" is too generic \u2014 it reads like a stock rainy-car line.\n*Direction:* Cut the em-dash entirely, or replace with something that establishes this car's specific relationship to rain (wiper blade pattern on a particular make of windshield).\n\n**Line: \"Engine tick / back seat breath / HVAC hum\"**\n*Issue:* Three sounds in a row without tension between them. Each is plain sensory data \u2014 no friction, no hierarchy.\n*Direction:* Rank these by volume or importance at the moment. One should rise above the others; right now they're equal.\n\n**Line: \"Phone glow / lip sync blurs / 1080p sobriety\"**\n*Issue:* Three unrelated pieces of a single image crammed together \u2014 screen, face, self-awareness. None land because they're all doing different things simultaneously.\n*Direction:* Choose one: the distorted reflection, or the quality of the display, or the act of watching oneself. The \"1080p sobriety\" is the worst offender \u2014 it reaches for meaning above what the image can carry.\n\n**Line: \"Fingers on the wheel / adjusting / something no one checks\"**\n*Issue:* \"Something no one checks\" explains rather than shows. The reader has to be told this gesture matters.\n*Direction:* Show what's adjusted, or cut the explanation entirely and let the action stand alone.\n\n**Line: \"Window fog / my exhale   my wipe   my view / gone as soon as made\"**\n*Issue:* \"Gone as soon as made\" is doing too much \u2014 it summarizes the whole moment rather than letting the image do its work.\n*Direction:* Remove the abstraction. Stay with the wiping and what happens.\n\n**Line: \"Drip from the visor light / highlights nothing\"**\n*Issue:* Abstract claim about a specific visual detail \u2014 no concrete image to back it up.\n*Direction:* If this is meant to be the rain on glass, render that instead of commenting on it.\n\n**Line: \"Turn signal clicks / every lane a choice / nobody sees me slowing\"",
+      "iteration": 1
+    }
+  ],
+  "final_poem": "## Front Seat\n\nRain\u2014\n    smeared dash, backwards A\n\nEngine tick\n    back seat breath\n        HVAC's cool lint\n\nPhone glow\n    filter face    blurred name\n            pixel fog the steering wheel\n\nLeft thumb dials the vents\n    clockwise tilt   counterclockwise\n        heat seeps the leather\n\nWindow fog\n    my exhale a ghost   my wipe   nothing left\n                except the dark\n\nWipers     wipers\n    redrawn each sweep   same wet margin\n\nI press the screen's sleep button twice\n    the world outside\n        turns blue then holds\n\nTurn signal clicks\n    every lane a line\n        I slow for the white line\n\nWipers     wipers\n    redraw the grey again\n        each pass new blind spot\n\nThe wiper blade catches rain\n    leaves a ribbon   lets it fill\n            the glass keeps moving\n\nI lean in closer to the sleep-\n    the world outside\n        is just wet paint",
+  "metadata": {
+    "revisions": 2,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "qwen2.5-7b-educator-Q4_K_M",
+    "model_poet": "qwen2.5-7b-poet-Q4_K_M"
+  }
+}

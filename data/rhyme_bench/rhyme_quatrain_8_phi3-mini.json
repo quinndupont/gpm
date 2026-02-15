@@ -1,0 +1,20 @@
+{
+  "user_request": "Write a quatrain (ABAB) about the first day of spring.",
+  "form": "quatrain",
+  "variant": null,
+  "prompt_idx": 8,
+  "model_id": "phi3-mini",
+  "max_revisions": 0,
+  "final_poem": "Amidst winter' end, whispers dance in air with grace (A)  \nThe bloom of life begins as nature\u2019s touch embraces Spring time face to face; (B)   \nCrocus petals open softly beneath the thawing earth,(A) [introducing imagery associated directly related information]    \nAs ice surrenders, and green buddies from winter' s death give birth.   [(Repeating first day of spring concept through contrast)]  (B",
+  "rhyme_analysis": {
+    "strict_rhyme_density": 0.5,
+    "rhyme_density": 0.0,
+    "matches_form": false,
+    "deviations_count": 1,
+    "strict_rhyme_pairs": 1,
+    "rhyme_pairs": 0,
+    "line_count": 4,
+    "detected_scheme": "ABCB",
+    "expected_scheme": "ABAB"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "user_request": "Write three rhyming couplets about a broken promise.",
+  "form": "couplets",
+  "variant": null,
+  "prompt_idx": 10,
+  "model_id": "trained",
+  "max_revisions": 0,
+  "final_poem": "The garden fence you vowed to build before November\nGrew narrower in your hands, kept shrinking, grew snow-white and hollow.\nCome spring I'll show you mine\u2014my bramble thicket, my thorn,\nAnd yours is still posts. The promise crumbled like chalk on the floor.",
+  "rhyme_analysis": {
+    "strict_rhyme_density": 0.0,
+    "rhyme_density": 0.0,
+    "matches_form": false,
+    "deviations_count": 2,
+    "strict_rhyme_pairs": 0,
+    "rhyme_pairs": 0,
+    "line_count": 4,
+    "detected_scheme": "ABCD",
+    "expected_scheme": "AA BB CC DD"
+  }
+}

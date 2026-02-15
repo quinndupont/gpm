@@ -1,0 +1,24 @@
+{
+  "user_request": "A romantic poem about two hearts beating as one.",
+  "category": "cliche",
+  "prompt_idx": 2,
+  "max_revisions": 0,
+  "model_id": "llama3.1-8b",
+  "revisions_actual": 0,
+  "change_pcts": [],
+  "per_round_changes": [],
+  "revised_lines_per_round": [],
+  "lines_changed_per_round": [],
+  "revision_history": [],
+  "final_poem": "Two pulses merged in love's sweet fire,\nA symphony of heartbeats, never to tire.\nIn syncopated rhythm, they dance and play,\nEchoing each other, night and day.\n\nTheir beats entwined like vines on a trellis high,\nIn perfect harmony, they touch the sky.\nWithin this rhythm, their love will forever be,\nA duet of hearts that beat as one, wild and free.",
+  "metadata": {
+    "revisions": 0,
+    "approved": false,
+    "approved_at_round": null,
+    "model_educator": "N/A (poet only)",
+    "model_poet": "ollama:llama3.1:8b",
+    "perf_total_sec": 2.17,
+    "perf_first_token_ms": null,
+    "perf_avg_token_ms": null
+  }
+}
