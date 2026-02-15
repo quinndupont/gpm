@@ -15,9 +15,10 @@ fi
 # Harness visualizations
 $RUN_PY scripts/benchmarks/rev_flux/visualize_harness.py "$DATA" -o "$OUT"
 
-# Per-run histogram + bars (revised lines only)
+# Per-run histogram + bars (revised lines only; skip rev0 = no revision data)
 for f in "$DATA"/*_rev*.json; do
   [[ -f "$f" ]] || continue
+  [[ "$f" == *"_rev0_"* ]] && continue
   base=$(basename "$f" .json)
   $RUN_PY scripts/benchmarks/rev_flux/visualize.py "$f" -o "$OUT/${base}_hist.png" --title "RevFlux: $base"
   $RUN_PY scripts/benchmarks/rev_flux/visualize.py "$f" -o "$OUT/${base}_bars.png" --bars --title "RevFlux: $base"

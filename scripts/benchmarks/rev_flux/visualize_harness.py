@@ -41,7 +41,7 @@ def plot_stanza_map(
     out_path: Path,
     title: str = "RevFlux: Stanza Structure Map",
 ) -> None:
-    """2D blocks: each stanza colored by mean change %."""
+    """2D blocks: each stanza colored by mean change %. Stanza = lines separated by blank lines."""
     from scripts.benchmarks.rev_flux.line_change import stanza_change_map
 
     plt, mcolors = _ensure_matplotlib()
@@ -63,10 +63,11 @@ def plot_stanza_map(
     ax.set_ylim(-0.05, y + 0.1)
     ax.axis("off")
     ax.set_title(title)
+    fig.text(0.5, -0.02, "Stanza = lines separated by blank lines. Color = mean % change (prev→final draft).", ha="center", fontsize=9, transform=fig.transFigure)
     sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
     sm.set_array([])
     plt.colorbar(sm, ax=ax, label="Mean change (%)")
-    fig.tight_layout()
+    fig.tight_layout(rect=[0, 0.04, 1, 1])
     fig.savefig(out_path, dpi=150)
     plt.close()
 
@@ -117,9 +118,12 @@ def plot_category_comparison(
         by_cat.setdefault(cat, []).extend(pcts)
     if not by_cat:
         return
-    fig, ax = plt.subplots(figsize=(8, 5))
-    cats = list(by_cat)
+    # Explicit order so all categories appear
+    cat_order = ["famous_poetry", "short_generic", "cliche"]
+    cats = [c for c in cat_order if c in by_cat]
+    cats.extend([c for c in sorted(by_cat) if c not in cats])
     data = [by_cat[c] for c in cats]
+    fig, ax = plt.subplots(figsize=(8, 5))
     bp = ax.boxplot(data, tick_labels=cats, patch_artist=True)
     for patch in bp["boxes"]:
         patch.set_facecolor("steelblue")
@@ -135,28 +139,34 @@ def plot_category_comparison(
 def plot_revision_length_comparison(
     runs: list[dict],
     out_path: Path,
-    title: str = "RevFlux: Change by Max Revision Length",
+    title: str = "RevFlux: Change by Model and Revision Length",
 ) -> None:
-    """Box plot: change_pcts by max_revisions. Only runs with revision data."""
+    """Grouped box plot: change_pcts by (model, max_revisions). Captures multiple models and revision process."""
     plt = _ensure_matplotlib()[0]
-    by_rev: dict[int, list[float]] = {}
+    by_key: dict[tuple[str, int], list[float]] = {}
     for r in runs:
         pcts = r.get("change_pcts", [])
         if not pcts:
             continue
         rev = r.get("max_revisions", 0)
-        by_rev.setdefault(rev, []).extend(pcts)
-    if not by_rev:
+        if rev == 0:
+            continue
+        mid = r.get("model_id") or r.get("metadata", {}).get("model_poet", "unknown")
+        by_key.setdefault((mid, rev), []).extend(pcts)
+    if not by_key:
         return
-    fig, ax = plt.subplots(figsize=(8, 5))
-    revs = sorted(by_rev)
-    data = [by_rev[r] for r in revs]
-    labels = [str(r) for r in revs]
+    # Build grouped layout: x = (model, rev) combos, sorted by model then rev
+    keys = sorted(by_key, key=lambda k: (k[0], k[1]))
+    data = [by_key[k] for k in keys]
+    labels = [f"{m}\nrev{k}" for m, k in keys]
+    fig, ax = plt.subplots(figsize=(max(10, len(keys) * 1.2), 5))
     bp = ax.boxplot(data, tick_labels=labels, patch_artist=True)
-    for patch in bp["boxes"]:
-        patch.set_facecolor("coral")
-        patch.set_alpha(0.7)
-    ax.set_xlabel("Max revisions")
+    colors = plt.cm.Set3.colors
+    for i, patch in enumerate(bp["boxes"]):
+        patch.set_facecolor(colors[i % len(colors)])
+        patch.set_alpha(0.8)
+    plt.setp(ax.get_xticklabels(), rotation=20, ha="right", fontsize=8)
+    ax.set_xlabel("Model (rev = max revision cycles)")
     ax.set_ylabel("Line change (%)")
     ax.set_title(title)
     ax.set_ylim(0, 100)
@@ -282,15 +292,23 @@ def main():
     plot_model_comparison(runs, out_dir / "model_comparison.png")
     plot_approval_timing(runs, out_dir / "approval_timing.png")
 
-    # Per-run stanza + stability for first few
-    for r in runs[:5]:
+    # Per-run stanza + stability: one per (category, rev) for rev in [1, 3]
+    seen: set[tuple[str, int]] = set()
+    for r in runs:
         hist = r.get("revision_history", [])
-        if hist:
-            cat = r.get("category", "unknown")
-            idx = r.get("prompt_idx", 0)
-            rev = r.get("max_revisions", 0)
-            plot_stanza_map(hist, out_dir / f"stanza_{cat}_{idx}_rev{rev}.png")
-            plot_line_stability(hist, out_dir / f"stability_{cat}_{idx}_rev{rev}.png")
+        if not hist:
+            continue
+        cat = r.get("category", "unknown")
+        idx = r.get("prompt_idx", 0)
+        rev = r.get("max_revisions", 0)
+        if rev not in (1, 3):
+            continue
+        key = (cat, rev)
+        if key in seen:
+            continue
+        seen.add(key)
+        plot_stanza_map(hist, out_dir / f"stanza_{cat}_{idx}_rev{rev}.png")
+        plot_line_stability(hist, out_dir / f"stability_{cat}_{idx}_rev{rev}.png")
 
     print(f"Plots saved to {out_dir}")
 

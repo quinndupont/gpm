@@ -75,10 +75,10 @@ python scripts/benchmarks/rev_flux/visualize.py data/rev_flux/summary.json -o ag
 
 | Plot | Description |
 |------|-------------|
-| **Stanza structure map** | 2D blocks per stanza, colored by mean line change % |
+| **Stanza structure map** | 2D blocks per stanza, colored by mean line change %. Stanza = lines separated by blank lines. |
 | **Line stability index** | Bar chart: rounds each line stayed unchanged |
 | **Per-category comparison** | Box plot of change % by prompt category |
-| **Revision-length comparison** | Box plot of change % by max revisions |
+| **Revision-length comparison** | Grouped box plot: change % by (model, revision length). Captures multiple models and revision process. |
 | **Approval timing** | Distribution of which round educator approved (or max reached) |
 | **Model comparison** | Box plot of change % by model (trained vs vanilla Ollama) |
 
@@ -86,6 +86,8 @@ python scripts/benchmarks/rev_flux/visualize.py data/rev_flux/summary.json -o ag
 python scripts/benchmarks/rev_flux/visualize_harness.py data/rev_flux -o data/rev_flux/plots
 # Single run: stanza + stability only
 python scripts/benchmarks/rev_flux/visualize_harness.py --single data/rev_flux/famous_poetry_0_rev3_trained.json -o data/rev_flux/plots
+
+Stanza/stability plots are generated for one run per (category, rev) with rev in {1, 3}: famous_poetry, short_generic, cliche each get rev1 and rev3.
 ```
 
 ### Batch visualize
