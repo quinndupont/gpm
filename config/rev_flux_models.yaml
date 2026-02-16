@@ -6,27 +6,12 @@ models:
     educator: gguf
     poet: gguf
 
-  - id: qwen2.5-7b
-    label: "Vanilla qwen2.5:7b-instruct"
-    educator: ollama:qwen2.5:7b-instruct
-    poet: ollama:qwen2.5:7b-instruct
-
   - id: qwen3-8b
     label: "Vanilla qwen3:8b"
     educator: ollama:qwen3:8b
     poet: ollama:qwen3:8b
 
-  - id: phi3-mini
-    label: "Vanilla phi3:mini"
-    educator: ollama:phi3:mini
-    poet: ollama:phi3:mini
-
   - id: llama3.1-8b
     label: "Vanilla llama3.1:8b"
     educator: ollama:llama3.1:8b
     poet: ollama:llama3.1:8b
-
-  - id: llama3.2-3b
-    label: "Vanilla llama3.2:3b"
-    educator: ollama:llama3.2:3b
-    poet: ollama:llama3.2:3b
