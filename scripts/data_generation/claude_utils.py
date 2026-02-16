@@ -112,7 +112,7 @@ def load_requests(source: Path) -> list[str]:
 def _load_quota_config():
     cfg_path = ROOT / "config" / "data_generation.yaml"
     if not cfg_path.exists():
-        return {"opus_max": 50, "sonnet_max": 400}, {"backend": "ollama", "model": "qwen2.5:7b-instruct"}
+        return {"opus_max": 50, "sonnet_max": 150}, {"backend": "ollama", "model": "qwen2.5:7b-instruct"}
     import yaml
     data = yaml.safe_load(cfg_path.read_text()) or {}
     quotas = data.get("quotas", {})

@@ -62,6 +62,8 @@ class SwappingPipeline(PoetryPipeline):
             "critique": {"temperature": 0.3, "max_tokens": 600},
             "revision_brief": {"temperature": 0.4, "max_tokens": 600},
             "final_note": {"temperature": 0.3, "max_tokens": 400},
+            "summarize": {"temperature": 0.2, "max_tokens": 300},
+            "poet_instructions": {"temperature": 0.2, "max_tokens": 250},
         }[task]
         r = self.active_model.create_chat_completion(
             messages=[

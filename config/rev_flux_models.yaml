@@ -21,11 +21,6 @@ models:
     educator: ollama:phi3:mini
     poet: ollama:phi3:mini
 
-  - id: deepseek-coder-6.7b
-    label: "Vanilla deepseek-coder:6.7b"
-    educator: ollama:deepseek-coder:6.7b
-    poet: ollama:deepseek-coder:6.7b
-
   - id: llama3.1-8b
     label: "Vanilla llama3.1:8b"
     educator: ollama:llama3.1:8b

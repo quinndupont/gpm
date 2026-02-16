@@ -13,7 +13,7 @@ sys.path.insert(0, str(ROOT))
 from scripts.data_generation.claude_utils import (
     call_claude,
     get_educator_system_prompt,
-    CLAUDE_OPUS_4_6,
+    CLAUDE_SONNET_4_5,
     poem_text,
 )
 
@@ -69,7 +69,7 @@ def main():
             print(f"[{i + 1}/{len(entries)}] Revision brief...", flush=True)
             user_msg = REVISION_BRIEF_PROMPT.format(poem_text=text, critique=critique)
             try:
-                brief = call_claude(user_msg, system, model=CLAUDE_OPUS_4_6, max_tokens=500, force_anthropic=True)
+                brief = call_claude(user_msg, system, model=CLAUDE_SONNET_4_5, max_tokens=500)
             except Exception as err:
                 print(f"  Error: {err}", file=sys.stderr)
                 brief = ""

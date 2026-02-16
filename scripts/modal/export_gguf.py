@@ -74,6 +74,18 @@ def export_poet():
     return _export("poet", "/vol/checkpoints/poet/final")
 
 
+@app.function(
+    image=image,
+    gpu="A10G",
+    timeout=2 * 3600,
+    volumes={"/vol/checkpoints": checkpoint_vol, "/vol/gguf": gguf_vol},
+    secrets=[modal.Secret.from_name("huggingface-secret")],
+)
+def export_poet_rhyme():
+    """Merge rhyme poet LoRA and export to GGUF Q4_K_M."""
+    return _export("poet_rhyme", "/vol/checkpoints/poet_rhyme/final", out_name="poet_rhyme")
+
+
 # Map HuggingFace IDs to short names for output filenames
 _HF_TO_SHORT: dict[str, str] = {
     "Qwen/Qwen2.5-7B-Instruct": "qwen2.5-7b",
@@ -175,7 +187,9 @@ def _export(model_name: str, checkpoint_path: str, out_name: str | None = None) 
 if __name__ == "__main__":
     import sys
     with app.run():
-        if "poet" in sys.argv:
+        if "poet_rhyme" in sys.argv or "rhyme" in sys.argv:
+            p = export_poet_rhyme.remote()
+        elif "poet" in sys.argv:
             p = export_poet.remote()
         elif "interim" in sys.argv:
             p = export_educator_interim.remote()

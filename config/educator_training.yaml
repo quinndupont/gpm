@@ -1,7 +1,7 @@
 # Educator Model Training — S3.2
-# Modal QLoRA fine-tune, Qwen 2.5 7B base
+# Modal QLoRA fine-tune, Llama 3.1 8B base
 
-base_model: "Qwen/Qwen2.5-7B-Instruct"
+base_model: "meta-llama/Llama-3.1-8B-Instruct"
 model_loading:
   quantization: "nf4"
   compute_dtype: "bfloat16"

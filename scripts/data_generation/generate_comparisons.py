@@ -13,7 +13,7 @@ sys.path.insert(0, str(ROOT))
 from scripts.data_generation.claude_utils import (
     call_claude,
     get_educator_system_prompt,
-    CLAUDE_OPUS_4_6,
+    CLAUDE_SONNET_4_5,
     load_poems,
     poem_text,
     RAW_GOOD,
@@ -69,7 +69,7 @@ def main():
             print(f"[{i + 1}/{len(pairs)}] Comparison...", flush=True)
             user_msg = COMPARISON_PROMPT.format(poem_a=text_a, poem_b=text_b)
             try:
-                comparison = call_claude(user_msg, system, model=CLAUDE_OPUS_4_6, max_tokens=600, force_anthropic=True)
+                comparison = call_claude(user_msg, system, model=CLAUDE_SONNET_4_5, max_tokens=600)
             except Exception as e:
                 print(f"  Error: {e}", file=sys.stderr)
                 comparison = ""

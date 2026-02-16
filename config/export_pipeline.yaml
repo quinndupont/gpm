@@ -1,7 +1,7 @@
 # Model Export Pipeline — S3.4
 # Merge LoRA → GGUF (Q4_K_M)
 
-base_model: "Qwen/Qwen2.5-7B-Instruct"
+base_model: "meta-llama/Llama-3.1-8B-Instruct"
 
 merge:
   load_precision: "bfloat16"

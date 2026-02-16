@@ -10,7 +10,7 @@ EDUCATOR_TRAINING = ROOT / "data" / "educator_training"
 POET_TRAINING = ROOT / "data" / "poet_training"
 
 sys.path.insert(0, str(ROOT))
-from scripts.data_generation.claude_utils import call_claude, CLAUDE_OPUS_4_6
+from scripts.data_generation.claude_utils import call_claude, CLAUDE_SONNET_4_5
 
 POET_SYSTEM = """You are a poet. You receive generation briefs and write poems.
 You never output instructions, critique, or analysis — only poems."""
@@ -40,7 +40,7 @@ def main():
     parser.add_argument("--limit", type=int, default=0)
     parser.add_argument("--output", type=Path, default=POET_TRAINING / "pairs.jsonl")
     parser.add_argument("--replace", action="store_true", help="Overwrite output file (default: append)")
-    parser.add_argument("--model", type=str, default=CLAUDE_OPUS_4_6)
+    parser.add_argument("--model", type=str, default=CLAUDE_SONNET_4_5)
     args = parser.parse_args()
 
     entries = []
@@ -67,7 +67,7 @@ def main():
             print(f"[{i + 1}/{len(entries)}] Poem from brief...", flush=True)
             user_msg = POET_PROMPT.format(brief=brief)
             try:
-                poem = call_claude(user_msg, POET_SYSTEM, model=args.model, max_tokens=1024, force_anthropic=True)
+                poem = call_claude(user_msg, POET_SYSTEM, model=args.model, max_tokens=1024)
             except Exception as err:
                 print(f"  Error: {err}", file=sys.stderr)
                 poem = ""

@@ -2,9 +2,10 @@
 # Hard tasks: critiques, comparisons, revision_briefs (Opus)
 # Easier: briefs, autopsies, lessons (Sonnet or local)
 
+# Opus: 50 total, only hardest (rhyme poem generation). Sonnet: 150. Beyond that → local.
 quotas:
   opus_max: 50
-  sonnet_max: 400
+  sonnet_max: 150
 
 local:
   backend: ollama

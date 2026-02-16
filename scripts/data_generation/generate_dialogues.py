@@ -13,7 +13,6 @@ sys.path.insert(0, str(ROOT))
 from scripts.data_generation.claude_utils import (
     call_claude,
     get_educator_system_prompt,
-    CLAUDE_OPUS_4_6,
     CLAUDE_SONNET_4_5,
     poem_text,
 )
@@ -61,7 +60,7 @@ def main():
     parser.add_argument("--limit", type=int, default=0, help="Max dialogues (0 = all)")
     parser.add_argument("--output", type=Path, default=EDUCATOR_TRAINING / "dialogues.jsonl")
     parser.add_argument("--replace", action="store_true", help="Overwrite output file (default: append)")
-    parser.add_argument("--model", type=str, default=CLAUDE_OPUS_4_6)
+    parser.add_argument("--model", type=str, default=CLAUDE_SONNET_4_5)
     args = parser.parse_args()
 
     if not args.critiques.exists():
@@ -93,7 +92,6 @@ def main():
                     system_message="You are a student poet. Output only the revised poem.",
                     model=CLAUDE_SONNET_4_5,
                     max_tokens=600,
-                    force_anthropic=True,
                 )
             except Exception as err:
                 print(f"  Error: {err}", file=sys.stderr)
@@ -111,7 +109,6 @@ def main():
                     system_message=system_educator,
                     model=args.model,
                     max_tokens=500,
-                    force_anthropic=True,
                 )
             except Exception as err:
                 print(f"  Error: {err}", file=sys.stderr)

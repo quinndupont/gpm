@@ -142,7 +142,18 @@ class PoetryPipeline:
     def _build_poet_prompt(self, brief: str) -> str:
         if len(brief) > BRIEF_CAP:
             brief = brief[:BRIEF_CAP].rsplit("\n", 1)[0] + "\n\n[truncated]"
-        return brief + "\n\nOutput ONLY the poem. Do not repeat the brief. Do not add commentary."
+        # If brief specifies a rhyming form, add explicit scheme reminder
+        detected = detect_form(brief)
+        scheme_reminder = ""
+        if detected and is_rhyming_form(detected):
+            scheme = get_scheme(detected)
+            if scheme:
+                scheme_reminder = (
+                    f"\n\nIMPORTANT: This poem must follow the {detected} rhyme scheme: {scheme}. "
+                    "Every end-word pair must be a true phonetic rhyme. "
+                    "Plan your end-words before writing each line."
+                )
+        return brief + scheme_reminder + "\n\nOutput ONLY the poem. Do not repeat the brief. Do not add commentary."
 
     def _build_poet_revision_instructions(
         self,
@@ -185,6 +196,7 @@ class PoetryPipeline:
         user_input: str = "",
         verbose: bool = False,
         past_summary: str = None,
+        brief: str = "",
     ) -> str:
         """Build poet revision prompt. Uses educator to summarize context so we never truncate."""
         if verbose:
@@ -195,9 +207,26 @@ class PoetryPipeline:
         user_ctx = ""
         if user_input.strip():
             user_ctx = f"\n\nPoet's additional direction:\n---\n{user_input.strip()}\n---\n\n"
+
+        # Inject deterministic rhyme deviations so poet knows exactly what to fix
+        rhyme_ctx = ""
+        rhyme = self._rhyme_gate(draft, brief)
+        if rhyme and rhyme.get("deviations"):
+            dev_lines = []
+            for d in rhyme["deviations"]:
+                dev_lines.append(
+                    f'- Line {d["line"]}: "{d["word"]}" does not rhyme with '
+                    f'"{d["expected_rhyme_with"]}" (needs {d["expected_label"]} rhyme)'
+                )
+            rhyme_ctx = (
+                "\n\nRhyme errors (fix these end-words):\n"
+                + "\n".join(dev_lines) + "\n"
+            )
+
         return (
             f"Previous draft:\n---\n{draft}\n---\n\n"
             f"Revision instructions:\n---\n{instructions}\n---\n"
+            f"{rhyme_ctx}"
             f"{user_ctx}"
             "Make ONLY the changes specified above. Preserve all other lines exactly. "
             "Revise the poem according to the instructions. Output ONLY the revised poem."
@@ -253,10 +282,22 @@ class PoetryPipeline:
         )
         return self._educator_generate(prompt, task="summarize")
 
-    def _educator_approves(self, critique: str) -> bool:
+    def _rhyme_gate(self, draft: str, brief: str) -> dict | None:
+        """Run deterministic rhyme analysis if the brief specifies a rhyming form.
+
+        Returns the analysis dict if the form requires rhyming, None otherwise.
         """
-        Detect conclusive approval. The educator must end with an approval phrase —
-        not use it mid-critique for partial progress (e.g. "found its shape from line 25 onward").
+        detected = detect_form(brief)
+        if not detected or not is_rhyming_form(detected):
+            return None
+        return analyze_rhyme(draft, expected_form=detected)
+
+    def _educator_approves(self, critique: str, draft: str = "", brief: str = "") -> bool:
+        """
+        Detect conclusive approval. Two conditions must be met:
+        1. The educator must end with an approval phrase (not mid-critique).
+        2. If the form requires rhyming, the deterministic rhyme analysis must
+           confirm the form matches (no unresolved deviations).
         """
         c = critique.lower().strip()
         closing = c[-250:] if len(c) > 250 else c
@@ -267,7 +308,18 @@ class PoetryPipeline:
             r"this poem is done\.\s*$",
             r"nothing left to cut\.\s*$",
         ]
-        return any(re.search(p, closing) for p in patterns)
+        text_approved = any(re.search(p, closing) for p in patterns)
+        if not text_approved:
+            return False
+
+        # Deterministic rhyme gate: override educator if form doesn't match
+        rhyme = self._rhyme_gate(draft, brief)
+        if rhyme is not None:
+            if rhyme.get("matches_form") is False:
+                return False
+            if rhyme.get("strict_rhyme_density", 0) < 0.5:
+                return False
+        return True
 
     def _build_brief_prompt(self, user_request: str) -> str:
         style_ctx = ""
@@ -318,8 +370,11 @@ class PoetryPipeline:
             f"{history_ctx}"
             f"{form_ctx}"
             "Give your workshop response. Start with what's alive. Then what isn't working — name the failure type. Offer direction.\n\n"
-            "When the poem is truly complete (no further revision needed), end with exactly: 'This poem has found its shape.' "
-            "Do not use this phrase for partial progress (e.g. 'found its shape from line 25 onward' is not approval)."
+            "APPROVAL RULES:\n"
+            "- When the poem is truly complete (no further revision needed), you MUST end your response with exactly this sentence: 'This poem has found its shape.'\n"
+            "- If the form requires rhyming and the rhyme analysis shows deviations or broken rhymes, do NOT approve. Name the specific end-words that fail.\n"
+            "- Do NOT use the approval phrase for partial progress (e.g. 'found its shape from line 25 onward' is not approval).\n"
+            "- The approval phrase must be the final sentence of your response, with no text after it.\n"
         )
 
     def _build_revision_brief_prompt(
@@ -432,7 +487,7 @@ class PoetryPipeline:
             revision_history.append({"draft": draft, "critique": critique, "iteration": i})
             out("EDUCATOR", f"Critique (revision {i + 1}) → Poet", critique)
 
-            if self._educator_approves(critique):
+            if self._educator_approves(critique, draft=draft, brief=brief):
                 approved_at_round = len(revision_history)  # 1-indexed
                 if verbose:
                     print("\n  ✓ Educator approved — poem complete.\n", flush=True)
@@ -461,7 +516,8 @@ class PoetryPipeline:
             if verbose:
                 print(f"→ Poet: generating revision {i + 1}...", flush=True)
             revision_prompt = self._build_poet_revision_prompt(
-                draft, critique, revision_brief, prev_history, user_input, verbose, past_summary
+                draft, critique, revision_brief, prev_history, user_input, verbose, past_summary,
+                brief=brief,
             )
             draft = self._poet_generate(revision_prompt, is_revision=True)
             out("POET", f"Revision {i + 1} draft → Educator", draft)

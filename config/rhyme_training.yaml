@@ -1,7 +1,7 @@
 # Rhyme-focused poet training — Modal QLoRA
-# 80% strong_rhyme_poems + 20% general (anti-collapse)
+# Claude rhyme_pairs + general (anti-collapse)
 
-base_model: "Qwen/Qwen2.5-7B-Instruct"
+base_model: "meta-llama/Llama-3.1-8B-Instruct"
 model_loading:
   quantization: "nf4"
   compute_dtype: "bfloat16"

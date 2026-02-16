@@ -174,8 +174,7 @@ def main():
             poem_msg = POET_PROMPT.format(brief=brief)
             try:
                 poem = call_claude(poem_msg, POET_SYSTEM,
-                                   model=args.poem_model, max_tokens=1024,
-                                   force_anthropic=True)
+                                   model=args.poem_model, max_tokens=1024)
             except Exception as e:
                 print(f"  {label} Poem error: {e}", file=sys.stderr)
                 continue

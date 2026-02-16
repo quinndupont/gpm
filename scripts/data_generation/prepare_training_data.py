@@ -158,6 +158,17 @@ def collect_educator_examples(system: str) -> list[dict]:
                 user = f"[Form: {form}, scheme: {scheme}]\n\n{poem}"
             examples.append(to_educator_example(user, critique, system))
 
+    # approval/rejection examples: teach when to say "This poem has found its shape."
+    for e in load_jsonl(EDUCATOR_TRAINING / "approval_examples.jsonl"):
+        poem = e.get("poem", "")
+        critique = e.get("critique", "")
+        ra = e.get("rhyme_analysis", {})
+        if poem.strip() and critique.strip():
+            density_note = f"[strict_rhyme_density: {ra.get('strict_rhyme_density', 'N/A')}]"
+            scheme_note = f"[detected_scheme: {ra.get('detected_scheme', 'N/A')}]"
+            user = f"{density_note} {scheme_note}\n\n{poem}"
+            examples.append(to_educator_example(user, critique, system))
+
     return examples
 
 
