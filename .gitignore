@@ -19,6 +19,7 @@ data/poet_training/*
 !data/poet_training/.gitkeep
 data/rhyme_training/*
 !data/rhyme_training/.gitkeep
+data/aem_index/
 data/training/
 models/adapters/
 models/*.gguf

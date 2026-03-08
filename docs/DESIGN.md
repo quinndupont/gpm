@@ -729,6 +729,55 @@ def download_artifacts():
 
 ---
 
+## GPM Training Methods: Technical Summary
+
+### QLoRA Mechanics
+
+- **Freeze base model weights**, add low-rank adapters: ΔW = B·A where rank r ≪ d
+- **Base weights** stored in NF4 4-bit quantization (exploits Gaussian distribution of pretrained weights)
+- **Loss** computed only on response tokens, not prompt tokens
+- **Key config:** lora_r=64, lora_alpha=128 (α/r scaling factor); target all attention + MLP projection layers. Lighter variant: r=16, α=32 for faster iteration when memory-constrained.
+
+### Educator Model: Supervised Fine-Tuning
+
+- **Method:** QLoRA SFT on (prompt → opinionated critique) pairs
+- **Prompt diversity** is critical — vary instruction phrasings so the model generalizes beyond exact training phrasing
+- **System prompt** anchors persona; model learns the conditional distribution over educator responses given that prefix
+- **Reverse prompts / soft prompts** (prefix tuning — learned continuous embedding vectors) are a different technique. QLoRA uses hard discrete prompts; learning happens in adapter weights, not the prompt itself
+- **Data quality >> hyperparameter tuning** — each example should demonstrate cliché autopsy voice explicitly
+
+### Poet Model: Two-Stage Training
+
+#### Stage 1 — Filtered SFT (warm start) ✓ Implemented
+
+- Run deterministic rhyme algo over corpus → get letter patterns → filter by compliance score (≥0.6; target 0.85 for stricter curation)
+- Build prompt as "Write a {scheme_name} ({letter_pattern})" → poem
+- Teaches name/pattern/poem association before RL
+- Weaker than RL alone (binary inclusion, no gradient proportional to score quality)
+
+#### Stage 2 — REINFORCE / Reward-Weighted Regression (Planned)
+
+- Generate N poems per prompt, score each with deterministic algo
+- Normalize scores to advantages: Â = (score − mean) / std
+- Loss: L = −Σ Â_i · log P_θ(poem_i | prompt)
+- KL penalty to prevent drift from SFT baseline: R_total = R_rhyme − β·KL[π_θ ‖ π_SFT]
+- **Key advantage:** deterministic rhyme scorer replaces the need for a trained neural reward model — cleaner gradients, faster iteration
+
+### Rhyme Scheme as Conditioning Variable
+
+- Letter pattern (from deterministic algo) serves dual purpose: prompt condition at training time AND reward signal during RL
+- Scheme registry maps patterns → named forms (Shakespearean sonnet, limerick, ballad stanza, etc.)
+- Train with both name and pattern in prompt so model responds to either at inference
+
+### Partial Credit Reward (Critical Detail — Planned)
+
+- Binary rhyme compliance produces weak gradients; partial credit is essential
+- Score by position match: ABAB vs ABAC = 3/4 = 0.75
+- **Tiered rhyme scoring:** perfect rhyme (1.0) → slant rhyme (0.6) → assonance (0.3) → none (0.0)
+- Prevents model from learning forced perfect rhymes at expense of meaning
+
+---
+
 ### S4: Local Inference Runtime Specification (Mac Mini M4)
 
 #### S4.1 Memory Budget
