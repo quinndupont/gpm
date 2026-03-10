@@ -17,8 +17,8 @@ models:
 
   - id: command-r7b-vanilla
     label: "Vanilla Command R7B"
-    educator: ollama:command-r:7b
-    poet: ollama:command-r:7b
+    educator: ollama:command-r7b:7b
+    poet: ollama:command-r7b:7b
     revisions: [0]
 
   # --- Fine-tuned variants (full revision sweep) ---
