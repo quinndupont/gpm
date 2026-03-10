@@ -7,9 +7,9 @@ import gc
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-PERSONA_PATH = ROOT / "persona" / "educator_neutral.txt"
-PERSONA_FALLBACK = ROOT / "persona" / "persona_condensed.txt"
-
+import sys
+sys.path.insert(0, str(ROOT))
+from models.prompts.loader import get_persona
 from .pipeline import PoetryPipeline, Config
 
 
@@ -22,8 +22,6 @@ class SwappingPipeline(PoetryPipeline):
         self.config = Config(cfg)
         self.config.educator_model_path = str(ROOT / self.config.educator_model_path.lstrip("./"))
         self.config.poet_model_path = str(ROOT / self.config.poet_model_path.lstrip("./"))
-        p = PERSONA_PATH if PERSONA_PATH.exists() else PERSONA_FALLBACK
-        self.config.educator_persona_condensed = p.read_text().strip() if p.exists() else ""
         self.active_model = None
         self.active_role = None
         self.educator_system = self.config.educator_persona_condensed
@@ -85,7 +83,7 @@ class SwappingPipeline(PoetryPipeline):
             messages=[
                 {
                     "role": "system",
-                    "content": "You are a poet. You receive generation briefs and write poems. You never output instructions, critique, or analysis — only poems.",
+                    "content": get_persona("poet"),
                 },
                 {"role": "user", "content": poet_prompt},
             ],

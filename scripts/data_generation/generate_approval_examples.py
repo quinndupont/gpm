@@ -27,36 +27,7 @@ from scripts.data_generation.claude_utils import (
 )
 from scripts.eval.rhyme_analyzer import analyze as analyze_rhyme, format_analysis_for_prompt
 from scripts.eval.form_registry import detect_form, is_rhyming_form, get_scheme, form_description
-
-APPROVE_PROMPT = """Here is a poem that successfully follows its intended form.
-
-Poem:
----
-{poem}
----
-
-Rhyme analysis (automated, deterministic):
-{analysis}
-
-Write a 3-5 sentence craft observation. Note what works well — specific rhyme pairs, line turns, imagery.
-You MUST end your response with exactly this sentence: "This poem has found its shape."
-Do not use this phrase anywhere else in your response."""
-
-REJECT_PROMPT = """Here is a poem that was intended to follow a specific rhyming form but has rhyme failures.
-
-Poem:
----
-{poem}
----
-
-Form requested: {form_desc}
-Expected rhyme scheme: {expected_scheme}
-
-Rhyme analysis (automated, deterministic):
-{analysis}
-
-Write a 3-5 sentence craft observation. Name the specific end-words that fail to rhyme and which lines they are on. Offer direction for how to fix them.
-Do NOT end with "This poem has found its shape." — the rhymes are not correct yet."""
+from models.prompts.loader import render_prompt
 
 
 def load_jsonl(path: Path) -> list[dict]:
@@ -114,7 +85,7 @@ def main():
                 continue
 
             analysis_text = format_analysis_for_prompt(analysis)
-            prompt = APPROVE_PROMPT.format(poem=poem, analysis=analysis_text)
+            prompt = render_prompt("tuning", "approval", template="approve", poem=poem, analysis=analysis_text)
 
             try:
                 critique = call_claude(prompt, system, model=args.model, max_tokens=300)
@@ -161,12 +132,7 @@ def main():
             form_desc = form_description(form) if form else "rhyming poem"
             scheme = get_scheme(form) if form else analysis.get("detected_scheme", "")
 
-            prompt = REJECT_PROMPT.format(
-                poem=poem,
-                form_desc=form_desc,
-                expected_scheme=scheme or "N/A",
-                analysis=analysis_text,
-            )
+            prompt = render_prompt("tuning", "approval", template="reject", poem=poem, form_desc=form_desc, expected_scheme=scheme or "N/A", analysis=analysis_text)
 
             try:
                 critique = call_claude(prompt, system, model=args.model, max_tokens=300)

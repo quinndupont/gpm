@@ -1,0 +1,15 @@
+{
+  "id": "rhyme_pairs",
+  "description": "Rhyme-form training data — briefs, poems, rhyme-aware critiques",
+  "persona": "educator_neutral",
+  "templates": {
+    "brief": "A student has asked for help writing a poem. Their request:\n\"{user_request}\"\n\nConstruct a COMPACT generation brief (~300 tokens max). Include:\n1. Angle — 2-3 sentences, not the obvious approach\n2. Clichés to avoid — 5-6 specific phrases/images for this topic\n3. Imagery domain — 1-2 sentences, unexpected\n4. Form guidance — the poem MUST be a {form_desc}. State the form, line count, and rhyme scheme explicitly.\n\nNo rhetorical flourish. Actionable only.",
+    "poet": "Generation brief:\n\n---\n{brief}\n---\n\nWrite the poem. Output ONLY the poem — no title unless it's part of the poem, no commentary.\nFollow the specified form and rhyme scheme precisely.",
+    "critique": "Here is a poem written in a specific form, along with automated analysis.\n\nPoem:\n---\n{poem}\n---\n\nForm requested: {form_name}\nExpected rhyme scheme: {expected_scheme}\n\n{analysis_block}\n\nWrite a 3-5 sentence craft observation about how this poem handles (or fails to handle) its form. Cover rhyme and meter where applicable. Be specific — name the words and lines. Note where rhymes land well, where meter holds or breaks for emphasis, and where control slips. No scores, no rubrics."
+  },
+  "variables": {
+    "brief": ["user_request", "form_desc"],
+    "poet": ["brief"],
+    "critique": ["poem", "form_name", "expected_scheme", "analysis_block"]
+  }
+}

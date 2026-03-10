@@ -9,24 +9,19 @@ ROOT = Path(__file__).resolve().parents[2]
 ANNOTATED = ROOT / "data" / "annotated"
 EDUCATOR_TRAINING = ROOT / "data" / "educator_training"
 POET_TRAINING = ROOT / "data" / "poet_training"
-PERSONA = ROOT / "persona"
-
 import sys
 sys.path.insert(0, str(ROOT))
-from scripts.data_generation.claude_utils import poem_text
+from scripts.data_generation.claude_utils import poem_text, get_educator_system_prompt
+from models.prompts.loader import get_persona, get_prompt
 
 
 def _educator_system() -> str:
-    p = PERSONA / "educator_neutral.txt"
-    if not p.exists():
-        p = PERSONA / "persona_condensed.txt"
-    return p.read_text().strip() if p.exists() else "You are a poetry educator. Identify craft issues. Give concrete directions."
+    try:
+        return get_educator_system_prompt()
+    except Exception:
+        return "You are a poetry educator. Identify craft issues. Give concrete directions."
 
 
-POET_SYSTEM = """You are a poet. You receive generation briefs and write poems.
-You never output instructions, critique, or analysis — only poems."""
-
-POET_USER_SUFFIX = "\n\nWrite the poem. Output ONLY the poem — no title unless it's part of the poem, no commentary."
 
 
 def load_jsonl(path: Path) -> list[dict]:
@@ -52,7 +47,7 @@ def to_educator_example(user: str, assistant: str, system: str) -> dict:
 def to_poet_example(user: str, assistant: str) -> dict:
     return {
         "messages": [
-            {"role": "system", "content": POET_SYSTEM},
+            {"role": "system", "content": get_persona("poet")},
             {"role": "user", "content": user},
             {"role": "assistant", "content": assistant},
         ]
@@ -172,16 +167,13 @@ def collect_educator_examples(system: str) -> list[dict]:
     return examples
 
 
-POET_RHYME_SUFFIX = "\n\nWrite the poem. Output ONLY the poem — no title unless it's part of the poem, no commentary.\nFollow the specified form and rhyme scheme precisely."
-
-
 def collect_poet_examples() -> list[dict]:
     examples = []
     for e in load_jsonl(POET_TRAINING / "pairs.jsonl"):
         brief = e.get("brief", e.get("user_request", ""))
         poem = e.get("poem", "")
         if brief.strip() and poem.strip():
-            user = brief + POET_USER_SUFFIX
+            user = brief + get_prompt("tuning", "poet_generation", "user_suffix")
             examples.append(to_poet_example(user, poem))
 
     # rhyme pairs: brief with form constraint -> poem in that form
@@ -189,7 +181,7 @@ def collect_poet_examples() -> list[dict]:
         brief = e.get("brief", "")
         poem = e.get("poem", "")
         if brief.strip() and poem.strip():
-            user = brief + POET_RHYME_SUFFIX
+            user = brief + get_prompt("tuning", "poet_generation", "rhyme_suffix")
             examples.append(to_poet_example(user, poem))
 
     return examples

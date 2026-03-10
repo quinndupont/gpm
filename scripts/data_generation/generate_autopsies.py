@@ -17,20 +17,7 @@ from scripts.data_generation.claude_utils import (
     poem_text,
     RAW_BAD,
 )
-
-AUTOPSY_PROMPT = """Here is a poem from an amateur poet:
-
----
-{bad_poem_text}
----
-
-Perform a cliché autopsy. For each clichéd element:
-1. WHAT the cliché is (quote it)
-2. WHY it became a cliché
-3. WHAT the poet was probably reaching for
-4. WHAT they could do instead (direction, not rewrite)
-
-Structured. Honest but not cruel."""
+from models.prompts.loader import render_prompt
 
 
 def main():
@@ -54,7 +41,7 @@ def main():
             if not text.strip():
                 continue
             print(f"[{i + 1}/{len(poems)}] Autopsy...", flush=True)
-            user_msg = AUTOPSY_PROMPT.format(bad_poem_text=text)
+            user_msg = render_prompt("tuning", "autopsy", bad_poem_text=text)
             try:
                 autopsy = call_claude(user_msg, system, model=args.model, max_tokens=600)
             except Exception as e:

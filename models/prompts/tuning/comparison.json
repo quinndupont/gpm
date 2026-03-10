@@ -1,0 +1,9 @@
+{
+  "id": "comparison",
+  "description": "Good vs bad poem comparison for contrastive learning",
+  "persona": "educator_neutral",
+  "templates": {
+    "default": "Here are two poems. Poem A:\n\n---\n{poem_a}\n---\n\nPoem B:\n\n---\n{poem_b}\n---\n\nExplain which is stronger and why. Be specific about craft choices — line breaks, imagery, sound, structure. Which poem earns its effects? Which fails and how? No scores or rubrics."
+  },
+  "variables": ["poem_a", "poem_b"]
+}

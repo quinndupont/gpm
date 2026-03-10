@@ -15,14 +15,12 @@ from scripts.data_generation.claude_utils import (
     load_poems,
     load_requests,
     poem_text,
+    get_educator_system_prompt,
     RAW_GOOD,
     RAW_BAD,
 )
-from scripts.data_generation.generate_briefs import BRIEF_PROMPT
-from scripts.data_generation.generate_autopsies import AUTOPSY_PROMPT
-from scripts.data_generation.generate_lessons import LESSON_PROMPT, CRAFT_QUESTIONS
-
-PERSONA = ROOT / "persona" / "educator_neutral.txt"
+from scripts.data_generation.generate_lessons import CRAFT_QUESTIONS
+from models.prompts.loader import render_prompt
 
 
 def _load_educator(model_path: Path):
@@ -30,7 +28,7 @@ def _load_educator(model_path: Path):
         from llama_cpp import Llama
     except ImportError:
         raise ImportError("pip install llama-cpp-python")
-    system = PERSONA.read_text().strip() if PERSONA.exists() else ""
+    system = get_educator_system_prompt()
     return Llama(
         model_path=str(model_path),
         n_ctx=4096,
@@ -62,7 +60,7 @@ def generate_briefs(llm, system: str, requests: list, output: Path, limit: int):
     with open(output, "w") as f:
         for i, req in enumerate(requests):
             print(f"[{i + 1}/{len(requests)}] Brief: {req[:50]}...", flush=True)
-            user = BRIEF_PROMPT.format(user_request=req)
+            user = render_prompt("tuning", "brief", user_request=req)
             brief = _generate(llm, system, user, max_tokens=500)
             f.write(json.dumps({"user_request": req, "brief": brief}) + "\n")
     print(f"Done: {len(requests)} briefs -> {output}")
@@ -78,7 +76,7 @@ def generate_autopsies(llm, system: str, output: Path, limit: int):
             if not text.strip():
                 continue
             print(f"[{i + 1}/{len(poems)}] Autopsy...", flush=True)
-            user = AUTOPSY_PROMPT.format(bad_poem_text=text)
+            user = render_prompt("tuning", "autopsy", bad_poem_text=text)
             autopsy = _generate(llm, system, user, max_tokens=600)
             f.write(json.dumps({"poem": poem, "autopsy": autopsy}) + "\n")
     print(f"Done: {len(poems)} autopsies -> {output}")
@@ -90,7 +88,7 @@ def generate_lessons(llm, system: str, output: Path, limit: int):
     with open(output, "w") as f:
         for i, q in enumerate(questions):
             print(f"[{i + 1}/{len(questions)}] Lesson: {q[:40]}...", flush=True)
-            user = LESSON_PROMPT.format(question=q)
+            user = render_prompt("tuning", "lesson", question=q)
             lesson = _generate(llm, system, user, max_tokens=600)
             f.write(json.dumps({"question": q, "lesson": lesson}) + "\n")
     print(f"Done: {len(questions)} lessons -> {output}")

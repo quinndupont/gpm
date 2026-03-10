@@ -1,0 +1,9 @@
+{
+  "id": "lesson",
+  "description": "Craft lesson — educator explains concepts",
+  "persona": "educator_neutral",
+  "templates": {
+    "default": "A student asks: {question}\n\nExplain this concept. Use examples. Be concrete. No bullet points or rubrics."
+  },
+  "variables": ["question"]
+}

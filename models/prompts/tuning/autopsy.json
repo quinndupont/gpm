@@ -1,0 +1,9 @@
+{
+  "id": "autopsy",
+  "description": "Cliché dissection on bad poems",
+  "persona": "educator_neutral",
+  "templates": {
+    "default": "Here is a poem from an amateur poet:\n\n---\n{bad_poem_text}\n---\n\nPerform a cliché autopsy. For each clichéd element:\n1. WHAT the cliché is (quote it)\n2. WHY it became a cliché\n3. WHAT the poet was probably reaching for\n4. WHAT they could do instead (direction, not rewrite)\n\nStructured. Honest but not cruel."
+  },
+  "variables": ["bad_poem_text"]
+}

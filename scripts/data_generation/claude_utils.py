@@ -12,8 +12,6 @@ CLAUDE_OPUS_4_6 = "claude-opus-4-6"
 CLAUDE_SONNET_4_5 = "claude-sonnet-4-5"
 
 QUOTA_FILE = ROOT / "data" / ".llm_quota.json"
-PERSONA = ROOT / "persona"
-EDUCATOR_NEUTRAL = PERSONA / "educator_neutral.txt"
 
 
 def load_env():
@@ -25,15 +23,14 @@ def load_env():
         pass
 
 
-def get_persona_condensed() -> str:
-    p = PERSONA / "persona_condensed.txt"
-    return p.read_text().strip() if p.exists() else ""
-
-
 def get_educator_system_prompt() -> str:
     """System prompt for educator tasks. Neutral, issue-focused."""
-    p = EDUCATOR_NEUTRAL if EDUCATOR_NEUTRAL.exists() else PERSONA / "persona_condensed.txt"
-    return p.read_text().strip() if p.exists() else "You are a poetry educator. Identify craft issues. Give concrete directions."
+    sys.path.insert(0, str(ROOT))
+    from models.prompts.loader import get_persona
+    try:
+        return get_persona("educator_neutral")
+    except FileNotFoundError:
+        return get_persona("educator_condensed")
 
 
 def load_poems(directory: Path) -> list[dict]:

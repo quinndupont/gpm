@@ -1,0 +1,9 @@
+{
+  "id": "poet_generation",
+  "description": "Brief → poem (inference, with optional scheme reminder)",
+  "persona": "poet",
+  "templates": {
+    "default": "{brief}{scheme_reminder}\n\nOutput ONLY the poem. Do not repeat the brief. Do not add commentary."
+  },
+  "variables": ["brief", "scheme_reminder"]
+}

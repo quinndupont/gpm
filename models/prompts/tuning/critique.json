@@ -1,0 +1,9 @@
+{
+  "id": "critique",
+  "description": "Workshop critique of a poem — identifies what works and what fails",
+  "persona": "educator_neutral",
+  "templates": {
+    "default": "A student has brought this poem to workshop:\n\n---\n{poem_text}\n---\n\nGive your workshop response. Structure it as:\n1. What's alive — the specific moment where the poet's attention is on the page\n2. What isn't working — name the failure type (abstraction, cliché, weak line break, sentimentality, etc.), location, and direction\n3. When the poem is truly complete (no further revision needed), end with exactly: \"This poem has found its shape.\" Do not use this phrase for partial progress (e.g. \"found its shape from line 25 onward\" is not approval).\n\nBe specific. Offer concrete direction. No rubrics or scores."
+  },
+  "variables": ["poem_text"]
+}

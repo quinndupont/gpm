@@ -1,0 +1,9 @@
+{
+  "id": "final_note",
+  "description": "Final poem → wrap-up note for poet",
+  "persona": "educator_neutral",
+  "templates": {
+    "default": "Final poem:\n---\n{final_draft}\n---\n\nWrite a brief note about what makes this poem work. What's the strongest moment? What craft choice pays off? What should the poet learn from this about their instincts?\n\nKeep it to 3-5 sentences."
+  },
+  "variables": ["final_draft"]
+}

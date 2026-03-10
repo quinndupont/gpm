@@ -16,42 +16,7 @@ from scripts.data_generation.claude_utils import (
     CLAUDE_SONNET_4_5,
     poem_text,
 )
-
-# Student persona: simulate a revision attempt (no educator voice)
-STUDENT_REVISION_PROMPT = """You are a student poet. You wrote this poem and received this workshop critique.
-
-Original poem:
----
-{poem_text}
----
-
-Critique:
----
-{critique}
----
-
-Write a revised version of the poem that responds to the critique. Output ONLY the revised poem — no title unless part of the poem, no commentary."""
-
-# T5: Educator follow-up after seeing the revision (plan: 200–300 words)
-DIALOGUE_PROMPT = """Original poem:
-
----
-{poem_text}
----
-
-Your earlier critique:
-
----
-{critique}
----
-
-The student has attempted a revision:
-
----
-{revised_poem}
----
-
-Give your follow-up: what improved, what still needs work. Be specific to lines and choices. 200–300 words. In your voice. No rubrics or scores."""
+from models.prompts.loader import render_prompt
 
 
 def main():
@@ -85,7 +50,7 @@ def main():
             if not text.strip() or not critique.strip():
                 continue
             print(f"[{i + 1}/{len(entries)}] Revision (student)...", flush=True)
-            user_revision = STUDENT_REVISION_PROMPT.format(poem_text=text, critique=critique)
+            user_revision = render_prompt("tuning", "dialogue", template="student_revision", poem_text=text, critique=critique)
             try:
                 revised_poem = call_claude(
                     user_revision,
@@ -100,9 +65,7 @@ def main():
                 continue
 
             print(f"[{i + 1}/{len(entries)}] Follow-up (educator)...", flush=True)
-            user_dialogue = DIALOGUE_PROMPT.format(
-                poem_text=text, critique=critique, revised_poem=revised_poem.strip()
-            )
+            user_dialogue = render_prompt("tuning", "dialogue", template="dialogue", poem_text=text, critique=critique, revised_poem=revised_poem.strip())
             try:
                 follow_up = call_claude(
                     user_dialogue,

@@ -16,26 +16,7 @@ from scripts.data_generation.claude_utils import (
     CLAUDE_SONNET_4_5,
     poem_text,
 )
-
-REVISION_BRIEF_PROMPT = """Original poem:
-
----
-{poem_text}
----
-
-Your critique:
-
----
-{critique}
----
-
-Construct a revised generation brief for the poet. Compact format (~300 tokens):
-- Angle (2-3 sentences)
-- Clichés to avoid (5-6 items, one line each)
-- Imagery domain (1-2 sentences)
-- Form guidance (1-2 sentences)
-
-No rhetorical flourish. Actionable only."""
+from models.prompts.loader import render_prompt
 
 
 def main():
@@ -67,7 +48,7 @@ def main():
             if not text.strip() or not critique.strip():
                 continue
             print(f"[{i + 1}/{len(entries)}] Revision brief...", flush=True)
-            user_msg = REVISION_BRIEF_PROMPT.format(poem_text=text, critique=critique)
+            user_msg = render_prompt("tuning", "revision_brief", poem_text=text, critique=critique)
             try:
                 brief = call_claude(user_msg, system, model=CLAUDE_SONNET_4_5, max_tokens=500)
             except Exception as err:

@@ -10,11 +10,10 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 CONFIG_PATH = ROOT / "config" / "inference_config.yaml"
-PERSONA_PATH = ROOT / "persona" / "educator_neutral.txt"
-PERSONA_FALLBACK = ROOT / "persona" / "persona_condensed.txt"
 BRIEF_CAP = 1200  # ~300 tokens for poet input
 
 sys.path.insert(0, str(ROOT))
+from models.prompts.loader import get_persona, render_prompt
 from scripts.eval.form_registry import detect_form, get_scheme, is_rhyming_form, is_metered_form, form_description
 from scripts.eval.rhyme_analyzer import analyze as analyze_rhyme, format_analysis_for_prompt
 from scripts.eval.meter_analyzer import analyze as analyze_meter, format_analysis_for_prompt as format_meter_for_prompt
@@ -37,8 +36,10 @@ class Config:
         self.poet_model_path = poet.get("model_path", "./models/qwen2.5-7b-poet-Q4_K_M.gguf")
         self.poet_ctx = poet.get("n_ctx", 2048)
         self.max_revisions = yaml_config.get("max_revisions", 3)
-        p = PERSONA_PATH if PERSONA_PATH.exists() else PERSONA_FALLBACK
-        self.educator_persona_condensed = p.read_text().strip() if p.exists() else ""
+        try:
+            self.educator_persona_condensed = get_persona("educator_neutral")
+        except FileNotFoundError:
+            self.educator_persona_condensed = get_persona("educator_condensed")
         self.user_style_profile = None
 
 
@@ -142,7 +143,6 @@ class PoetryPipeline:
     def _build_poet_prompt(self, brief: str) -> str:
         if len(brief) > BRIEF_CAP:
             brief = brief[:BRIEF_CAP].rsplit("\n", 1)[0] + "\n\n[truncated]"
-        # If brief specifies a rhyming form, add explicit scheme reminder
         detected = detect_form(brief)
         scheme_reminder = ""
         if detected and is_rhyming_form(detected):
@@ -153,7 +153,7 @@ class PoetryPipeline:
                     "Every end-word pair must be a true phonetic rhyme. "
                     "Plan your end-words before writing each line."
                 )
-        return brief + scheme_reminder + "\n\nOutput ONLY the poem. Do not repeat the brief. Do not add commentary."
+        return render_prompt("inference", "poet_generation", brief=brief, scheme_reminder=scheme_reminder)
 
     def _build_poet_revision_instructions(
         self,
@@ -175,15 +175,11 @@ class PoetryPipeline:
             f"Past revision rounds (poet has already revised after each; draft above is the result):\n---\n{past_ctx}\n---\n"
             if past_ctx else ""
         )
-        prompt = (
-            f"{draft_label}:\n---\n{draft[:1200]}{'...' if len(draft) > 1200 else ''}\n---\n\n"
-            f"Your critique:\n---\n{critique}\n---\n\n"
-            f"Revision brief:\n---\n{revision_brief}\n---\n"
-            f"{past_section}"
-            f"{user_ctx}\n"
-            "Produce compact revision instructions for the poet (~100–150 words). "
-            "Be SPECIFIC: name which lines or sections need changes. The poet will make ONLY these changes — "
-            "do not ask for broad rewrites. Bullet or numbered list. No preamble. Actionable only."
+        draft_trunc = draft[:1200] + ("..." if len(draft) > 1200 else "")
+        prompt = render_prompt(
+            "inference", "poet_revision_instructions",
+            draft_label=draft_label, draft=draft_trunc, critique=critique, revision_brief=revision_brief,
+            past_section=past_section, user_ctx=user_ctx,
         )
         return self._educator_generate(prompt, task="poet_instructions")
 
@@ -223,19 +219,15 @@ class PoetryPipeline:
                 + "\n".join(dev_lines) + "\n"
             )
 
-        return (
-            f"Previous draft:\n---\n{draft}\n---\n\n"
-            f"Revision instructions:\n---\n{instructions}\n---\n"
-            f"{rhyme_ctx}"
-            f"{user_ctx}"
-            "Make ONLY the changes specified above. Preserve all other lines exactly. "
-            "Revise the poem according to the instructions. Output ONLY the revised poem."
+        return render_prompt(
+            "inference", "poet_revision",
+            draft=draft, instructions=instructions, rhyme_ctx=rhyme_ctx, user_ctx=user_ctx,
         )
 
     def _poet_generate(self, prompt: str, is_revision: bool = False) -> str:
         temp = 0.75 if is_revision else 0.8
         poet_prompt = prompt if is_revision else self._build_poet_prompt(prompt)
-        system = "You are a poet. You receive generation briefs and write poems. You never output instructions, critique, or analysis — only poems."
+        system = get_persona("poet")
         if self.poet_model_override and self.poet_model_override.startswith("ollama:"):
             model = self.poet_model_override[7:]
             return self._ollama_chat(
@@ -325,16 +317,7 @@ class PoetryPipeline:
         style_ctx = ""
         if self.user_profile:
             style_ctx = f"\n\nThis poet's style profile:\n{self.user_profile}\n"
-        return (
-            f'A poet has asked for help. Their request:\n\n"{user_request}"\n\n'
-            "Construct a COMPACT generation brief (~300 tokens max). Include:\n"
-            "- Angle (2-3 sentences, not the obvious approach)\n"
-            "- Clichés to avoid (5-6 specific phrases for this topic)\n"
-            "- Imagery domain (1-2 sentences, unexpected)\n"
-            "- Form guidance (1-2 sentences)\n"
-            f"{style_ctx}"
-            "No rhetorical flourish. Actionable only."
-        )
+        return render_prompt("inference", "brief", user_request=user_request, style_ctx=style_ctx)
 
     def _build_critique_prompt(self, draft: str, brief: str, history: list) -> str:
         history_ctx = ""
@@ -365,17 +348,7 @@ class PoetryPipeline:
                     "Name specific lines and words.\n"
                 )
 
-        return (
-            f"Generation brief:\n---\n{brief}\n---\n\nDraft:\n---\n{draft}\n---\n"
-            f"{history_ctx}"
-            f"{form_ctx}"
-            "Give your workshop response. Start with what's alive. Then what isn't working — name the failure type. Offer direction.\n\n"
-            "APPROVAL RULES:\n"
-            "- When the poem is truly complete (no further revision needed), you MUST end your response with exactly this sentence: 'This poem has found its shape.'\n"
-            "- If the form requires rhyming and the rhyme analysis shows deviations or broken rhymes, do NOT approve. Name the specific end-words that fail.\n"
-            "- Do NOT use the approval phrase for partial progress (e.g. 'found its shape from line 25 onward' is not approval).\n"
-            "- The approval phrase must be the final sentence of your response, with no text after it.\n"
-        )
+        return render_prompt("inference", "critique", brief=brief, draft=draft, history_ctx=history_ctx, form_ctx=form_ctx)
 
     def _build_revision_brief_prompt(
         self,
@@ -401,26 +374,10 @@ class PoetryPipeline:
                 f"\n\nPoet's additional direction (incorporate into your brief):\n---\n"
                 f"{user_input.strip()}\n---\n\n"
             )
-        return (
-            f"Original brief:\n---\n{brief}\n---\n\n"
-            f"Current draft:\n---\n{draft}\n---\n\n"
-            f"Your critique:\n---\n{critique}\n---\n"
-            f"{history_ctx}"
-            f"{user_ctx}"
-            "Construct a COMPACT revised generation brief (~300 tokens). "
-            "Each critique point must map to a concrete revision direction. "
-            "Be specific: name which lines or sections to change. The poet will make ONLY the changes you specify — "
-            "avoid broad rewrites; target the exact spots that need fixing. "
-            "Angle, clichés to avoid, imagery domain, form. No flourish."
-        )
+        return render_prompt("inference", "revision_brief", brief=brief, draft=draft, critique=critique, history_ctx=history_ctx, user_ctx=user_ctx)
 
     def _build_final_note_prompt(self, final_draft: str, brief: str) -> str:
-        return (
-            f"Final poem:\n---\n{final_draft}\n---\n\n"
-            "Write a brief note about what makes this poem work. What's the strongest moment? "
-            "What craft choice pays off? What should the poet learn from this about their instincts?\n\n"
-            "Keep it to 3-5 sentences."
-        )
+        return render_prompt("inference", "final_note", final_draft=final_draft)
 
     def generate(
         self,

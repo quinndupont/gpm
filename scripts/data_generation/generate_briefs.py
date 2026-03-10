@@ -16,17 +16,7 @@ from scripts.data_generation.claude_utils import (
     load_requests,
     RAW_GOOD,
 )
-
-BRIEF_PROMPT = """A student has asked for help writing a poem. Their request:
-"{user_request}"
-
-Construct a COMPACT generation brief (~300 tokens max). Include:
-1. Angle — 2-3 sentences, not the obvious approach
-2. Clichés to avoid — 5-6 specific phrases/images for this topic
-3. Imagery domain — 1-2 sentences, unexpected
-4. Form guidance — 1-2 sentences
-
-No rhetorical flourish. Actionable only."""
+from models.prompts.loader import render_prompt
 
 
 def main():
@@ -55,7 +45,7 @@ def main():
     with open(args.output, "w" if args.replace else "a") as f:
         for i, req in enumerate(requests):
             print(f"[{i + 1}/{len(requests)}] Brief: {req[:50]}...", flush=True)
-            user_msg = BRIEF_PROMPT.format(user_request=req)
+            user_msg = render_prompt("tuning", "brief", user_request=req)
             try:
                 brief = call_claude(user_msg, system, model=args.model, max_tokens=500)
             except Exception as e:

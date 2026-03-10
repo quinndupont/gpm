@@ -18,13 +18,7 @@ RHYME_TRAINING = ROOT / "data" / "rhyme_training"
 sys.path.insert(0, str(ROOT))
 from scripts.eval.rhyme_analyzer import analyze as analyze_rhyme
 from scripts.eval.form_registry import get_scheme
-
-POET_SYSTEM = """You are a poet. You receive generation briefs and write poems.
-You never output instructions, critique, or analysis — only poems.
-When a rhyme scheme is specified, every end-word pair must be a true phonetic rhyme."""
-
-POET_USER_SUFFIX = "\n\nWrite the poem. Output ONLY the poem — no title unless it's part of the poem, no commentary."
-POET_RHYME_SUFFIX = "\n\nWrite the poem. Output ONLY the poem — no title unless it's part of the poem, no commentary.\nFollow the specified form and rhyme scheme precisely. Plan your end-words before writing each line."
+from models.prompts.loader import get_persona, get_prompt
 
 MIN_STRICT_DENSITY = 0.6
 
@@ -42,7 +36,7 @@ def load_jsonl(path: Path) -> list[dict]:
 def to_poet_example(user: str, assistant: str) -> dict:
     return {
         "messages": [
-            {"role": "system", "content": POET_SYSTEM},
+            {"role": "system", "content": get_persona("poet_rhyme")},
             {"role": "user", "content": user},
             {"role": "assistant", "content": assistant},
         ]
@@ -60,8 +54,9 @@ def poem_to_rhyme_example(poem: str, form: str | None = None, brief: str | None 
     scheme = analysis.get("strict_detected_scheme") or analysis.get("detected_scheme", "")
     if brief and brief.strip():
         user = brief.strip()
-        if not user.endswith(POET_RHYME_SUFFIX.strip()):
-            user = user + "\n\n" + POET_RHYME_SUFFIX.strip()
+        rhyme_suffix = get_prompt("tuning", "poet_generation", "rhyme_suffix").strip()
+        if not user.endswith(rhyme_suffix):
+            user = user + "\n\n" + rhyme_suffix
     else:
         parts = ["Write a poem with strong end rhyme."]
         if scheme:
@@ -71,7 +66,7 @@ def poem_to_rhyme_example(poem: str, form: str | None = None, brief: str | None 
             if scheme_str:
                 parts.append(f"Form: {form}, scheme {scheme_str}.")
         parts.append("Every end-word pair must be a true phonetic rhyme. Follow the form precisely.")
-        user = " ".join(parts) + POET_RHYME_SUFFIX
+        user = " ".join(parts) + get_prompt("tuning", "poet_generation", "rhyme_suffix")
     return to_poet_example(user, poem)
 
 

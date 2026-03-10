@@ -1,0 +1,13 @@
+{
+  "id": "dialogue",
+  "description": "Revision dialogue — student revision and educator follow-up",
+  "persona": "educator_neutral",
+  "templates": {
+    "student_revision": "You are a student poet. You wrote this poem and received this workshop critique.\n\nOriginal poem:\n---\n{poem_text}\n---\n\nCritique:\n---\n{critique}\n---\n\nWrite a revised version of the poem that responds to the critique. Output ONLY the revised poem — no title unless part of the poem, no commentary.",
+    "dialogue": "Original poem:\n\n---\n{poem_text}\n---\n\nYour earlier critique:\n\n---\n{critique}\n---\n\nThe student has attempted a revision:\n\n---\n{revised_poem}\n---\n\nGive your follow-up: what improved, what still needs work. Be specific to lines and choices. 200–300 words. In your voice. No rubrics or scores."
+  },
+  "variables": {
+    "student_revision": ["poem_text", "critique"],
+    "dialogue": ["poem_text", "critique", "revised_poem"]
+  }
+}

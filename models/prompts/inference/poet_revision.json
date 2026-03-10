@@ -1,0 +1,9 @@
+{
+  "id": "poet_revision",
+  "description": "Revision instructions → poet revises poem",
+  "persona": "poet",
+  "templates": {
+    "default": "Previous draft:\n---\n{draft}\n---\n\nRevision instructions:\n---\n{instructions}\n---\n\n{rhyme_ctx}{user_ctx}Make ONLY the changes specified above. Preserve all other lines exactly. Revise the poem according to the instructions. Output ONLY the revised poem."
+  },
+  "variables": ["draft", "instructions", "rhyme_ctx", "user_ctx"]
+}

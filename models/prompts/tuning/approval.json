@@ -1,0 +1,13 @@
+{
+  "id": "approval",
+  "description": "Approval/rejection examples for rhyme-gated educator behavior",
+  "persona": "educator_neutral",
+  "templates": {
+    "approve": "Here is a poem that successfully follows its intended form.\n\nPoem:\n---\n{poem}\n---\n\nRhyme analysis (automated, deterministic):\n{analysis}\n\nWrite a 3-5 sentence craft observation. Note what works well — specific rhyme pairs, line turns, imagery.\nYou MUST end your response with exactly this sentence: \"This poem has found its shape.\"\nDo not use this phrase anywhere else in your response.",
+    "reject": "Here is a poem that was intended to follow a specific rhyming form but has rhyme failures.\n\nPoem:\n---\n{poem}\n---\n\nForm requested: {form_desc}\nExpected rhyme scheme: {expected_scheme}\n\nRhyme analysis (automated, deterministic):\n{analysis}\n\nWrite a 3-5 sentence craft observation. Name the specific end-words that fail to rhyme and which lines they are on. Offer direction for how to fix them.\nDo NOT end with \"This poem has found its shape.\" — the rhymes are not correct yet."
+  },
+  "variables": {
+    "approve": ["poem", "analysis"],
+    "reject": ["poem", "form_desc", "expected_scheme", "analysis"]
+  }
+}

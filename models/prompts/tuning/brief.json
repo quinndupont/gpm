@@ -1,0 +1,9 @@
+{
+  "id": "brief",
+  "description": "User request → generation brief",
+  "persona": "educator_neutral",
+  "templates": {
+    "default": "A student has asked for help writing a poem. Their request:\n\"{user_request}\"\n\nConstruct a COMPACT generation brief (~300 tokens max). Include:\n1. Angle — 2-3 sentences, not the obvious approach\n2. Clichés to avoid — 5-6 specific phrases/images for this topic\n3. Imagery domain — 1-2 sentences, unexpected\n4. Form guidance — 1-2 sentences\n\nNo rhetorical flourish. Actionable only."
+  },
+  "variables": ["user_request"]
+}

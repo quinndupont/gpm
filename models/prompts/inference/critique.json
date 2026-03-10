@@ -1,0 +1,9 @@
+{
+  "id": "critique",
+  "description": "Draft + brief → workshop critique (inference)",
+  "persona": "educator_neutral",
+  "templates": {
+    "default": "Generation brief:\n---\n{brief}\n---\n\nDraft:\n---\n{draft}\n---\n\n{history_ctx}{form_ctx}Give your workshop response. Start with what's alive. Then what isn't working — name the failure type. Offer direction.\n\nAPPROVAL RULES:\n- When the poem is truly complete (no further revision needed), you MUST end your response with exactly this sentence: 'This poem has found its shape.'\n- If the form requires rhyming and the rhyme analysis shows deviations or broken rhymes, do NOT approve. Name the specific end-words that fail.\n- Do NOT use the approval phrase for partial progress (e.g. 'found its shape from line 25 onward' is not approval).\n- The approval phrase must be the final sentence of your response, with no text after it."
+  },
+  "variables": ["brief", "draft", "history_ctx", "form_ctx"]
+}

@@ -19,20 +19,7 @@ from scripts.data_generation.claude_utils import (
     RAW_GOOD,
     RAW_BAD,
 )
-
-COMPARISON_PROMPT = """Here are two poems. Poem A:
-
----
-{poem_a}
----
-
-Poem B:
-
----
-{poem_b}
----
-
-Explain which is stronger and why. Be specific about craft choices — line breaks, imagery, sound, structure. Which poem earns its effects? Which fails and how? No scores or rubrics."""
+from models.prompts.loader import render_prompt
 
 
 def main():
@@ -67,7 +54,7 @@ def main():
             if not text_a.strip() or not text_b.strip():
                 continue
             print(f"[{i + 1}/{len(pairs)}] Comparison...", flush=True)
-            user_msg = COMPARISON_PROMPT.format(poem_a=text_a, poem_b=text_b)
+            user_msg = render_prompt("tuning", "comparison", poem_a=text_a, poem_b=text_b)
             try:
                 comparison = call_claude(user_msg, system, model=CLAUDE_SONNET_4_5, max_tokens=600)
             except Exception as e:

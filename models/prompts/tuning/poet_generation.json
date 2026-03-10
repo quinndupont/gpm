@@ -1,0 +1,12 @@
+{
+  "id": "poet_generation",
+  "description": "Brief → poem for poet training pairs",
+  "persona": "poet",
+  "templates": {
+    "default": "Generation brief:\n\n---\n{brief}\n---\n\nWrite the poem. Output ONLY the poem — no title unless it's part of the poem, no commentary.",
+    "rhyme": "Generation brief:\n\n---\n{brief}\n---\n\nWrite the poem. Output ONLY the poem — no title unless it's part of the poem, no commentary.\nFollow the specified form and rhyme scheme precisely.",
+    "user_suffix": "\n\nWrite the poem. Output ONLY the poem — no title unless it's part of the poem, no commentary.",
+    "rhyme_suffix": "\n\nWrite the poem. Output ONLY the poem — no title unless it's part of the poem, no commentary.\nFollow the specified form and rhyme scheme precisely."
+  },
+  "variables": ["brief"]
+}

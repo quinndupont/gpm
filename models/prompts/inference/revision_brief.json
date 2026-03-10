@@ -1,0 +1,9 @@
+{
+  "id": "revision_brief",
+  "description": "Draft + critique → revised generation brief (inference)",
+  "persona": "educator_neutral",
+  "templates": {
+    "default": "Original brief:\n---\n{brief}\n---\n\nCurrent draft:\n---\n{draft}\n---\n\nYour critique:\n---\n{critique}\n---\n\n{history_ctx}{user_ctx}Construct a COMPACT revised generation brief (~300 tokens). Each critique point must map to a concrete revision direction. Be specific: name which lines or sections to change. The poet will make ONLY the changes you specify — avoid broad rewrites; target the exact spots that need fixing. Angle, clichés to avoid, imagery domain, form. No flourish."
+  },
+  "variables": ["brief", "draft", "critique", "history_ctx", "user_ctx"]
+}

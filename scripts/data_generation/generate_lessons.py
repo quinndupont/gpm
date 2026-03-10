@@ -10,6 +10,7 @@ EDUCATOR_TRAINING = ROOT / "data" / "educator_training"
 
 sys.path.insert(0, str(ROOT))
 from scripts.data_generation.claude_utils import call_claude, get_educator_system_prompt, CLAUDE_SONNET_4_5
+from models.prompts.loader import render_prompt
 
 CRAFT_QUESTIONS = [
     "What does it mean to earn an abstraction?",
@@ -18,11 +19,6 @@ CRAFT_QUESTIONS = [
     "What's the difference between sentiment and sentimentality?",
     "How do you revise without losing the original impulse?",
 ]
-
-LESSON_PROMPT = """A student asks: {question}
-
-Explain this concept. Use examples. Be concrete. No bullet points or rubrics."""
-
 
 def main():
     parser = argparse.ArgumentParser()
@@ -45,7 +41,7 @@ def main():
     with open(args.output, "w" if args.replace else "a") as f:
         for i, q in enumerate(questions):
             print(f"[{i + 1}/{len(questions)}] Lesson: {q[:40]}...", flush=True)
-            user_msg = LESSON_PROMPT.format(question=q)
+            user_msg = render_prompt("tuning", "lesson", question=q)
             try:
                 lesson = call_claude(user_msg, system, model=args.model, max_tokens=600)
             except Exception as e:

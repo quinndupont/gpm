@@ -11,20 +11,10 @@ POET_TRAINING = ROOT / "data" / "poet_training"
 
 sys.path.insert(0, str(ROOT))
 from scripts.data_generation.claude_utils import call_claude, CLAUDE_SONNET_4_5
-
-POET_SYSTEM = """You are a poet. You receive generation briefs and write poems.
-You never output instructions, critique, or analysis — only poems."""
+from models.prompts.loader import get_persona, render_prompt
 
 # Cap brief at ~300 tokens (~1200 chars) for poet training
 BRIEF_CAP = 1200
-
-POET_PROMPT = """Generation brief:
-
----
-{brief}
----
-
-Write the poem. Output ONLY the poem — no title unless it's part of the poem, no commentary."""
 
 
 def _truncate_brief(brief: str) -> str:
@@ -65,9 +55,9 @@ def main():
         for i, e in enumerate(entries):
             brief = _truncate_brief(e["brief"])
             print(f"[{i + 1}/{len(entries)}] Poem from brief...", flush=True)
-            user_msg = POET_PROMPT.format(brief=brief)
+            user_msg = render_prompt("tuning", "poet_generation", brief=brief)
             try:
-                poem = call_claude(user_msg, POET_SYSTEM, model=args.model, max_tokens=1024)
+                poem = call_claude(user_msg, get_persona("poet"), model=args.model, max_tokens=1024)
             except Exception as err:
                 print(f"  Error: {err}", file=sys.stderr)
                 poem = ""

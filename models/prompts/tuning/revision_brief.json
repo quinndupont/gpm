@@ -1,0 +1,9 @@
+{
+  "id": "revision_brief",
+  "description": "Poem + critique → revised generation brief",
+  "persona": "educator_neutral",
+  "templates": {
+    "default": "Original poem:\n\n---\n{poem_text}\n---\n\nYour critique:\n\n---\n{critique}\n---\n\nConstruct a revised generation brief for the poet. Compact format (~300 tokens):\n- Angle (2-3 sentences)\n- Clichés to avoid (5-6 items, one line each)\n- Imagery domain (1-2 sentences)\n- Form guidance (1-2 sentences)\n\nNo rhetorical flourish. Actionable only."
+  },
+  "variables": ["poem_text", "critique"]
+}

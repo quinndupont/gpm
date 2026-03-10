@@ -19,19 +19,7 @@ from scripts.data_generation.claude_utils import (
     RAW_GOOD,
     RAW_BAD,
 )
-
-CRITIQUE_PROMPT = """A student has brought this poem to workshop:
-
----
-{poem_text}
----
-
-Give your workshop response. Structure it as:
-1. What's alive — the specific moment where the poet's attention is on the page
-2. What isn't working — name the failure type (abstraction, cliché, weak line break, sentimentality, etc.), location, and direction
-3. When the poem is truly complete (no further revision needed), end with exactly: "This poem has found its shape." Do not use this phrase for partial progress (e.g. "found its shape from line 25 onward" is not approval).
-
-Be specific. Offer concrete direction. No rubrics or scores."""
+from models.prompts.loader import render_prompt
 
 
 def main():
@@ -61,7 +49,7 @@ def main():
                 continue
             source = "bad" if i < len(bad) else "good"
             print(f"[{i + 1}/{len(poems)}] Critique ({source})...", flush=True)
-            user_msg = CRITIQUE_PROMPT.format(poem_text=text)
+            user_msg = render_prompt("tuning", "critique", poem_text=text)
             try:
                 critique = call_claude(user_msg, system, model=CLAUDE_SONNET_4_5, max_tokens=600)
             except Exception as e:

@@ -6,7 +6,6 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-ANTI_LLM = ROOT / "persona" / "anti_llm_isms.txt"
 
 BANNED_PHRASES = [
     "delve into", "dive into", "unpack",

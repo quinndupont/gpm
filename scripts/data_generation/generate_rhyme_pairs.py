@@ -43,42 +43,7 @@ from scripts.eval.meter_analyzer import (
 # Prompts
 # ---------------------------------------------------------------------------
 
-BRIEF_PROMPT = """A student has asked for help writing a poem. Their request:
-"{user_request}"
-
-Construct a COMPACT generation brief (~300 tokens max). Include:
-1. Angle — 2-3 sentences, not the obvious approach
-2. Clichés to avoid — 5-6 specific phrases/images for this topic
-3. Imagery domain — 1-2 sentences, unexpected
-4. Form guidance — the poem MUST be a {form_desc}. State the form, line count, and rhyme scheme explicitly.
-
-No rhetorical flourish. Actionable only."""
-
-POET_SYSTEM = """You are a poet. You receive generation briefs and write poems.
-You never output instructions, critique, or analysis — only poems."""
-
-POET_PROMPT = """Generation brief:
-
----
-{brief}
----
-
-Write the poem. Output ONLY the poem — no title unless it's part of the poem, no commentary.
-Follow the specified form and rhyme scheme precisely."""
-
-CRITIQUE_PROMPT = """Here is a poem written in a specific form, along with automated analysis.
-
-Poem:
----
-{poem}
----
-
-Form requested: {form_name}
-Expected rhyme scheme: {expected_scheme}
-
-{analysis_block}
-
-Write a 3-5 sentence craft observation about how this poem handles (or fails to handle) its form. Cover rhyme and meter where applicable. Be specific — name the words and lines. Note where rhymes land well, where meter holds or breaks for emphasis, and where control slips. No scores, no rubrics."""
+from models.prompts.loader import get_persona, render_prompt
 
 # ---------------------------------------------------------------------------
 # Topics — used when no external request source is available
@@ -158,9 +123,7 @@ def main():
             print(f"{label} Topic: {topic[:50]}...", flush=True)
 
             # Step A: Generate brief
-            brief_msg = BRIEF_PROMPT.format(
-                user_request=topic, form_desc=desc,
-            )
+            brief_msg = render_prompt("tuning", "rhyme_pairs", template="brief", user_request=topic, form_desc=desc)
             try:
                 brief = call_claude(brief_msg, educator_system,
                                     model=args.brief_model, max_tokens=500)
@@ -171,9 +134,9 @@ def main():
                 continue
 
             # Step B: Generate poem
-            poem_msg = POET_PROMPT.format(brief=brief)
+            poem_msg = render_prompt("tuning", "rhyme_pairs", template="poet", brief=brief)
             try:
-                poem = call_claude(poem_msg, POET_SYSTEM,
+                poem = call_claude(poem_msg, get_persona("poet"),
                                    model=args.poem_model, max_tokens=1024)
             except Exception as e:
                 print(f"  {label} Poem error: {e}", file=sys.stderr)
@@ -202,12 +165,7 @@ def main():
             }) + "\n")
 
             # Step D: Generate educator critique informed by analyzers
-            critique_msg = CRITIQUE_PROMPT.format(
-                poem=poem,
-                form_name=desc,
-                expected_scheme=scheme,
-                analysis_block=analysis_block,
-            )
+            critique_msg = render_prompt("tuning", "rhyme_pairs", template="critique", poem=poem, form_name=desc, expected_scheme=scheme, analysis_block=analysis_block)
             try:
                 critique = call_claude(critique_msg, educator_system,
                                        model=args.critique_model, max_tokens=400)
