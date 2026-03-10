@@ -3,6 +3,27 @@
 
 ---
 
+## Prompt Architecture & Model Experimentation
+
+Prompts and personas live in `models/prompts/` as JSON. This keeps the system **transparent and flexible** for experimenting with different models and prompt variants.
+
+**Structure:**
+- `models/prompts/personas/` — System prompts (educator_neutral, educator_condensed, poet, poet_rhyme)
+- `models/prompts/tuning/` — Prompts for data generation → `data/`
+- `models/prompts/inference/` — Prompts for the runtime pipeline
+
+**Loader:** `models.prompts.loader` provides `get_persona(id)`, `get_prompt(category, id, template)`, `render_prompt(category, id, template, **kwargs)`. All data-generation scripts and the inference pipeline use these instead of hardcoded strings.
+
+**Model experimentation:**
+- Base models: `config/model_registry.yaml` lists Qwen, Llama, DeepSeek, Mistral, etc. with educator/poet fit notes
+- Swap models via `config/inference_config.yaml` (educator/poet paths) or `--educator-model-override` / `--poet-model-override`
+- For 32B poet on 24GB: use `SwappingPipeline` (load one model at a time)
+- Prompt variants: add keys under `templates` in any JSON (e.g. `"terse"`, `"detailed"`) and pass `template="terse"` to the loader for A/B experiments
+
+See `models/README.md` for the full prompt taxonomy and data flow.
+
+---
+
 ## Foundational Philosophy: The Educator, Not the Evaluator
 
 The best poetry educators don't rate dimensions on 1-10 scales. They see the poet inside the poem and coach them toward their own best instincts.
@@ -33,10 +54,12 @@ This matters for the educator because:
 
 A multi-agent poetry system with two specialized fine-tuned models:
 
-1. **The Educator Model** (14B recommended) — A poetry mentor with a distinct voice, strong opinions, and deep craft knowledge. Functions as prompt constructor, critic, and developmental editor.
-2. **The Poet Model** (14B-32B recommended) — Produces original poems via inference, trained on exemplary work.
+1. **The Educator Model** (7B–14B typical) — A poetry mentor with a distinct voice, strong opinions, and deep craft knowledge. Functions as prompt constructor, critic, and developmental editor.
+2. **The Poet Model** (7B–32B) — Produces original poems via inference, trained on exemplary work.
 
-**Training:** Modal serverless GPUs (A10G for 14B, A100-80GB for 32B)
+**Model flexibility:** Base models are configurable via `config/model_registry.yaml`. Prompts live in `models/prompts/` (JSON) so you can swap personas and prompt variants without code changes. Use `inference_config.yaml` or CLI overrides to run different educator/poet combinations.
+
+**Training:** Modal serverless GPUs (A10G for 7B–14B, A100-80GB for 32B)
 **Export:** Merge LoRA → GGUF quantization (Q4_K_M or Q5_K_M)
 **Inference:** llama.cpp with Metal backend on Mac Mini M4 (24GB unified memory)
 **Data Generation:** Anthropic API (Claude) for training corpus creation
@@ -54,10 +77,10 @@ A multi-agent poetry system with two specialized fine-tuned models:
 │  │ (Good + Bad)  │   │ (In-persona   │   │ (T1-T6 tasks in  │   │
 │  └──────────────┘   │  generation)  │   │  educator voice)  │   │
 │                     └───────────────┘   └───────────────────┘   │
-│  ┌──────────────┐                                                │
-│  │ Pedagogy     │  Defines WHO the educator IS                   │
-│  │ Design Doc   │  (system prompt for all Claude API calls)      │
-│  └──────────────┘                                                │
+│  ┌──────────────────────┐                                       │
+│  │ models/prompts/       │  Personas + tuning prompts            │
+│  │ (personas/, tuning/)  │  (system prompt for Claude API)      │
+│  └──────────────────────┘                                       │
 └─────────────────────────────────────────────────────────────────┘
                               │
                     JSONL upload to Modal volume
@@ -258,23 +281,12 @@ Influences (for the human designing this):
 
 #### S1.2 Persona Consistency Specification
 
-The persona document is used in TWO ways:
+Personas are stored in `models/prompts/personas/` as JSON (e.g. `educator_neutral.json`, `educator_condensed.json`). The loader provides `get_persona("educator_neutral")` for use in two ways:
 
 1. **As the system prompt for Claude during training data generation** — Every training example is generated "in character" as this educator
-2. **As an evaluation rubric for the fine-tuned model** — After training, sample outputs are compared against the persona doc for voice consistency
+2. **As an evaluation rubric for the fine-tuned model** — After training, sample outputs are compared against the persona for voice consistency
 
-```python
-EDUCATOR_SYSTEM_PROMPT = """
-You are Robert, a poetry educator with the following characteristics:
-
-{full_persona_document}
-
-You are now responding to a student's work. Your voice, opinions, and teaching approach must be consistent with the persona defined above. 
-
-CRITICAL: You are not a rubric. You are a person who has spent their life reading and writing poetry and who cares deeply about helping others find their voice. Respond as that person, not as 
-an evaluation system.
-"""
-```
+The condensed persona (~200 words) is used in training data; the full persona can be authored as a design doc and distilled into the JSON. See `models/README.md` for the persona inventory.
 
 ### S2: Training Data Generation Specifications
 
@@ -343,85 +355,19 @@ an institution.
 
 #### S2.4 Claude API Prompt Templates
 
-**Task T1: Workshop Critique**
+Prompts live in `models/prompts/tuning/` as JSON. Use the loader:
+
 ```python
-T1_PROMPT = """
-{EDUCATOR_SYSTEM_PROMPT}
+from models.prompts.loader import render_prompt, get_persona
 
-A student has brought this poem to workshop:
-
----
-{poem_text}
----
-
-Give your honest workshop response. Remember:
-- Start with what's alive in this poem — the specific moment 
-  where the poet's actual attention is on the page
-- Then address what isn't working yet, naming the specific 
-  type of failure
-- Offer at least one concrete direction — not a rewrite, 
-  but a question or suggestion that could unlock the next draft
-- If the poem is genuinely bad, say so with compassion but 
-  without lying
-- If the poem is genuinely good, let your enthusiasm show
-
-Respond as {educator_name}. No scores, no rubrics, no bullet 
-points. This is a conversation about a poem.
-"""
+system = get_persona("educator_neutral")
+user_msg = render_prompt("tuning", "critique", poem_text=poem_text)
+# → calls Claude with system + user_msg
 ```
 
-**Task T2: Generation Brief**
-```python
-T2_PROMPT = """
-{EDUCATOR_SYSTEM_PROMPT}
+**Task mapping:** T1=critique, T2=brief, T3=comparison, T4=autopsy, T5=dialogue, T6=lesson. See `models/prompts/tuning/*.json` for the exact templates. Add new keys under `templates` for prompt variants (e.g. `"terse"`, `"detailed"`) to run experiments.
 
-A student has asked for help writing a poem. Their request:
-"{user_request}"
-
-Construct a GENERATION BRIEF — the assignment you'd give 
-your most talented MFA student. The brief MUST include:
-
-1. A SPECIFIC angle — not the obvious approach to this topic
-2. ANTI-CLICHÉ GUIDANCE: At minimum 8 specific phrases, 
-   images, and structural moves to AVOID for this topic
-3. An UNEXPECTED IMAGERY DOMAIN orthogonal to the topic
-4. FORM AND STRUCTURE guidance that serves the content — 
-   argue for why this form fits
-5. SOUND guidance — specific consonant/vowel textures
-6. A STRUCTURAL ARC — where should the poem turn?
-
-Write in your voice, as if excited about this specific poem.
-
-{context_bad_examples}
-{context_good_examples}
-"""
-```
-
-**Task T4: Cliché Autopsy**
-```python
-T4_PROMPT = """
-{EDUCATOR_SYSTEM_PROMPT}
-
-Here is a poem from an amateur poet:
-
----
-{bad_poem_text}
----
-
-Perform a "cliché autopsy" — for each clichéd element, explain:
-1. WHAT the cliché is (quote it)
-2. WHY it became a cliché (what was it before it died?)
-3. WHAT the poet was probably reaching for
-4. WHAT they could do instead (a direction, not a rewrite)
-
-You're not just saying "this is bad." You're teaching the 
-student to see the living impulse buried under dead language. 
-Every cliché was once a fresh observation. Help them find 
-their way back to the original seeing.
-
-Be honest but not cruel. This poet is trying.
-"""
-```
+T2 (brief), T4 (autopsy), and other task templates are in `models/prompts/tuning/brief.json`, `autopsy.json`, etc. Use `render_prompt("tuning", "brief", user_request=req)` and similar.
 
 #### S2.5 Training Data Format
 
@@ -446,7 +392,7 @@ All training data in Llama 3 chat format:
 }
 ```
 
-**Critical:** The system message in training data is a CONDENSED version of the full persona doc (~200 words). During Claude API generation, you use the full 2-3 page persona. For training, you compress to essential voice markers. This teaches the model to produce the full persona from a short trigger.
+**Critical:** The system message in training data uses the condensed persona (`educator_condensed` or `educator_neutral`). During Claude API generation, use `get_persona("educator_neutral")`. For training, the loader provides the appropriate persona. This teaches the model to produce the full persona from a short trigger.
 
 ---
 
@@ -915,7 +861,7 @@ class PoetryPipeline:
             verbose=False
         )
         
-        self.educator_system = config.educator_persona_condensed
+        self.educator_system = config.educator_persona_condensed  # from models/prompts loader
         self.max_revisions = config.max_revisions  # default: 3
         self.user_profile = config.user_style_profile
     
@@ -1039,7 +985,8 @@ class PoetryPipeline:
         ]
         return any(s in critique.lower() for s in approval_signals)
 
-    # ── Prompt builders (unchanged from v2, see S5.2) ──
+    # ── Prompt builders: use models.prompts.loader.render_prompt ──
+    # Templates in models/prompts/inference/*.json
     
     def _build_brief_prompt(self, user_request):
         style_ctx = ""
@@ -1433,12 +1380,11 @@ What Maren Would Never Say:
 ## Appendix C: Project Directory Structure
 
 ```
-poetry-chatbot/
+gpm/
 ├── data/
 │   ├── raw/
-│   │   ├── tier1_exemplary/          # Curated good poetry
-│   │   ├── tier2_competent/          # General published poetry
-│   │   └── tier3_amateur/            # Bad poetry for contrast
+│   │   ├── good/                     # Curated good poetry
+│   │   └── bad/                      # Bad poetry for contrast
 │   ├── annotated/                    # Claude's raw analysis output
 │   ├── educator_training/            # Quality-gated training data
 │   │   ├── train.jsonl
@@ -1446,10 +1392,15 @@ poetry-chatbot/
 │   └── poet_training/
 │       ├── train.jsonl
 │       └── valid.jsonl
-├── persona/
-│   ├── pedagogy_design_doc.md        # THE persona document (S1.1)
-│   ├── persona_condensed.txt         # 200-word version for training
-│   └── anti_llm_isms.txt            # Banned phrase list (S2.3)
+├── models/
+│   ├── prompts/                      # Prompt architecture (JSON + loader)
+│   │   ├── loader.py                 # get_persona, get_prompt, render_prompt
+│   │   ├── personas/                 # educator_neutral, poet, etc.
+│   │   ├── tuning/                   # Data-generation prompts
+│   │   └── inference/                # Runtime pipeline prompts
+│   ├── adapters/                     # LoRA checkpoints
+│   ├── *.gguf                        # Quantized models for inference
+│   └── README.md                     # Prompt taxonomy, model inventory
 ├── scripts/
 │   ├── data_generation/
 │   │   ├── generate_critiques.py     # T1: Claude API batch critiques
@@ -1471,15 +1422,13 @@ poetry-chatbot/
 │       ├── pipeline.py               # PoetryPipeline class
 │       ├── swapping_pipeline.py       # Option C swap strategy
 │       └── feedback.py               # Feedback collection
-├── models/                           # Downloaded GGUF files
-│   ├── llama3.1-14b-educator-Q4_K_M.gguf
-│   └── llama3.1-14b-poet-Q4_K_M.gguf
 ├── feedback/
 │   └── feedback.jsonl
 ├── config/
+│   ├── model_registry.yaml           # Base model options (Qwen, Llama, etc.)
 │   ├── educator_training.yaml
 │   ├── poet_training.yaml
 │   ├── export_pipeline.yaml
-│   └── inference_config.yaml
+│   └── inference_config.yaml         # Educator/poet paths, overrides
 └── README.md
 ```
