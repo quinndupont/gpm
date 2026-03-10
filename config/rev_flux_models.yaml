@@ -1,25 +1,41 @@
 # RevFlux model configs for comparison.
 # educator/poet: "gguf" = use inference_config.yaml; "gguf:path" = explicit GGUF; "ollama:tag" = Ollama
-# revisions: per-model sweep (vanilla: rev0 only; fine-tuned: full sweep)
+# revisions: per-model sweep (vanilla: rev0+rev1 for change_pcts; fine-tuned: full sweep)
+# test_models: model IDs to run when --test (default when no --models given)
+test_models:
+  - trained-qwen2.5-7b
+  - qwen2.5-7b-vanilla
+  - llama3.1-8b-vanilla
+  - command-r7b-vanilla
+
 models:
-  # --- Vanilla baselines (rev0 only = poet-only, no educator loop) ---
+  # --- Vanilla baselines (rev0+rev1: same model as educator+poet for change_pcts) ---
   - id: qwen2.5-7b-vanilla
     label: "Vanilla Qwen 2.5 7B"
     educator: ollama:qwen2.5:7b-instruct
     poet: ollama:qwen2.5:7b-instruct
-    revisions: [0]
+    revisions: [0, 1, 3]
 
   - id: llama3.1-8b-vanilla
     label: "Vanilla Llama 3.1 8B"
     educator: ollama:llama3.1:8b
     poet: ollama:llama3.1:8b
-    revisions: [0]
+    revisions: [0, 1, 3]
 
   - id: command-r7b-vanilla
     label: "Vanilla Command R7B"
     educator: ollama:command-r7b:7b
     poet: ollama:command-r7b:7b
-    revisions: [0]
+    revisions: [0, 1, 3]
+
+  # Vanilla GGUF (no Ollama needed; uses downloaded base models)
+  - id: llama3.1-8b-vanilla-gguf
+    label: "Vanilla Llama 3.1 8B (GGUF)"
+    educator: gguf:./models/llama3.1-8b-instruct-Q4_K_M.gguf
+    poet: gguf:./models/llama3.1-8b-instruct-Q4_K_M.gguf
+    revisions: [0, 1, 3]
+
+  # Cohere GGUF has Jinja2 template incompatibility with llama.cpp; use command-r7b-vanilla (Ollama) instead
 
   # --- Fine-tuned variants (full revision sweep) ---
   - id: trained-llama3.1-8b
@@ -31,7 +47,7 @@ models:
   - id: trained-qwen2.5-7b
     label: "Fine-tuned Qwen 2.5 7B"
     educator: gguf:./models/qwen2.5-7b-educator-Q4_K_M.gguf
-    poet: gguf:./models/qwen2.5-7b-poet_rhyme-Q4_K_M.gguf
+    poet: gguf:./models/qwen2.5-7b-poet-Q4_K_M.gguf
     revisions: [0, 1, 3, 5]
 
   - id: trained-command-r7b
@@ -40,9 +56,9 @@ models:
     poet: gguf:./models/command-r7b-poet_rhyme-Q4_K_M.gguf
     revisions: [0, 1, 3, 5]
 
-  # Legacy: use inference_config default (for backward compat)
+  # Legacy: explicit Qwen paths (matches inference_config; avoids missing Llama GGUF)
   - id: trained
     label: "Trained (GGUF)"
-    educator: gguf
-    poet: gguf
+    educator: gguf:./models/qwen2.5-7b-educator-Q4_K_M.gguf
+    poet: gguf:./models/qwen2.5-7b-poet-Q4_K_M.gguf
     revisions: [0, 1, 3, 5]

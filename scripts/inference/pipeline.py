@@ -425,6 +425,7 @@ class PoetryPipeline:
         self,
         user_request: str,
         max_revisions: int = None,
+        min_revisions: int = None,
         verbose: bool = False,
         interactive: bool = False,
     ) -> dict:
@@ -486,7 +487,11 @@ class PoetryPipeline:
             revision_history.append({"draft": draft, "critique": critique, "iteration": i})
             out("EDUCATOR", f"Critique (revision {i + 1}) → Poet", critique)
 
-            if self._educator_approves(critique, draft=draft, brief=brief):
+            honor_approval = (
+                self._educator_approves(critique, draft=draft, brief=brief)
+                and (min_revisions is None or i >= min_revisions)
+            )
+            if honor_approval:
                 approved_at_round = len(revision_history)  # 1-indexed
                 if verbose:
                     print("\n  ✓ Educator approved — poem complete.\n", flush=True)

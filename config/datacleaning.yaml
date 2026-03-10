@@ -1,0 +1,6 @@
+# Poem datacleaning config
+min_lines: 2
+max_lines: 500
+min_chars: 20
+max_chars: 100000
+include_rev_flux: false

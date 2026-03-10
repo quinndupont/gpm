@@ -22,12 +22,15 @@ from scripts.benchmarks.rev_flux.line_change import (
 )
 
 
-def _load_models_config() -> list[dict]:
+def _load_models_config() -> tuple[list[dict], list[str] | None]:
     import yaml
+    default = [{"id": "trained", "label": "Trained (GGUF)", "educator": "gguf", "poet": "gguf", "revisions": [0, 1, 3, 5]}]
     if not MODELS_CONFIG.exists():
-        return [{"id": "trained", "label": "Trained (GGUF)", "educator": "gguf", "poet": "gguf", "revisions": [0, 1, 3, 5]}]
-    with open(MODELS_CONFIG) as f:
-        return yaml.safe_load(f).get("models", [])
+        return default, None
+    data = yaml.safe_load(open(MODELS_CONFIG)) or {}
+    models = data.get("models", default)
+    test_models = data.get("test_models")
+    return models, test_models
 
 
 def _slug(s: str) -> str:
@@ -41,12 +44,14 @@ def run_single(
     category: str,
     prompt_idx: int,
     model_id: str = "trained",
+    min_revisions: int = 1,
     verbose: bool = False,
 ) -> dict:
     """Run one pipeline invocation and attach RevFlux metrics."""
     result = pipeline.generate(
         user_request,
         max_revisions=max_revisions,
+        min_revisions=min_revisions if max_revisions > 0 else 0,
         verbose=verbose,
         interactive=False,
     )
@@ -89,7 +94,13 @@ def main():
         nargs="+",
         type=int,
         default=[0, 1, 3, 5],
-        help="Revision cycle lengths (0=poet only). Trained: 0,1,3,5. Vanilla: 0.",
+        help="Revision cycle lengths (0=poet only). Overrides per-model config when set.",
+    )
+    parser.add_argument(
+        "--num-revisions",
+        type=int,
+        default=None,
+        help="Number of revision levels for all models (1-4, from [0,1,3,5]). Default in --test: 3.",
     )
     parser.add_argument(
         "--test",
@@ -144,9 +155,23 @@ def main():
         action="store_true",
         help="Discover GGUF educator+poet pairs from models/ and run them",
     )
+    parser.add_argument(
+        "--min-revisions",
+        type=int,
+        default=1,
+        help="Minimum revision rounds before honoring educator approval (default: 1). Use 0 to allow early approval.",
+    )
     args = parser.parse_args()
 
-    models_config = _load_models_config()
+    CANONICAL_REVS = [0, 1, 3, 5]
+    if args.num_revisions is not None:
+        revs_to_run_override = CANONICAL_REVS[: args.num_revisions]
+    elif args.test:
+        revs_to_run_override = CANONICAL_REVS[:3]
+    else:
+        revs_to_run_override = None
+
+    models_config, test_models = _load_models_config()
 
     if args.auto_discover:
         from scripts.training.model_discovery import discover_local_gguf
@@ -174,9 +199,15 @@ def main():
         if not models_config:
             print("No educator+poet pairs found in models/*.gguf")
             return
+        test_models = None  # discovery overrides config; use all discovered
         print("Auto-discovered:", [m["id"] for m in models_config])
 
-    model_ids = args.models or [m["id"] for m in models_config]
+    if args.models:
+        model_ids = args.models
+    elif args.test and test_models:
+        model_ids = test_models
+    else:
+        model_ids = [m["id"] for m in models_config]
     models_to_run = [m for m in models_config if m["id"] in model_ids]
     if not models_to_run:
         print("No matching models. Use --list-models to see available.")
@@ -186,6 +217,7 @@ def main():
         model_ids = [m["id"] for m in models_config]
         models_to_run = models_config
         args.max_revisions = None
+        revs_to_run_override = None  # use per-model config for full sweep
 
     if args.list_models:
         for m in models_config:
@@ -196,11 +228,14 @@ def main():
     if args.dry_run:
         total = 0
         limit = 1 if args.test else (args.limit or 999)
+        n_prompts = sum(min(len(CATEGORIES[cat]), limit) for cat in args.categories)
         for m in models_to_run:
-            revs = m.get("revisions", [0])
-            if args.test:
-                revs = [0] if (m.get("educator", "").startswith("ollama:")) else revs[:2]
-            n_prompts = sum(min(len(CATEGORIES[cat]), limit) for cat in args.categories)
+            if revs_to_run_override is not None:
+                revs = revs_to_run_override
+            elif args.max_revisions is not None:
+                revs = args.max_revisions
+            else:
+                revs = m.get("revisions", [0])
             total += n_prompts * len(revs)
         print(f"Would run {total} pipeline invocations")
         print(f"Categories: {args.categories}")
@@ -222,16 +257,12 @@ def main():
             educator_model_override=edu_override,
             poet_model_override=poet_override,
         )
-        revs_to_run = model_cfg.get("revisions", [0])
-        if args.max_revisions is not None:
+        if revs_to_run_override is not None:
+            revs_to_run = revs_to_run_override
+        elif args.max_revisions is not None:
             revs_to_run = args.max_revisions
-        if args.test:
-            if "vanilla" in mid or (edu and edu.startswith("ollama:")):
-                revs_to_run = [0]
-            elif "trained" not in mid and not (edu and (edu == "gguf" or edu.startswith("gguf:"))):
-                continue
-            else:
-                revs_to_run = revs_to_run[:2] if len(revs_to_run) > 2 else revs_to_run
+        else:
+            revs_to_run = model_cfg.get("revisions", [0])
         for category in args.categories:
             prompts = CATEGORIES[category]
             n_prompts = 1 if args.test else (args.limit or len(prompts))
@@ -245,6 +276,7 @@ def main():
                         category=category,
                         prompt_idx=idx,
                         model_id=mid,
+                        min_revisions=args.min_revisions,
                         verbose=args.verbose,
                     )
                     runs.append(run)
@@ -274,14 +306,23 @@ def main():
 
     import statistics
     by_model = {}
+    by_model_category: dict[str, dict[str, dict]] = {}
     for r in runs:
         mid = r["model_id"]
+        cat = r["category"]
         if mid not in by_model:
             by_model[mid] = {"change_pcts": [], "perf_sec": []}
         by_model[mid]["change_pcts"].extend(r.get("change_pcts", []))
         perf = r.get("metadata", {}).get("perf_total_sec")
         if perf is not None:
             by_model[mid]["perf_sec"].append(perf)
+        if mid not in by_model_category:
+            by_model_category[mid] = {}
+        if cat not in by_model_category[mid]:
+            by_model_category[mid][cat] = {"change_pcts": [], "perf_sec": []}
+        by_model_category[mid][cat]["change_pcts"].extend(r.get("change_pcts", []))
+        if perf is not None:
+            by_model_category[mid][cat]["perf_sec"].append(perf)
     model_stats = {}
     for mid, data in by_model.items():
         cps = data["change_pcts"]
@@ -293,29 +334,63 @@ def main():
             "perf_total_sec_mean": round(statistics.mean(secs), 2) if secs else None,
             "perf_total_sec_median": round(statistics.median(secs), 2) if secs else None,
         }
+    model_stats_by_category: dict[str, dict[str, dict]] = {}
+    for mid, cat_data in by_model_category.items():
+        model_stats_by_category[mid] = {}
+        for cat, data in cat_data.items():
+            cps = data["change_pcts"]
+            secs = data["perf_sec"]
+            model_stats_by_category[mid][cat] = {
+                "change_pcts_mean": round(statistics.mean(cps), 2) if cps else None,
+                "change_pcts_median": round(statistics.median(cps), 2) if cps else None,
+                "change_pcts_std": round(statistics.stdev(cps), 2) if len(cps) > 1 else None,
+                "perf_total_sec_mean": round(statistics.mean(secs), 2) if secs else None,
+                "perf_total_sec_median": round(statistics.median(secs), 2) if secs else None,
+            }
     summary = {
         "total_runs": len(runs),
         "categories": args.categories,
         "models_tested": model_ids,
         "aggregate_change_pcts": [p for r in runs for p in r.get("change_pcts", [])],
         "model_stats": model_stats,
+        "model_stats_by_category": model_stats_by_category,
     }
     summary_path = args.output_dir / "summary.json"
     with open(summary_path, "w") as f:
         json.dump(summary, f, indent=2)
     print(f"\nSummary: {summary_path}")
     if model_stats:
-        print("\nComparison (change_pcts mean | perf_sec mean):")
+        print("\nComparison (overall):")
         for mid in sorted(model_stats):
             s = model_stats[mid]
             cp = s.get("change_pcts_mean", "N/A")
             pf = s.get("perf_total_sec_mean", "N/A")
             print(f"  {mid}: {cp} | {pf}s")
+    if model_stats_by_category:
+        print("\nBy category:")
+        for cat in args.categories:
+            print(f"  {cat}:")
+            for mid in sorted(model_stats_by_category):
+                if cat not in model_stats_by_category[mid]:
+                    continue
+                s = model_stats_by_category[mid][cat]
+                cp = s.get("change_pcts_mean", "N/A")
+                pf = s.get("perf_total_sec_mean", "N/A")
+                print(f"    {mid}: {cp} | {pf}s")
 
     if args.visualize and runs:
         import subprocess
+        viz_py = ["uv", "run", "--with", "matplotlib", "python"]
+        harness_script = str(ROOT / "scripts" / "benchmarks" / "rev_flux" / "visualize_harness.py")
+        dashboard_script = str(ROOT / "scripts" / "benchmarks" / "rev_flux" / "visualize_dashboard.py")
+        out_plots = str(args.output_dir / "plots")
         subprocess.run(
-            [sys.executable, str(ROOT / "scripts" / "benchmarks" / "rev_flux" / "visualize_harness.py"), str(args.output_dir), "-o", str(args.output_dir / "plots")],
+            viz_py + [harness_script, str(args.output_dir), "-o", out_plots, "--comparison-only"],
+            cwd=str(ROOT),
+            check=True,
+        )
+        subprocess.run(
+            viz_py + [dashboard_script, str(args.output_dir), "-o", out_plots],
             cwd=str(ROOT),
             check=True,
         )

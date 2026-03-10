@@ -12,6 +12,18 @@ ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT))
 
 REV_FLUX = Path(__file__).resolve().parent
+MODELS_CONFIG = ROOT / "config" / "rev_flux_models.yaml"
+
+
+def _load_model_labels() -> dict[str, str]:
+    """Load model_id -> label from config. Falls back to model_id if not found."""
+    labels = {}
+    if MODELS_CONFIG.exists():
+        import yaml
+        data = yaml.safe_load(open(MODELS_CONFIG)) or {}
+        for m in data.get("models", []):
+            labels[m["id"]] = m.get("label", m["id"])
+    return labels
 
 
 def _ensure_matplotlib():
@@ -106,31 +118,51 @@ def plot_category_comparison(
     runs: list[dict],
     out_path: Path,
     title: str = "RevFlux: Per-Category Change Distribution",
+    model_labels: dict[str, str] | None = None,
 ) -> None:
-    """Box plot: change_pcts by category. Only runs with revision data."""
+    """Grouped box plot: change_pcts by (category, model). Only runs with revision data."""
     plt = _ensure_matplotlib()[0]
-    by_cat: dict[str, list[float]] = {}
+    by_cat_model: dict[tuple[str, str], list[float]] = {}
     for r in runs:
         pcts = r.get("change_pcts", [])
         if not pcts:
             continue
         cat = r.get("category", "unknown")
-        by_cat.setdefault(cat, []).extend(pcts)
-    if not by_cat:
+        mid = r.get("model_id") or r.get("metadata", {}).get("model_poet", "unknown")
+        by_cat_model.setdefault((cat, mid), []).extend(pcts)
+    if not by_cat_model:
         return
-    # Explicit order so all categories appear
+    labels = model_labels or {}
     cat_order = ["famous_poetry", "short_generic", "cliche"]
-    cats = [c for c in cat_order if c in by_cat]
-    cats.extend([c for c in sorted(by_cat) if c not in cats])
-    data = [by_cat[c] for c in cats]
-    fig, ax = plt.subplots(figsize=(8, 5))
-    bp = ax.boxplot(data, tick_labels=cats, patch_artist=True)
-    for patch in bp["boxes"]:
-        patch.set_facecolor("steelblue")
-        patch.set_alpha(0.7)
+    models = sorted({m for _, m in by_cat_model})
+    cats = [c for c in cat_order if any((c, m) in by_cat_model for m in models)]
+    cats.extend([c for c in sorted({c for c, _ in by_cat_model}) if c not in cats])
+    n_cats, n_models = len(cats), len(models)
+    data, positions, colors = [], [], []
+    colors_list = plt.cm.Set3.colors
+    for i, cat in enumerate(cats):
+        for j, mid in enumerate(models):
+            key = (cat, mid)
+            if key not in by_cat_model:
+                continue
+            data.append(by_cat_model[key])
+            pos = i * (n_models + 1) + j
+            positions.append(pos)
+            colors.append(colors_list[j % len(colors_list)])
+    if not data:
+        return
+    fig, ax = plt.subplots(figsize=(max(10, n_cats * (n_models + 1) * 0.8), 5))
+    bp = ax.boxplot(data, positions=positions, widths=0.6, patch_artist=True)
+    for i, patch in enumerate(bp["boxes"]):
+        patch.set_facecolor(colors[i])
+        patch.set_alpha(0.8)
+    ax.set_xticks([i * (n_models + 1) + (n_models - 1) / 2 for i in range(n_cats)])
+    ax.set_xticklabels(cats, rotation=15, ha="right")
     ax.set_ylabel("Line change (%)")
     ax.set_title(title)
     ax.set_ylim(0, 100)
+    legend_handles = [plt.Rectangle((0, 0), 1, 1, fc=colors_list[j % len(colors_list)], alpha=0.8, label=labels.get(m, m)) for j, m in enumerate(models)]
+    ax.legend(handles=legend_handles, loc="upper right", fontsize=8)
     fig.tight_layout()
     fig.savefig(out_path, dpi=150)
     plt.close()
@@ -140,8 +172,9 @@ def plot_revision_length_comparison(
     runs: list[dict],
     out_path: Path,
     title: str = "RevFlux: Change by Model and Revision Length",
+    model_labels: dict[str, str] | None = None,
 ) -> None:
-    """Grouped box plot: change_pcts by (model, max_revisions). Captures multiple models and revision process."""
+    """Grouped box plot: x = model, grouped by revision level. Captures multiple models and revision process."""
     plt = _ensure_matplotlib()[0]
     by_key: dict[tuple[str, int], list[float]] = {}
     for r in runs:
@@ -155,21 +188,31 @@ def plot_revision_length_comparison(
         by_key.setdefault((mid, rev), []).extend(pcts)
     if not by_key:
         return
-    # Build grouped layout: x = (model, rev) combos, sorted by model then rev
-    keys = sorted(by_key, key=lambda k: (k[0], k[1]))
-    data = [by_key[k] for k in keys]
-    labels = [f"{m}\nrev{k}" for m, k in keys]
-    fig, ax = plt.subplots(figsize=(max(10, len(keys) * 1.2), 5))
-    bp = ax.boxplot(data, tick_labels=labels, patch_artist=True)
-    colors = plt.cm.Set3.colors
-    for i, patch in enumerate(bp["boxes"]):
-        patch.set_facecolor(colors[i % len(colors)])
+    labels = model_labels or {}
+    models = sorted({m for m, _ in by_key})
+    revs = sorted({r for _, r in by_key})
+    n_models, n_revs = len(models), len(revs)
+    data, positions, colors = [], [], []
+    colors_list = plt.cm.Set3.colors
+    for i, mid in enumerate(models):
+        for j, rev in enumerate(revs):
+            if (mid, rev) in by_key:
+                data.append(by_key[(mid, rev)])
+                pos = i * (n_revs + 1) + j
+                positions.append(pos)
+                colors.append(colors_list[j % len(colors_list)])
+    fig, ax = plt.subplots(figsize=(max(10, n_models * (n_revs + 1) * 0.8), 5))
+    bp = ax.boxplot(data, positions=positions, widths=0.6, patch_artist=True)
+    for idx, patch in enumerate(bp["boxes"]):
+        patch.set_facecolor(colors[idx])
         patch.set_alpha(0.8)
-    plt.setp(ax.get_xticklabels(), rotation=20, ha="right", fontsize=8)
-    ax.set_xlabel("Model (rev = max revision cycles)")
+    ax.set_xticks([i * (n_revs + 1) + (n_revs - 1) / 2 for i in range(n_models)])
+    ax.set_xticklabels([labels.get(m, m) for m in models], rotation=15, ha="right", fontsize=9)
     ax.set_ylabel("Line change (%)")
     ax.set_title(title)
     ax.set_ylim(0, 100)
+    legend_handles = [plt.Rectangle((0, 0), 1, 1, fc=colors_list[j % len(colors_list)], alpha=0.8, label=f"rev{r}") for j, r in enumerate(revs)]
+    ax.legend(handles=legend_handles, loc="upper right", fontsize=8)
     fig.tight_layout()
     fig.savefig(out_path, dpi=150)
     plt.close()
@@ -179,8 +222,9 @@ def plot_model_comparison(
     runs: list[dict],
     out_path: Path,
     title: str = "RevFlux: Per-Model Change Distribution",
+    model_labels: dict[str, str] | None = None,
 ) -> None:
-    """Box plot: change_pcts by model_id. Only includes models with revision data (trained)."""
+    """Box plot: change_pcts by model_id. Only includes models with revision data."""
     plt = _ensure_matplotlib()[0]
     by_model: dict[str, list[float]] = {}
     for r in runs:
@@ -191,14 +235,17 @@ def plot_model_comparison(
         by_model.setdefault(mid, []).extend(pcts)
     if not by_model:
         return
+    labels = model_labels or {}
     models = list(by_model)
     data = [by_model[m] for m in models]
-    fig, ax = plt.subplots(figsize=(max(8, len(models) * 1.5), 5))
-    bp = ax.boxplot(data, tick_labels=models, patch_artist=True)
-    plt.setp(ax.get_xticklabels(), rotation=15, ha="right")
-    for patch in bp["boxes"]:
-        patch.set_facecolor("mediumseagreen")
-        patch.set_alpha(0.7)
+    tick_labels = [labels.get(m, m) for m in models]
+    fig, ax = plt.subplots(figsize=(max(10, len(models) * 2), 5))
+    bp = ax.boxplot(data, tick_labels=tick_labels, patch_artist=True)
+    plt.setp(ax.get_xticklabels(), rotation=15, ha="right", fontsize=9)
+    colors = plt.cm.Set3.colors
+    for i, patch in enumerate(bp["boxes"]):
+        patch.set_facecolor(colors[i % len(colors)])
+        patch.set_alpha(0.8)
     ax.set_ylabel("Line change (%)")
     ax.set_title(title)
     ax.set_ylim(0, 100)
@@ -211,37 +258,45 @@ def plot_approval_timing(
     runs: list[dict],
     out_path: Path,
     title: str = "RevFlux: Approval Timing",
+    model_labels: dict[str, str] | None = None,
 ) -> None:
-    """Bar chart: when did educator approve (round 1, 2, 3, ...) or not at all. Only runs with revision."""
+    """Grouped bar chart: when did educator approve, per model. Only runs with revision."""
     plt = _ensure_matplotlib()[0]
-    by_round: dict[int | str, int] = {}
+    by_round_model: dict[tuple[int | str, str], int] = {}
     for r in runs:
         if not r.get("revision_history"):
             continue
+        mid = r.get("model_id") or r.get("metadata", {}).get("model_poet", "unknown")
         meta = r.get("metadata", {})
         if meta.get("approved"):
             rd = meta.get("approved_at_round", 1)
-            by_round[rd] = by_round.get(rd, 0) + 1
+            key = (rd, mid)
         else:
-            by_round["max_reached"] = by_round.get("max_reached", 0) + 1
-    if not by_round:
+            key = ("max_reached", mid)
+        by_round_model[key] = by_round_model.get(key, 0) + 1
+    if not by_round_model:
         return
-    fig, ax = plt.subplots(figsize=(8, 5))
-    approved = [(k, v) for k, v in by_round.items() if k != "max_reached"]
-    approved.sort(key=lambda x: x[0])
-    labels = [str(x[0]) for x in approved]
-    vals = [x[1] for x in approved]
-    x_pos = list(range(len(labels)))
-    ax.bar(x_pos, vals, color="steelblue", alpha=0.8, width=0.8)
-    ax.set_xticks(x_pos)
-    ax.set_xticklabels(labels)
-    if "max_reached" in by_round:
-        ax.bar(len(labels), by_round["max_reached"], color="gray", alpha=0.7, width=0.8, label="Max revisions reached")
-        ax.set_xticks(list(x_pos) + [len(labels)])
-        ax.set_xticklabels(labels + ["—"])
+    labels_map = model_labels or {}
+    round_vals = {k for k, _ in by_round_model}
+    rounds = sorted([k for k in round_vals if k != "max_reached"])
+    if "max_reached" in round_vals:
+        rounds.append("max_reached")
+    models = sorted({m for _, m in by_round_model})
+    n_rounds, n_models = len(rounds), len(models)
+    width = 0.8 / max(1, n_models)
+    x = list(range(n_rounds))
+    colors = plt.cm.Set3.colors
+    fig, ax = plt.subplots(figsize=(max(8, n_rounds * 1.5), 5))
+    for j, mid in enumerate(models):
+        vals = [by_round_model.get((r, mid), 0) for r in rounds]
+        offset = (j - n_models / 2 + 0.5) * width
+        ax.bar([xi + offset for xi in x], vals, width, label=labels_map.get(mid, mid), color=colors[j % len(colors)], alpha=0.8)
+    ax.set_xticks(x)
+    ax.set_xticklabels([str(r) if r != "max_reached" else "—" for r in rounds])
     ax.set_xlabel("Approval round (1-indexed)")
     ax.set_ylabel("Count of runs")
     ax.set_title(title)
+    ax.legend(loc="upper right", fontsize=8)
     fig.tight_layout()
     fig.savefig(out_path, dpi=150)
     plt.close()
@@ -267,6 +322,11 @@ def main():
         type=Path,
         help="Single run JSON for stanza map + stability only",
     )
+    parser.add_argument(
+        "--comparison-only",
+        action="store_true",
+        help="Only produce model comparison plots (skip per-run stanza/stability)",
+    )
     args = parser.parse_args()
 
     out_dir = args.output_dir or args.data_dir / "plots"
@@ -287,10 +347,15 @@ def main():
         print("No runs found")
         return
 
-    plot_category_comparison(runs, out_dir / "category_comparison.png")
-    plot_revision_length_comparison(runs, out_dir / "revision_length_comparison.png")
-    plot_model_comparison(runs, out_dir / "model_comparison.png")
-    plot_approval_timing(runs, out_dir / "approval_timing.png")
+    model_labels = _load_model_labels()
+    plot_category_comparison(runs, out_dir / "category_comparison.png", model_labels=model_labels)
+    plot_revision_length_comparison(runs, out_dir / "revision_length_comparison.png", model_labels=model_labels)
+    plot_model_comparison(runs, out_dir / "model_comparison.png", model_labels=model_labels)
+    plot_approval_timing(runs, out_dir / "approval_timing.png", model_labels=model_labels)
+
+    if args.comparison_only:
+        print(f"Plots saved to {out_dir}")
+        return
 
     # Per-run stanza + stability: one per (category, rev) for rev in [1, 3]
     seen: set[tuple[str, int]] = set()
