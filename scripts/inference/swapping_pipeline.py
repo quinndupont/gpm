@@ -10,7 +10,8 @@ ROOT = Path(__file__).resolve().parents[2]
 import sys
 sys.path.insert(0, str(ROOT))
 from models.prompts.loader import get_persona
-from .pipeline import PoetryPipeline, Config
+from scripts.training.model_registry import DEFAULT_STOP_TOKENS, stop_tokens_for
+from .pipeline import PoetryPipeline, Config, _infer_short_from_gguf_path
 
 
 class SwappingPipeline(PoetryPipeline):
@@ -30,6 +31,11 @@ class SwappingPipeline(PoetryPipeline):
         self.max_revisions = self.config.max_revisions
         self.user_profile = self.config.user_style_profile
         self._load("educator")
+
+    def _get_stop_tokens(self, role: str) -> list[str]:
+        path = self.config.educator_model_path if role == "educator" else self.config.poet_model_path
+        short = _infer_short_from_gguf_path(path)
+        return stop_tokens_for(short_name=short) if short else DEFAULT_STOP_TOKENS
 
     def _load(self, role: str):
         if self.active_role == role:
@@ -71,7 +77,7 @@ class SwappingPipeline(PoetryPipeline):
             **params,
             top_p=0.9,
             repeat_penalty=1.1,
-            stop=["<|im_end|>", "<|endoftext|>"],
+            stop=self._get_stop_tokens("educator"),
         )
         return r["choices"][0]["message"]["content"]
 
@@ -91,6 +97,6 @@ class SwappingPipeline(PoetryPipeline):
             top_p=0.95,
             repeat_penalty=1.15,
             max_tokens=4096,
-            stop=["<|im_end|>", "<|endoftext|>"],
+            stop=self._get_stop_tokens("poet"),
         )
         return r["choices"][0]["message"]["content"]

@@ -1,17 +1,48 @@
-# RevFlux model configs for comparison. "gguf" = use inference_config.yaml (trained educator + poet).
-# Ollama models must match: ollama list
+# RevFlux model configs for comparison.
+# educator/poet: "gguf" = use inference_config.yaml; "gguf:path" = explicit GGUF; "ollama:tag" = Ollama
+# revisions: per-model sweep (vanilla: rev0 only; fine-tuned: full sweep)
 models:
+  # --- Vanilla baselines (rev0 only = poet-only, no educator loop) ---
+  - id: qwen2.5-7b-vanilla
+    label: "Vanilla Qwen 2.5 7B"
+    educator: ollama:qwen2.5:7b-instruct
+    poet: ollama:qwen2.5:7b-instruct
+    revisions: [0]
+
+  - id: llama3.1-8b-vanilla
+    label: "Vanilla Llama 3.1 8B"
+    educator: ollama:llama3.1:8b
+    poet: ollama:llama3.1:8b
+    revisions: [0]
+
+  - id: command-r7b-vanilla
+    label: "Vanilla Command R7B"
+    educator: ollama:command-r:7b
+    poet: ollama:command-r:7b
+    revisions: [0]
+
+  # --- Fine-tuned variants (full revision sweep) ---
+  - id: trained-llama3.1-8b
+    label: "Fine-tuned Llama 3.1 8B"
+    educator: gguf:./models/llama3.1-8b-educator-Q4_K_M.gguf
+    poet: gguf:./models/llama3.1-8b-poet_rhyme-Q4_K_M.gguf
+    revisions: [0, 1, 3, 5]
+
+  - id: trained-qwen2.5-7b
+    label: "Fine-tuned Qwen 2.5 7B"
+    educator: gguf:./models/qwen2.5-7b-educator-Q4_K_M.gguf
+    poet: gguf:./models/qwen2.5-7b-poet_rhyme-Q4_K_M.gguf
+    revisions: [0, 1, 3, 5]
+
+  - id: trained-command-r7b
+    label: "Fine-tuned Command R7B"
+    educator: gguf:./models/command-r7b-educator-Q4_K_M.gguf
+    poet: gguf:./models/command-r7b-poet_rhyme-Q4_K_M.gguf
+    revisions: [0, 1, 3, 5]
+
+  # Legacy: use inference_config default (for backward compat)
   - id: trained
     label: "Trained (GGUF)"
     educator: gguf
     poet: gguf
-
-  - id: qwen3-8b
-    label: "Vanilla qwen3:8b"
-    educator: ollama:qwen3:8b
-    poet: ollama:qwen3:8b
-
-  - id: llama3.1-8b
-    label: "Vanilla llama3.1:8b"
-    educator: ollama:llama3.1:8b
-    poet: ollama:llama3.1:8b
+    revisions: [0, 1, 3, 5]

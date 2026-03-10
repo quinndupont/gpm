@@ -16,6 +16,21 @@ CONFIG_PATH = ROOT / "config" / "inference_config.yaml"
 _llama = None
 
 
+def _get_stop_tokens():
+    cfg = load_config()
+    edu = cfg.get("educator", {})
+    stop = edu.get("generation_brief", {}).get("stop") or edu.get("critique", {}).get("stop")
+    if stop:
+        return stop
+    sys.path.insert(0, str(ROOT))
+    from scripts.training.model_registry import DEFAULT_STOP_TOKENS, stop_tokens_for
+    from scripts.inference.pipeline import _infer_short_from_gguf_path
+    path = edu.get("model_path", "./models/qwen2.5-7b-educator-Q4_K_M.gguf")
+    full_path = str(ROOT / path.lstrip("./"))
+    short = _infer_short_from_gguf_path(full_path)
+    return stop_tokens_for(short_name=short) if short else DEFAULT_STOP_TOKENS
+
+
 def load_config():
     import yaml
     with open(CONFIG_PATH) as f:
@@ -81,7 +96,7 @@ class GPMHandler(BaseHTTPRequestHandler):
                 stream=True,
                 temperature=0.4,
                 max_tokens=2048,
-                stop=["<|im_end|>", "<|endoftext|>"],
+                stop=_get_stop_tokens(),
             ):
                 delta = chunk.get("choices", [{}])[0].get("delta", {})
                 content = delta.get("content") or ""

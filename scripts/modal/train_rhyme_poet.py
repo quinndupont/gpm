@@ -19,7 +19,7 @@ image = (
     .apt_install("git")
     .pip_install(
         "torch>=2.1",
-        "transformers>=4.36",
+        "git+https://github.com/huggingface/transformers.git",
         "peft>=0.10",
         "trl>=0.8",
         "bitsandbytes>=0.43",

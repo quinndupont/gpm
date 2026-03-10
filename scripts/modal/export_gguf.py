@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """Modal: Merge LoRA + convert to GGUF Q4_K_M. S3.4"""
-import re
 import subprocess
 import yaml
 from pathlib import Path
@@ -9,9 +8,12 @@ import modal
 
 # Config path: works when run from project root (local or Modal workspace)
 _EXPORT_CONFIG = Path("config/export_pipeline.yaml")
+_REGISTRY = Path("config/model_registry.yaml")
 if not _EXPORT_CONFIG.exists():
     _p = Path(__file__).resolve()
-    _EXPORT_CONFIG = _p.parents[1] / "config" / "export_pipeline.yaml" if len(_p.parents) > 1 else _EXPORT_CONFIG
+    _root = _p.parents[1] if len(_p.parents) > 1 else Path(".")
+    _EXPORT_CONFIG = _root / "config" / "export_pipeline.yaml"
+    _REGISTRY = _root / "config" / "model_registry.yaml"
 
 # Image with llama.cpp for conversion and quantization (add_local_file last per Modal)
 image = (
@@ -19,7 +21,7 @@ image = (
     .apt_install("git", "build-essential", "cmake")
     .pip_install(
         "torch>=2.1",
-        "transformers>=4.36",
+        "git+https://github.com/huggingface/transformers.git",
         "peft>=0.10",
         "accelerate>=0.28",
         "pyyaml>=6.0",
@@ -31,6 +33,7 @@ image = (
         "cd /tmp/llama.cpp && cmake -B build && cmake --build build --config Release -j4",
     )
     .add_local_file(str(_EXPORT_CONFIG), "/config/export_pipeline.yaml")
+    .add_local_file(str(_REGISTRY), "/config/model_registry.yaml")
 )
 
 app = modal.App("poetry-export-gguf")
@@ -86,31 +89,9 @@ def export_poet_rhyme():
     return _export("poet_rhyme", "/vol/checkpoints/poet_rhyme/final", out_name="poet_rhyme")
 
 
-# Map HuggingFace IDs to short names for output filenames
-_HF_TO_SHORT: dict[str, str] = {
-    "Qwen/Qwen2.5-7B-Instruct": "qwen2.5-7b",
-    "Qwen/Qwen2.5-14B-Instruct": "qwen2.5-14b",
-    "Qwen/Qwen2.5-32B-Instruct": "qwen2.5-32b",
-    "meta-llama/Llama-3.1-8B-Instruct": "llama3.1-8b",
-    "meta-llama/Llama-3.1-14B-Instruct": "llama3.1-14b",
-    "meta-llama/Llama-3.1-32B-Instruct": "llama3.1-32b",
-    "meta-llama/Llama-3.2-3B-Instruct": "llama3.2-3b",
-    "meta-llama/Llama-3.2-8B-Instruct": "llama3.2-8b",
-    "deepseek-ai/DeepSeek-V2-Lite-7B-Instruct": "deepseek-v2-lite-7b",
-    "deepseek-ai/DeepSeek-V2-Lite-16B-Instruct": "deepseek-v2-lite-16b",
-    "mistralai/Mistral-7B-Instruct-v0.3": "mistral-7b",
-    "mistralai/Mixtral-8x7B-Instruct-v0.1": "mixtral-8x7b",
-    "THUDM/glm-4-9b-chat-hf": "glm4-9b",
-}
-
-
 def _hf_to_short(hf_id: str) -> str:
-    if hf_id in _HF_TO_SHORT:
-        return _HF_TO_SHORT[hf_id]
-    base = hf_id.split("/")[-1].lower().replace("_", "-")
-    base = re.sub(r"-instruct$", "", base)
-    base = re.sub(r"-chat$", "", base)
-    return base
+    from scripts.training.model_registry import hf_to_short
+    return hf_to_short(hf_id)
 
 
 def _export(model_name: str, checkpoint_path: str, out_name: str | None = None) -> str:

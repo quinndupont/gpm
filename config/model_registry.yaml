@@ -14,10 +14,25 @@ models:
     training_quant: nf4
     inference_quants: [Q4_K_M, Q5_K_M]
     recommended_inference_quant: Q4_K_M
+    stop_tokens: ["<|im_end|>", "<|endoftext|>"]
     educator_fit: recommended
     educator_note: Strong instruct model; excellent for critique and structured briefs
     poet_fit: good
     poet_note: Good creative output; instruct tuning helps follow briefs
+
+  - hf_id: CohereLabs/c4ai-command-r7b-12-2024
+    short_name: command-r7b
+    param_b: 7
+    training_quant: nf4
+    inference_quants: [Q4_K_M, Q5_K_M]
+    recommended_inference_quant: Q4_K_M
+    stop_tokens: ["<|END_OF_TURN|>"]
+    architecture: cohere2
+    requires_transformers_git: true
+    educator_fit: good
+    educator_note: Strong RAG and tool-use; solid for structured critique
+    poet_fit: good
+    poet_note: Multilingual 7B with good instruction following
 
   - hf_id: meta-llama/Llama-3.2-3B-Instruct
     short_name: llama3.2-3b
@@ -25,6 +40,7 @@ models:
     training_quant: nf4
     inference_quants: [Q4_K_M, Q5_K_M]
     recommended_inference_quant: Q5_K_M
+    stop_tokens: ["<|eot_id|>"]
     educator_fit: good
     educator_note: Compact; solid for educator if size-constrained
     poet_fit: ok
@@ -36,10 +52,23 @@ models:
     training_quant: nf4
     inference_quants: [Q4_K_M, Q5_K_M]
     recommended_inference_quant: Q4_K_M
+    stop_tokens: ["<|eot_id|>"]
     educator_fit: recommended
     educator_note: Strong instruct; good at analytical tasks
     poet_fit: good
     poet_note: Llama 3.2 has strong generative range
+
+  - hf_id: meta-llama/Llama-3.1-8B-Instruct
+    short_name: llama3.1-8b
+    param_b: 8
+    training_quant: nf4
+    inference_quants: [Q4_K_M, Q5_K_M]
+    recommended_inference_quant: Q4_K_M
+    stop_tokens: ["<|eot_id|>"]
+    educator_fit: recommended
+    educator_note: Strong instruct; good at analytical tasks
+    poet_fit: good
+    poet_note: Llama 3.1 has strong creative range
 
   - hf_id: deepseek-ai/DeepSeek-V2-Lite-7B-Instruct
     short_name: deepseek-v2-lite-7b
@@ -47,6 +76,7 @@ models:
     training_quant: nf4
     inference_quants: [Q4_K_M, Q5_K_M]
     recommended_inference_quant: Q4_K_M
+    stop_tokens: ["<|im_end|>", "<|endoftext|>"]
     educator_fit: recommended
     educator_note: Excellent reasoning; strong for critique and revision briefs
     poet_fit: good
@@ -58,6 +88,7 @@ models:
     training_quant: nf4
     inference_quants: [Q4_K_M, Q5_K_M]
     recommended_inference_quant: Q4_K_M
+    stop_tokens: ["<|endoftext|>"]
     educator_fit: good
     educator_note: Chat-tuned; capable for educator tasks
     poet_fit: recommended
@@ -69,6 +100,7 @@ models:
     training_quant: nf4
     inference_quants: [Q4_K_M, Q5_K_M]
     recommended_inference_quant: Q4_K_M
+    stop_tokens: ["</s>"]
     educator_fit: good
     educator_note: Efficient instruct model; good for structured output
     poet_fit: recommended
@@ -81,6 +113,7 @@ models:
     training_quant: nf4
     inference_quants: [Q4_K_M]
     recommended_inference_quant: Q4_K_M
+    stop_tokens: ["<|im_end|>", "<|endoftext|>"]
     educator_fit: recommended
     educator_note: Best educator fit; strong analytical and instruct capabilities
     poet_fit: good
@@ -92,6 +125,7 @@ models:
     training_quant: nf4
     inference_quants: [Q4_K_M]
     recommended_inference_quant: Q4_K_M
+    stop_tokens: ["<|eot_id|>"]
     educator_fit: recommended
     educator_note: Strong instruct; excellent for critique
     poet_fit: recommended
@@ -103,6 +137,7 @@ models:
     training_quant: nf4
     inference_quants: [Q4_K_M]
     recommended_inference_quant: Q4_K_M
+    stop_tokens: ["<|im_end|>", "<|endoftext|>"]
     educator_fit: recommended
     educator_note: Top-tier reasoning for educator tasks
     poet_fit: good
@@ -115,6 +150,7 @@ models:
     training_quant: nf4
     inference_quants: [Q4_K_M, Q3_K_M]
     recommended_inference_quant: Q4_K_M
+    stop_tokens: ["<|im_end|>", "<|endoftext|>"]
     educator_fit: recommended
     educator_note: Highest quality educator; needs swap for dual-model on 24GB
     poet_fit: good
@@ -126,6 +162,7 @@ models:
     training_quant: nf4
     inference_quants: [Q4_K_M, Q3_K_M]
     recommended_inference_quant: Q4_K_M
+    stop_tokens: ["<|eot_id|>"]
     educator_fit: recommended
     educator_note: Best-in-class instruct; swap needed for 24GB
     poet_fit: recommended
@@ -137,6 +174,7 @@ models:
     training_quant: nf4
     inference_quants: [Q4_K_M, Q4_K_S, Q3_K_M]
     recommended_inference_quant: Q4_K_S
+    stop_tokens: ["</s>"]
     educator_fit: good
     educator_note: MoE; strong but tight on 24GB
     poet_fit: recommended

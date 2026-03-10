@@ -14,34 +14,7 @@ ROOT = Path(__file__).resolve().parents[2]
 MODELS_DIR = ROOT / "models"
 ADAPTERS_DIR = ROOT / "adapters"
 
-# Map short names (from filenames or GGUF basename) to HuggingFace IDs
-SHORT_NAME_TO_HF: dict[str, str] = {
-    "qwen2.5-7b": "Qwen/Qwen2.5-7B-Instruct",
-    "qwen2.5-14b": "Qwen/Qwen2.5-14B-Instruct",
-    "qwen2.5-32b": "Qwen/Qwen2.5-32B-Instruct",
-    "llama3.1-8b": "meta-llama/Llama-3.1-8B-Instruct",
-    "llama3.1-14b": "meta-llama/Llama-3.1-14B-Instruct",
-    "llama3.1-32b": "meta-llama/Llama-3.1-32B-Instruct",
-    "llama3.2-3b": "meta-llama/Llama-3.2-3B-Instruct",
-    "llama3.2-8b": "meta-llama/Llama-3.2-8B-Instruct",
-    "deepseek-v2-lite-7b": "deepseek-ai/DeepSeek-V2-Lite-7B-Instruct",
-    "deepseek-v2-lite-16b": "deepseek-ai/DeepSeek-V2-Lite-16B-Instruct",
-    "mistral-7b": "mistralai/Mistral-7B-Instruct-v0.3",
-    "mixtral-8x7b": "mistralai/Mixtral-8x7B-Instruct-v0.1",
-    "glm4-9b": "THUDM/glm-4-9b-chat-hf",
-}
-
-
-# Reverse: HuggingFace ID to short name for filename generation
-def _hf_to_short_name(hf_id: str) -> str:
-    for short, hf in SHORT_NAME_TO_HF.items():
-        if hf == hf_id:
-            return short
-    # Fallback: derive from HF path (e.g. Qwen/Qwen2.5-7B-Instruct -> qwen2.5-7b)
-    base = hf_id.split("/")[-1].lower()
-    base = re.sub(r"-instruct$", "", base)
-    base = re.sub(r"-chat$", "", base)
-    return base.replace("_", "-")
+from scripts.training.model_registry import all_short_names, hf_to_short, short_to_hf
 
 
 @dataclass
@@ -79,8 +52,9 @@ def _parse_gguf_filename(name: str) -> tuple[str | None, str | None, str | None]
 def _infer_hf_from_short(base: str) -> str:
     """Map short base name to HuggingFace ID."""
     base_lower = base.lower()
-    for short, hf in SHORT_NAME_TO_HF.items():
-        if short in base_lower or base_lower in short:
+    for short in all_short_names():
+        hf = short_to_hf(short)
+        if hf and (short in base_lower or base_lower in short):
             return hf
     return base
 
@@ -211,4 +185,4 @@ def discover_by_task(task: str, include_modal: bool = False) -> list[DiscoveredM
 
 def hf_to_short_name(hf_id: str) -> str:
     """Map HuggingFace ID to short name for filenames."""
-    return _hf_to_short_name(hf_id)
+    return hf_to_short(hf_id)

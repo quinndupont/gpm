@@ -17,12 +17,27 @@ from models.prompts.loader import get_persona, render_prompt
 from scripts.eval.form_registry import detect_form, get_scheme, is_rhyming_form, is_metered_form, form_description
 from scripts.eval.rhyme_analyzer import analyze as analyze_rhyme, format_analysis_for_prompt
 from scripts.eval.meter_analyzer import analyze as analyze_meter, format_analysis_for_prompt as format_meter_for_prompt
+from scripts.training.model_registry import (
+    DEFAULT_STOP_TOKENS,
+    ollama_tag_to_short,
+    stop_tokens_for,
+)
 
 
 def load_config(path: Path):
     import yaml
     with open(path) as f:
         return yaml.safe_load(f)
+
+
+def _infer_short_from_gguf_path(path: str) -> str | None:
+    """Infer registry short_name from GGUF path (e.g. .../llama3.1-8b-educator-Q4_K_M.gguf)."""
+    from scripts.training.model_registry import all_short_names
+    stem = Path(path).stem
+    for short in all_short_names():
+        if short in stem:
+            return short
+    return None
 
 
 class Config:
@@ -36,6 +51,8 @@ class Config:
         self.poet_model_path = poet.get("model_path", "./models/qwen2.5-7b-poet-Q4_K_M.gguf")
         self.poet_ctx = poet.get("n_ctx", 2048)
         self.max_revisions = yaml_config.get("max_revisions", 3)
+        self.educator_stop = edu.get("generation_brief", {}).get("stop") or edu.get("critique", {}).get("stop") or DEFAULT_STOP_TOKENS
+        self.poet_stop = poet.get("generation", {}).get("stop") or poet.get("revision", {}).get("stop") or DEFAULT_STOP_TOKENS
         try:
             self.educator_persona_condensed = get_persona("educator_neutral")
         except FileNotFoundError:
@@ -63,6 +80,23 @@ class PoetryPipeline:
         self.user_profile = self.config.user_style_profile
         self.educator_model_override = educator_model_override
         self.poet_model_override = poet_model_override
+
+    def _get_stop_tokens(self, role: str) -> list[str]:
+        """Return stop tokens for educator or poet."""
+        override = self.educator_model_override if role == "educator" else self.poet_model_override
+        if override and override.startswith("ollama:"):
+            tag = override[7:]
+            short = ollama_tag_to_short(tag)
+            return stop_tokens_for(short_name=short) if short else DEFAULT_STOP_TOKENS
+        if override and override.startswith("gguf:"):
+            path = override[5:]
+            short = _infer_short_from_gguf_path(path)
+            return stop_tokens_for(short_name=short) if short else DEFAULT_STOP_TOKENS
+        path = self.config.educator_model_path if role == "educator" else self.config.poet_model_path
+        short = _infer_short_from_gguf_path(path)
+        if short:
+            return stop_tokens_for(short_name=short)
+        return self.config.educator_stop if role == "educator" else self.config.poet_stop
 
     def _ollama_chat(
         self,
@@ -93,9 +127,17 @@ class PoetryPipeline:
             raise ImportError("pip install llama-cpp-python")
         use_edu_gguf = not (self.educator_model_override and self.educator_model_override.startswith("ollama:"))
         use_poet_gguf = not (self.poet_model_override and self.poet_model_override.startswith("ollama:"))
+        edu_path = self.config.educator_model_path
+        poet_path = self.config.poet_model_path
+        if self.educator_model_override and self.educator_model_override.startswith("gguf:"):
+            p = self.educator_model_override[5:].strip()
+            edu_path = p if Path(p).is_absolute() else str(ROOT / p.lstrip("./"))
+        if self.poet_model_override and self.poet_model_override.startswith("gguf:"):
+            p = self.poet_model_override[5:].strip()
+            poet_path = p if Path(p).is_absolute() else str(ROOT / p.lstrip("./"))
         if use_edu_gguf and self.educator is None:
             self.educator = Llama(
-                model_path=self.config.educator_model_path,
+                model_path=edu_path,
                 n_ctx=self.config.educator_ctx,
                 n_gpu_layers=-1,
                 n_threads=8,
@@ -104,7 +146,7 @@ class PoetryPipeline:
             )
         if use_poet_gguf and self.poet is None:
             self.poet = Llama(
-                model_path=self.config.poet_model_path,
+                model_path=poet_path,
                 n_ctx=self.config.poet_ctx,
                 n_gpu_layers=-1,
                 n_threads=8,
@@ -136,7 +178,7 @@ class PoetryPipeline:
             **params,
             top_p=0.9,
             repeat_penalty=1.1,
-            stop=["<|im_end|>", "<|endoftext|>"],
+            stop=self._get_stop_tokens("educator"),
         )
         return r["choices"][0]["message"]["content"]
 
@@ -241,7 +283,7 @@ class PoetryPipeline:
             top_p=0.95,
             repeat_penalty=1.15,
             max_tokens=4096,
-            stop=["<|im_end|>", "<|endoftext|>"],
+            stop=self._get_stop_tokens("poet"),
         )
         return r["choices"][0]["message"]["content"]
 

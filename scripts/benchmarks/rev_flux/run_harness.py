@@ -25,7 +25,7 @@ from scripts.benchmarks.rev_flux.line_change import (
 def _load_models_config() -> list[dict]:
     import yaml
     if not MODELS_CONFIG.exists():
-        return [{"id": "trained", "label": "Trained (GGUF)", "educator": "gguf", "poet": "gguf"}]
+        return [{"id": "trained", "label": "Trained (GGUF)", "educator": "gguf", "poet": "gguf", "revisions": [0, 1, 3, 5]}]
     with open(MODELS_CONFIG) as f:
         return yaml.safe_load(f).get("models", [])
 
@@ -134,14 +134,58 @@ def main():
         action="store_true",
         help="Run harness visualizations after completion",
     )
+    parser.add_argument(
+        "--compare",
+        action="store_true",
+        help="Run all vanilla (rev0) + all trained (full sweep)",
+    )
+    parser.add_argument(
+        "--auto-discover",
+        action="store_true",
+        help="Discover GGUF educator+poet pairs from models/ and run them",
+    )
     args = parser.parse_args()
 
     models_config = _load_models_config()
+
+    if args.auto_discover:
+        from scripts.training.model_discovery import discover_local_gguf
+        discovered = discover_local_gguf()
+        by_base = {}
+        for m in discovered:
+            base = m.base_model_hf_id
+            from scripts.training.model_registry import hf_to_short
+            short = hf_to_short(base)
+            if short not in by_base:
+                by_base[short] = {}
+            by_base[short][m.task] = m.path
+        models_config = []
+        for short, tasks in by_base.items():
+            edu = tasks.get("educator") or tasks.get("educator-interim")
+            poet = tasks.get("poet_rhyme") or tasks.get("poet")
+            if edu and poet:
+                models_config.append({
+                    "id": f"trained-{short}",
+                    "label": f"Fine-tuned {short}",
+                    "educator": f"gguf:{edu}",
+                    "poet": f"gguf:{poet}",
+                    "revisions": [0, 1, 3, 5],
+                })
+        if not models_config:
+            print("No educator+poet pairs found in models/*.gguf")
+            return
+        print("Auto-discovered:", [m["id"] for m in models_config])
+
     model_ids = args.models or [m["id"] for m in models_config]
     models_to_run = [m for m in models_config if m["id"] in model_ids]
     if not models_to_run:
         print("No matching models. Use --list-models to see available.")
         return
+
+    if args.compare:
+        model_ids = [m["id"] for m in models_config]
+        models_to_run = models_config
+        args.max_revisions = None
 
     if args.list_models:
         for m in models_config:
@@ -153,14 +197,13 @@ def main():
         total = 0
         limit = 1 if args.test else (args.limit or 999)
         for m in models_to_run:
-            if args.test and m["id"] != "trained":
-                continue
+            revs = m.get("revisions", [0])
+            if args.test:
+                revs = [0] if (m.get("educator", "").startswith("ollama:")) else revs[:2]
             n_prompts = sum(min(len(CATEGORIES[cat]), limit) for cat in args.categories)
-            n_revs = len(args.max_revisions) if m["id"] == "trained" else 1
-            total += n_prompts * n_revs
+            total += n_prompts * len(revs)
         print(f"Would run {total} pipeline invocations")
         print(f"Categories: {args.categories}")
-        print(f"Max revisions: {args.max_revisions}")
         print(f"Models: {[m['id'] for m in models_to_run]}")
         return
 
@@ -179,10 +222,16 @@ def main():
             educator_model_override=edu_override,
             poet_model_override=poet_override,
         )
-        # Only trained model gets revision analysis; vanilla models get rev0 only
-        revs_to_run = args.max_revisions if mid == "trained" else [0]
-        if args.test and mid != "trained":
-            continue
+        revs_to_run = model_cfg.get("revisions", [0])
+        if args.max_revisions is not None:
+            revs_to_run = args.max_revisions
+        if args.test:
+            if "vanilla" in mid or (edu and edu.startswith("ollama:")):
+                revs_to_run = [0]
+            elif "trained" not in mid and not (edu and (edu == "gguf" or edu.startswith("gguf:"))):
+                continue
+            else:
+                revs_to_run = revs_to_run[:2] if len(revs_to_run) > 2 else revs_to_run
         for category in args.categories:
             prompts = CATEGORIES[category]
             n_prompts = 1 if args.test else (args.limit or len(prompts))
@@ -223,17 +272,45 @@ def main():
                         )
                     print(f"  -> {out_file}", flush=True)
 
+    import statistics
+    by_model = {}
+    for r in runs:
+        mid = r["model_id"]
+        if mid not in by_model:
+            by_model[mid] = {"change_pcts": [], "perf_sec": []}
+        by_model[mid]["change_pcts"].extend(r.get("change_pcts", []))
+        perf = r.get("metadata", {}).get("perf_total_sec")
+        if perf is not None:
+            by_model[mid]["perf_sec"].append(perf)
+    model_stats = {}
+    for mid, data in by_model.items():
+        cps = data["change_pcts"]
+        secs = data["perf_sec"]
+        model_stats[mid] = {
+            "change_pcts_mean": round(statistics.mean(cps), 2) if cps else None,
+            "change_pcts_median": round(statistics.median(cps), 2) if cps else None,
+            "change_pcts_std": round(statistics.stdev(cps), 2) if len(cps) > 1 else None,
+            "perf_total_sec_mean": round(statistics.mean(secs), 2) if secs else None,
+            "perf_total_sec_median": round(statistics.median(secs), 2) if secs else None,
+        }
     summary = {
         "total_runs": len(runs),
         "categories": args.categories,
-        "max_revisions_tested": args.max_revisions,
         "models_tested": model_ids,
         "aggregate_change_pcts": [p for r in runs for p in r.get("change_pcts", [])],
+        "model_stats": model_stats,
     }
     summary_path = args.output_dir / "summary.json"
     with open(summary_path, "w") as f:
         json.dump(summary, f, indent=2)
     print(f"\nSummary: {summary_path}")
+    if model_stats:
+        print("\nComparison (change_pcts mean | perf_sec mean):")
+        for mid in sorted(model_stats):
+            s = model_stats[mid]
+            cp = s.get("change_pcts_mean", "N/A")
+            pf = s.get("perf_total_sec_mean", "N/A")
+            print(f"  {mid}: {cp} | {pf}s")
 
     if args.visualize and runs:
         import subprocess
