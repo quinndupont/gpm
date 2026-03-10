@@ -82,3 +82,8 @@ scripts/training/model_discovery.py
 scripts/training/model_registry.py
 scripts/training/qlora_train.py
 scripts/training/train_interactive.py
+tests/test_data_validation.py
+tests/test_eval.py
+tests/test_prompts.py
+tests/test_rhyme_bench.py
+tests/test_training.py
