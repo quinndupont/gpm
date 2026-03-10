@@ -86,7 +86,7 @@ def main():
     parser.add_argument("--constrained", dest="constrained", action="store_true",
                         default=True, help="Use CMU-seeded end-words (default)")
     parser.add_argument("--no-constrained", dest="constrained", action="store_false",
-                        help="Use unconstrained poem generation (for frontier models)")
+                        help="Unconstrained poem generation; use Anthropic (Sonnet/Opus), no local fallback")
     parser.add_argument("--retries", type=int, default=2,
                         help="Retries with fresh end-words on rhyme fail (constrained mode)")
     args = parser.parse_args()
@@ -128,8 +128,11 @@ def main():
                 user_request=topic, form_desc=desc,
             )
             try:
-                brief = call_claude(brief_msg, educator_system,
-                                    model=args.brief_model, max_tokens=500)
+                brief = call_claude(
+                    brief_msg, educator_system,
+                    model=args.brief_model, max_tokens=500,
+                    force_anthropic=not args.constrained,
+                )
             except Exception as e:
                 print(f"  {label} Brief error: {e}", file=sys.stderr)
                 continue
@@ -158,8 +161,11 @@ def main():
                 else:
                     poem_msg = render_prompt("tuning", "rhyme_pairs", template="poet", brief=brief)
                 try:
-                    poem = call_claude(poem_msg, get_persona("poet"),
-                                       model=args.poem_model, max_tokens=1024)
+                    poem = call_claude(
+                        poem_msg, get_persona("poet"),
+                        model=args.poem_model, max_tokens=1024,
+                        force_anthropic=not args.constrained,
+                    )
                 except Exception as e:
                     print(f"  {label} Poem error: {e}", file=sys.stderr)
                     break
@@ -197,8 +203,11 @@ def main():
                 analysis_block=analysis_block,
             )
             try:
-                critique = call_claude(critique_msg, educator_system,
-                                       model=args.critique_model, max_tokens=400)
+                critique = call_claude(
+                    critique_msg, educator_system,
+                    model=args.critique_model, max_tokens=400,
+                    force_anthropic=not args.constrained,
+                )
             except Exception as e:
                 print(f"  {label} Critique error: {e}", file=sys.stderr)
                 critique = ""
