@@ -108,16 +108,15 @@ python scripts/data_generation/prepare_rhyme_training_data.py [--general-frac 0.
 
 Combines outputs into chat format. `--quality-gate`: run quality gate on educator data; fail if pass rate < 90%. Rhyme data: curated strong-rhyme poems + form-specific pairs (80% rhyme / 20% general by default). `--min-samples N`: requires ≥N examples; if set, caps train/valid (quick test).
 
-### 3. Upload to Modal
+### 3. Upload (Modal or S3)
 
-```bash
-python scripts/modal/upload_data.py
-```
+**Modal:** `python scripts/modal/upload_data.py` — uploads `data/educator_training/`, `data/poet_training/`, `data/rhyme_training/` to `poetry-data` volume.
 
-Uploads `data/educator_training/`, `data/poet_training/`, and `data/rhyme_training/` to `poetry-data` volume.
+**SageMaker:** `python scripts/sagemaker/upload_to_s3.py` — uploads same dirs to S3 (uses `config/sagemaker.yaml`: bucket, region). Validate: `python scripts/sagemaker/validate_setup.py`.
 
-### 4. Train + export (Modal)
+### 4. Train + export
 
+**Modal:**
 ```bash
 # Educator
 modal run scripts/modal/train_educator.py [--num-epochs-override N]
@@ -129,16 +128,28 @@ modal run scripts/modal/train_rhyme_poet.py [--num-epochs-override N]
 modal run scripts/modal/export_gguf.py::export_poet
 modal run scripts/modal/export_gguf.py::export_poet_rhyme
 
-# Or orchestrate
+# Orchestrate
 modal run scripts/modal/modal_app.py [--educator-only] [--poet-only] [--train-only] [--num-epochs N]
+```
+
+**SageMaker:** Configure `config/sagemaker.yaml` (S3 bucket, IAM role, `instance_type`, `hf_secret_name`). Then:
+```bash
+python scripts/sagemaker/train_sagemaker.py --task educator [--num-epochs-override N]
+python scripts/sagemaker/train_sagemaker.py --task poet [--num-epochs-override N]
+python scripts/sagemaker/train_sagemaker.py --task rhyme [--num-epochs-override N]
+python scripts/sagemaker/export_gguf_sagemaker.py  # merge + GGUF
+python scripts/sagemaker/download_models.py        # pull GGUF to local
+# Or: modal run scripts/modal/modal_app.py --backend sagemaker [--educator-only] [--poet-only] [--train-rhyme] [--num-epochs N]
 ```
 
 ### 5. Download + inference
 
-```bash
-modal volume get --force poetry-gguf llama3.1-8b-educator-Q4_K_M.gguf models/
-modal volume get --force poetry-gguf llama3.1-8b-poet_rhyme-Q4_K_M.gguf models/
+**Modal:** `modal volume get --force poetry-gguf <gguf_name> models/`
 
+**SageMaker:** `python scripts/sagemaker/download_models.py` (writes into `models/`).
+
+Then:
+```bash
 python scripts/inference/pipeline.py "Write a poem about winter light" [--config PATH]
 ```
 
@@ -150,7 +161,7 @@ Default config uses the rhyme-trained poet. **Reference chat server:** `python s
 ./scripts/run_full_workflow.sh
 ```
 
-Runs: seed data (frontier) → prepare interim educator → train interim educator on Modal → export/download interim GGUF → local educator generates briefs, autopsies, lessons → poet_pairs → generate_dialogues → rhyme_pairs + approval_examples → prepare full data (including rhyme) → upload → train educator + poet + rhyme poet → export → download. Use `--skip-generation` if `train.jsonl` already exists.
+Runs: seed data (frontier) → prepare interim educator → train interim educator on Modal → export/download interim GGUF → local educator generates briefs, autopsies, lessons → poet_pairs → generate_dialogues → rhyme_pairs + approval_examples → prepare full data (including rhyme) → upload → train educator + poet + rhyme poet → export → download. Use `--skip-generation` if `train.jsonl` already exists. For SageMaker, use `--backend sagemaker` with `modal_app.py` or run `scripts/sagemaker/*` after prepare/upload.
 
 ## First test
 
@@ -162,7 +173,7 @@ Minimal data → prepare (`--min-samples 5`) → upload → train both educator 
 
 ## Rhyme poet (inference default)
 
-The poet used in the revision loop is the **rhyme-trained poet**. Data: (1) **Curated:** `select_strong_rhyme_poems.py` on good poems → `data/annotated/strong_rhyme_poems.jsonl`; `prepare_rhyme_training_data.py` builds `data/rhyme_training/` (strong-rhyme + general mix). (2) **Frontier-generated:** `generate_rhyme_pairs.py` produces form-specific brief+poem+critique pairs. Training: `config/rhyme_training.yaml`, `scripts/modal/train_rhyme_poet.py`. Eval: `rhyme_analyzer.py`, `meter_analyzer.py`, `form_registry.py`.
+The poet used in the revision loop is the **rhyme-trained poet**. Data: (1) **Curated:** `select_strong_rhyme_poems.py` on good poems → `data/annotated/strong_rhyme_poems.jsonl`; `prepare_rhyme_training_data.py` builds `data/rhyme_training/` (strong-rhyme + general mix). (2) **Frontier-generated:** `generate_rhyme_pairs.py` produces form-specific brief+poem+critique pairs. Training: `config/rhyme_training.yaml`; scripts: `scripts/modal/train_rhyme_poet.py` or `scripts/sagemaker/train_sagemaker.py --task rhyme`. Eval: `rhyme_analyzer.py`, `meter_analyzer.py`, `form_registry.py`.
 
 ## Config
 
@@ -176,6 +187,7 @@ The poet used in the revision loop is the **rhyme-trained poet**. Data: (1) **Cu
 | `config/model_registry.yaml` | Base model registry (Qwen, Llama, etc.) and fit guidance |
 | `config/rev_flux_models.yaml` | RevFlux: trained vs vanilla Ollama configs |
 | `config/data_generation.yaml` | Data generation defaults |
+| `config/sagemaker.yaml` | SageMaker: S3 bucket, IAM role, instance_type, region, HF secret name |
 
 ## Structure
 
@@ -188,7 +200,7 @@ data/rhyme_training/     # Rhyme poet train/valid (inference default poet)
 persona/                 # educator_neutral.txt, persona_condensed.txt
 adapters/                # LoRA adapters (e.g. poet_rhyme)
 config/                  # YAML configs
-scripts/{benchmarks,data_generation,modal,eval,inference,training,aem}/
+scripts/{benchmarks,data_generation,modal,sagemaker,eval,inference,training,aem}/
 serve_gpm.py             # Reference HTTP chat server (POST /api/chat)
 ```
 
