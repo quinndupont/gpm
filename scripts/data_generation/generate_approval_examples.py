@@ -15,18 +15,19 @@ import random
 import sys
 from pathlib import Path
 
+from models.prompts.loader import render_prompt
+from scripts.data_generation.claude_utils import (
+    CLAUDE_SONNET_4_5,
+    call_claude,
+    get_educator_system_prompt,
+)
+from scripts.eval.form_registry import detect_form, form_description, get_scheme
+from scripts.eval.rhyme_analyzer import analyze as analyze_rhyme
+from scripts.eval.rhyme_analyzer import format_analysis_for_prompt
+
 ROOT = Path(__file__).resolve().parents[2]
 ANNOTATED = ROOT / "data" / "annotated"
 EDUCATOR_TRAINING = ROOT / "data" / "educator_training"
-
-from scripts.data_generation.claude_utils import (
-    call_claude,
-    get_educator_system_prompt,
-    CLAUDE_SONNET_4_5,
-)
-from scripts.eval.rhyme_analyzer import analyze as analyze_rhyme, format_analysis_for_prompt
-from scripts.eval.form_registry import detect_form, is_rhyming_form, get_scheme, form_description
-from models.prompts.loader import render_prompt
 
 
 def load_jsonl(path: Path) -> list[dict]:
@@ -40,10 +41,18 @@ def load_jsonl(path: Path) -> list[dict]:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Generate approval/rejection training examples")
-    parser.add_argument("--strong-rhyme", type=Path, default=ANNOTATED / "strong_rhyme_poems.jsonl")
-    parser.add_argument("--rhyme-critiques", type=Path, default=EDUCATOR_TRAINING / "rhyme_critiques.jsonl")
-    parser.add_argument("--output", type=Path, default=EDUCATOR_TRAINING / "approval_examples.jsonl")
+    parser = argparse.ArgumentParser(
+        description="Generate approval/rejection training examples"
+    )
+    parser.add_argument(
+        "--strong-rhyme", type=Path, default=ANNOTATED / "strong_rhyme_poems.jsonl"
+    )
+    parser.add_argument(
+        "--rhyme-critiques", type=Path, default=EDUCATOR_TRAINING / "rhyme_critiques.jsonl"
+    )
+    parser.add_argument(
+        "--output", type=Path, default=EDUCATOR_TRAINING / "approval_examples.jsonl",
+    )
     parser.add_argument("--approve-count", type=int, default=80, help="Number of approval examples")
     parser.add_argument("--reject-count", type=int, default=40, help="Number of rejection examples")
     parser.add_argument("--model", type=str, default=CLAUDE_SONNET_4_5)
@@ -84,7 +93,9 @@ def main():
                 continue
 
             analysis_text = format_analysis_for_prompt(analysis)
-            prompt = render_prompt("tuning", "approval", template="approve", poem=poem, analysis=analysis_text)
+            prompt = render_prompt(
+                "tuning", "approval", template="approve", poem=poem, analysis=analysis_text
+            )
 
             try:
                 critique = call_claude(prompt, system, model=args.model, max_tokens=300)
@@ -108,7 +119,11 @@ def main():
                 },
             }) + "\n")
             total_approve += 1
-            print(f"[approve {total_approve}/{args.approve_count}] density={analysis['strict_rhyme_density']}", flush=True)
+            print(
+                f"[approve {total_approve}/{args.approve_count}] "
+                f"density={analysis['strict_rhyme_density']}",
+                flush=True,
+            )
 
         # REJECT examples: poems with moderate density (some rhymes but not all correct)
         for rec in poems:
@@ -131,7 +146,15 @@ def main():
             form_desc = form_description(form) if form else "rhyming poem"
             scheme = get_scheme(form) if form else analysis.get("detected_scheme", "")
 
-            prompt = render_prompt("tuning", "approval", template="reject", poem=poem, form_desc=form_desc, expected_scheme=scheme or "N/A", analysis=analysis_text)
+            prompt = render_prompt(
+                "tuning",
+                "approval",
+                template="reject",
+                poem=poem,
+                form_desc=form_desc,
+                expected_scheme=scheme or "N/A",
+                analysis=analysis_text,
+            )
 
             try:
                 critique = call_claude(prompt, system, model=args.model, max_tokens=300)
@@ -141,7 +164,9 @@ def main():
 
             # Verify the response does NOT end with approval
             if critique.strip().endswith("This poem has found its shape."):
-                critique = critique.strip().rsplit("This poem has found its shape.", 1)[0].strip()
+                critique = (
+                    critique.strip().rsplit("This poem has found its shape.", 1)[0].strip()
+                )
 
             f.write(json.dumps({
                 "type": "rejection",
@@ -156,7 +181,8 @@ def main():
             total_reject += 1
             print(f"[reject {total_reject}/{args.reject_count}] density={density}", flush=True)
 
-    print(f"\nDone: {total_approve} approval + {total_reject} rejection = {total_approve + total_reject} total")
+    total_n = total_approve + total_reject
+    print(f"\nDone: {total_approve} approval + {total_reject} rejection = {total_n} total")
     print(f"  {args.output}")
 
 

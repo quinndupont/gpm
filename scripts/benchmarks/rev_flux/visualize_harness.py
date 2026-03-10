@@ -5,7 +5,6 @@ revision-length comparison, approval timing. Requires harness output (runs + sum
 """
 import argparse
 import json
-import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -28,8 +27,8 @@ def _load_model_labels() -> dict[str, str]:
 def _ensure_matplotlib():
     import matplotlib
     matplotlib.use("Agg")
-    import matplotlib.pyplot as plt
     import matplotlib.colors as mcolors
+    import matplotlib.pyplot as plt
     return plt, mcolors
 
 
@@ -74,7 +73,11 @@ def plot_stanza_map(
     ax.set_ylim(-0.05, y + 0.1)
     ax.axis("off")
     ax.set_title(title)
-    fig.text(0.5, -0.02, "Stanza = lines separated by blank lines. Color = mean % change (prev→final draft).", ha="center", fontsize=9, transform=fig.transFigure)
+    fig.text(
+        0.5, -0.02,
+        "Stanza = lines separated by blank lines. Color = mean % change (prev→final).",
+        ha="center", fontsize=9, transform=fig.transFigure,
+    )
     sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
     sm.set_array([])
     plt.colorbar(sm, ax=ax, label="Mean change (%)")
@@ -150,7 +153,8 @@ def plot_category_comparison(
             colors.append(colors_list[j % len(colors_list)])
     if not data:
         return
-    fig, ax = plt.subplots(figsize=(max(10, n_cats * (n_models + 1) * 0.8), 5))
+    fig_w = max(10, n_cats * (n_models + 1) * 0.8)
+    fig, ax = plt.subplots(figsize=(fig_w, 5))
     bp = ax.boxplot(data, positions=positions, widths=0.6, patch_artist=True)
     for i, patch in enumerate(bp["boxes"]):
         patch.set_facecolor(colors[i])
@@ -160,7 +164,11 @@ def plot_category_comparison(
     ax.set_ylabel("Line change (%)")
     ax.set_title(title)
     ax.set_ylim(0, 100)
-    legend_handles = [plt.Rectangle((0, 0), 1, 1, fc=colors_list[j % len(colors_list)], alpha=0.8, label=labels.get(m, m)) for j, m in enumerate(models)]
+    legend_handles = [
+        plt.Rectangle((0, 0), 1, 1, fc=colors_list[j % len(colors_list)], alpha=0.8,
+                      label=labels.get(m, m))
+        for j, m in enumerate(models)
+    ]
     ax.legend(handles=legend_handles, loc="upper right", fontsize=8)
     fig.tight_layout()
     fig.savefig(out_path, dpi=150)
@@ -173,7 +181,7 @@ def plot_revision_length_comparison(
     title: str = "RevFlux: Change by Model and Revision Length",
     model_labels: dict[str, str] | None = None,
 ) -> None:
-    """Grouped box plot: x = model, grouped by revision level. Captures multiple models and revision process."""
+    """Grouped box: x = model, by revision level. Multiple models and revision process."""
     plt = _ensure_matplotlib()[0]
     by_key: dict[tuple[str, int], list[float]] = {}
     for r in runs:
@@ -210,7 +218,11 @@ def plot_revision_length_comparison(
     ax.set_ylabel("Line change (%)")
     ax.set_title(title)
     ax.set_ylim(0, 100)
-    legend_handles = [plt.Rectangle((0, 0), 1, 1, fc=colors_list[j % len(colors_list)], alpha=0.8, label=f"rev{r}") for j, r in enumerate(revs)]
+    legend_handles = [
+        plt.Rectangle((0, 0), 1, 1, fc=colors_list[j % len(colors_list)], alpha=0.8,
+                      label=f"rev{r}")
+        for j, r in enumerate(revs)
+    ]
     ax.legend(handles=legend_handles, loc="upper right", fontsize=8)
     fig.tight_layout()
     fig.savefig(out_path, dpi=150)
@@ -289,7 +301,10 @@ def plot_approval_timing(
     for j, mid in enumerate(models):
         vals = [by_round_model.get((r, mid), 0) for r in rounds]
         offset = (j - n_models / 2 + 0.5) * width
-        ax.bar([xi + offset for xi in x], vals, width, label=labels_map.get(mid, mid), color=colors[j % len(colors)], alpha=0.8)
+        ax.bar(
+            [xi + offset for xi in x], vals, width,
+            label=labels_map.get(mid, mid), color=colors[j % len(colors)], alpha=0.8,
+        )
     ax.set_xticks(x)
     ax.set_xticklabels([str(r) if r != "max_reached" else "—" for r in rounds])
     ax.set_xlabel("Approval round (1-indexed)")
@@ -337,7 +352,9 @@ def main():
         hist = data.get("revision_history", [])
         if hist:
             plot_stanza_map(hist, out_dir / "stanza_map.png", title=f"RevFlux: {args.single.stem}")
-            plot_line_stability(hist, out_dir / "line_stability.png", title=f"RevFlux: {args.single.stem}")
+            plot_line_stability(
+                hist, out_dir / "line_stability.png", title=f"RevFlux: {args.single.stem}",
+            )
         print(f"Saved to {out_dir}")
         return
 
@@ -348,7 +365,9 @@ def main():
 
     model_labels = _load_model_labels()
     plot_category_comparison(runs, out_dir / "category_comparison.png", model_labels=model_labels)
-    plot_revision_length_comparison(runs, out_dir / "revision_length_comparison.png", model_labels=model_labels)
+    plot_revision_length_comparison(
+        runs, out_dir / "revision_length_comparison.png", model_labels=model_labels,
+    )
     plot_model_comparison(runs, out_dir / "model_comparison.png", model_labels=model_labels)
     plot_approval_timing(runs, out_dir / "approval_timing.png", model_labels=model_labels)
 

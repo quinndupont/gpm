@@ -14,7 +14,6 @@ import pronouncing
 
 from scripts.eval.form_registry import detect_form, get_scheme, parse_scheme
 
-
 # ---------------------------------------------------------------------------
 # Phoneme helpers
 # ---------------------------------------------------------------------------
@@ -155,7 +154,8 @@ def _detect_scheme(end_words: list[str], strict: bool = False) -> str:
         matched_label = None
         for j in range(i):
             rt = _rhyme_type(word, end_words[j], strict=strict)
-            if rt in ("perfect", "slant", "identical") if not strict else rt in ("perfect", "identical"):
+            ok = ("perfect", "slant", "identical") if not strict else ("perfect", "identical")
+            if rt in ok:
                 matched_label = labels[j]
                 break
         if matched_label is not None:
@@ -196,7 +196,7 @@ def analyze(
 
     Args:
         poem: The poem text.
-        expected_form: Form name from the registry (e.g. 'sonnet'). If None, auto-detect from poem text.
+        expected_form: Form name from registry (e.g. 'sonnet'). If None, auto-detect from text.
         expected_variant: Variant name (e.g. 'petrarchan'). Optional.
 
     Returns:
@@ -335,7 +335,8 @@ def format_analysis_for_prompt(analysis: dict) -> str:
     if analysis.get("rhyme_pairs"):
         top = analysis["rhyme_pairs"][:6]
         pair_strs = [
-            f"  \"{p['words'][0]}\" / \"{p['words'][1]}\" ({p['type']}, lines {p['lines'][0]}&{p['lines'][1]})"
+            f"  \"{p['words'][0]}\" / \"{p['words'][1]}\" ({p['type']}, "
+            f"lines {p['lines'][0]}&{p['lines'][1]})"
             for p in top
         ]
         parts.append("Rhyme pairs:\n" + "\n".join(pair_strs))

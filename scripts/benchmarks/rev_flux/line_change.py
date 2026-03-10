@@ -9,7 +9,7 @@ def _lines(text: str) -> list[str]:
 
 
 def _change_pct(a: str, b: str) -> float:
-    """Character-level edit distance as percentage of max length. 0 = identical, 100 = fully different."""
+    """Character-level edit distance as % of max length. 0 = identical, 100 = fully different."""
     if not a and not b:
         return 0.0
     if not a or not b:
@@ -159,7 +159,9 @@ def stanza_change_map(
         if n > 0 and pos + n <= len(last_round):
             stanza_means.append(sum(last_round[pos : pos + n]) / n)
         else:
-            stanza_means.append(sum(last_round[pos:]) / max(len(last_round[pos:]), 1) if pos < len(last_round) else 0.0)
+            tail = last_round[pos:] if pos < len(last_round) else []
+            mean = sum(tail) / max(len(tail), 1)
+            stanza_means.append(mean)
         pos += n
     return stanzas, stanza_means
 
@@ -192,7 +194,7 @@ def head_preservation(
     fraction: float = 0.2,
     threshold: float = 5.0,
 ) -> float:
-    """Fraction of lines in the first fraction of the poem that stayed below threshold. High = preserves opening."""
+    """Fraction of head lines below threshold. High = preserves opening."""
     if not change_pcts:
         return 1.0
     n = len(change_pcts)

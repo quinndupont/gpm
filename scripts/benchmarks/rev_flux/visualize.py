@@ -39,12 +39,15 @@ def plot_line_change_histogram(
         return
     pcts = [p for _, p in revised]
     fig, ax = plt.subplots(figsize=(8, 5))
-    ax.hist(pcts, bins=bins, range=(0, 100), color="steelblue", edgecolor="white", alpha=0.85)
+    ax.hist(
+        pcts, bins=bins, range=(0, 100), color="steelblue", edgecolor="white", alpha=0.85,
+    )
     ax.set_xlabel("Line change (%)")
     ax.set_ylabel("Count of revised lines")
     ax.set_title(title)
     ax.set_xlim(0, 100)
-    summary = " | ".join(f"R{r+1}: {n} lines" for r, n in enumerate(lines_changed_per_round) if n > 0)
+    parts = (f"R{r+1}: {n} lines" for r, n in enumerate(lines_changed_per_round) if n > 0)
+    summary = " | ".join(parts)
     if summary:
         fig.text(0.5, -0.05, summary, ha="center", fontsize=9, transform=fig.transFigure)
     fig.tight_layout(rect=[0, 0.05, 1, 1])
@@ -70,13 +73,16 @@ def plot_line_change_bars(
     indices = [i for i, _ in revised]
     pcts = [p for _, p in revised]
     fig, ax = plt.subplots(figsize=(12, 5))
-    colors = ["#2ecc71" if p < 10 else "#f39c12" if p < 50 else "#e74c3c" for p in pcts]
+    colors = [
+        "#2ecc71" if p < 10 else "#f39c12" if p < 50 else "#e74c3c" for p in pcts
+    ]
     ax.bar(indices, pcts, color=colors, alpha=0.8, width=0.9)
     ax.set_xlabel("Line index")
     ax.set_ylabel("Change (%)")
     ax.set_title(title)
     ax.set_ylim(0, 100)
-    summary = " | ".join(f"R{r+1}: {n} lines" for r, n in enumerate(lines_changed_per_round) if n > 0)
+    parts = (f"R{r+1}: {n} lines" for r, n in enumerate(lines_changed_per_round) if n > 0)
+    summary = " | ".join(parts)
     if summary:
         fig.text(0.5, -0.05, summary, ha="center", fontsize=9, transform=fig.transFigure)
     fig.tight_layout(rect=[0, 0.05, 1, 1])
@@ -91,7 +97,10 @@ def main():
     parser.add_argument("--title", type=str, default="RevFlux: Revised Lines")
     parser.add_argument("--bars", action="store_true", help="Bar chart (line index vs change pct)")
     parser.add_argument("--bins", type=int, default=20, help="Histogram bins")
-    parser.add_argument("--threshold", type=float, default=0.5, help="Min change pct to count as revised")
+    parser.add_argument(
+        "--threshold", type=float, default=0.5,
+        help="Min change pct to count as revised",
+    )
     args = parser.parse_args()
 
     with open(args.input) as f:
@@ -106,8 +115,10 @@ def main():
             revised.extend([(int(i), float(p)) for i, p in r])
     elif "per_round_changes" in data:
         from scripts.benchmarks.rev_flux.line_change import (
-            revised_lines_per_round,
             lines_changed_per_round as lcpr,
+        )
+        from scripts.benchmarks.rev_flux.line_change import (
+            revised_lines_per_round,
         )
         rounds = data["per_round_changes"]
         revised_per = revised_lines_per_round(rounds, args.threshold)
@@ -116,8 +127,10 @@ def main():
             revised.extend([(i, p) for i, p in r])
     elif "change_pcts" in data:
         from scripts.benchmarks.rev_flux.line_change import (
-            revised_lines_per_round,
             lines_changed_per_round as lcpr,
+        )
+        from scripts.benchmarks.rev_flux.line_change import (
+            revised_lines_per_round,
         )
         # Flatten - treat as single round
         pcts = data["change_pcts"]
@@ -129,9 +142,11 @@ def main():
         lines_changed_per_round = [len(revised)]
     elif "revision_history" in data:
         from scripts.benchmarks.rev_flux.line_change import (
-            revision_round_changes,
-            revised_lines_per_round,
             lines_changed_per_round as lcpr,
+        )
+        from scripts.benchmarks.rev_flux.line_change import (
+            revised_lines_per_round,
+            revision_round_changes,
         )
         rounds = revision_round_changes(data["revision_history"])
         revised_per = revised_lines_per_round(rounds, args.threshold)
@@ -145,7 +160,9 @@ def main():
     if args.bars:
         plot_line_change_bars(revised, lines_changed_per_round, out, title=args.title)
     else:
-        plot_line_change_histogram(revised, lines_changed_per_round, out, title=args.title, bins=args.bins)
+        plot_line_change_histogram(
+            revised, lines_changed_per_round, out, title=args.title, bins=args.bins,
+        )
     print(f"Saved: {out}")
 
 

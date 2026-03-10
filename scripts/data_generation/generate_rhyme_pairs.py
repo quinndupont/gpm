@@ -13,40 +13,30 @@ import random
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
-POET_TRAINING = ROOT / "data" / "poet_training"
-EDUCATOR_TRAINING = ROOT / "data" / "educator_training"
-
+from models.prompts.loader import get_persona, render_prompt
 from scripts.data_generation.claude_utils import (
-    call_claude,
-    get_educator_system_prompt,
     CLAUDE_OPUS_4_6,
     CLAUDE_SONNET_4_5,
-    load_requests,
     RAW_GOOD,
+    call_claude,
+    get_educator_system_prompt,
+    load_requests,
 )
 from scripts.eval.form_registry import (
-    FORMS,
     RHYMING_FORMS,
     form_description,
     get_scheme,
     is_metered_form,
 )
-from scripts.eval.rhyme_analyzer import analyze, format_analysis_for_prompt
+from scripts.eval.meter_analyzer import analyze as analyze_meter
 from scripts.eval.meter_analyzer import (
-    analyze as analyze_meter,
     format_analysis_for_prompt as format_meter_for_prompt,
 )
+from scripts.eval.rhyme_analyzer import analyze, format_analysis_for_prompt
 
-# ---------------------------------------------------------------------------
-# Prompts
-# ---------------------------------------------------------------------------
-
-from models.prompts.loader import get_persona, render_prompt
-
-# ---------------------------------------------------------------------------
-# Topics — used when no external request source is available
-# ---------------------------------------------------------------------------
+ROOT = Path(__file__).resolve().parents[2]
+POET_TRAINING = ROOT / "data" / "poet_training"
+EDUCATOR_TRAINING = ROOT / "data" / "educator_training"
 
 FALLBACK_TOPICS = [
     "a childhood kitchen",
@@ -85,7 +75,9 @@ def main():
     parser.add_argument("--critique-model", type=str, default=CLAUDE_SONNET_4_5,
                         help="Model for critique narration (cheap)")
     parser.add_argument("--seed", type=int, default=42)
-    parser.add_argument("--replace", action="store_true", help="Overwrite output files (default: append)")
+    parser.add_argument(
+        "--replace", action="store_true", help="Overwrite output files (default: append)"
+    )
     parser.add_argument("--forms", type=str, nargs="*", default=TARGET_FORMS,
                         help="Which forms to generate for")
     args = parser.parse_args()
@@ -122,7 +114,10 @@ def main():
             print(f"{label} Topic: {topic[:50]}...", flush=True)
 
             # Step A: Generate brief
-            brief_msg = render_prompt("tuning", "rhyme_pairs", template="brief", user_request=topic, form_desc=desc)
+            brief_msg = render_prompt(
+                "tuning", "rhyme_pairs", template="brief",
+                user_request=topic, form_desc=desc,
+            )
             try:
                 brief = call_claude(brief_msg, educator_system,
                                     model=args.brief_model, max_tokens=500)
@@ -164,7 +159,11 @@ def main():
             }) + "\n")
 
             # Step D: Generate educator critique informed by analyzers
-            critique_msg = render_prompt("tuning", "rhyme_pairs", template="critique", poem=poem, form_name=desc, expected_scheme=scheme, analysis_block=analysis_block)
+            critique_msg = render_prompt(
+                "tuning", "rhyme_pairs", template="critique",
+                poem=poem, form_name=desc, expected_scheme=scheme,
+                analysis_block=analysis_block,
+            )
             try:
                 critique = call_claude(critique_msg, educator_system,
                                        model=args.critique_model, max_tokens=400)
@@ -195,9 +194,13 @@ def main():
             meter_status = ""
             if meter_result:
                 m = meter_result.get("matches_meter")
-                meter_status = f" | meter={'pass' if m else 'fail'} ({meter_result['consistency']:.0%})"
-            print(f"  {label} Rhyme: {status} | density={rhyme_result['rhyme_density']:.0%}{meter_status}",
-                  flush=True)
+                m_cons = meter_result["consistency"]
+                meter_status = f" | meter={'pass' if m else 'fail'} ({m_cons:.0%})"
+            print(
+                f"  {label} Rhyme: {status} | "
+                f"density={rhyme_result['rhyme_density']:.0%}{meter_status}",
+                flush=True,
+            )
 
     poet_f.close()
     edu_f.close()

@@ -43,7 +43,7 @@ def main():
         print("   FAIL Replace ACCOUNT_ID in config/sagemaker.yaml")
     elif ":root:role/" in role_arn:
         suggested = role_arn.replace(":root:role/", ":role/")
-        print(f"   WARN Role ARN has ':root:' - typical format is arn:aws:iam::ACCOUNT:role/NAME")
+        print("   WARN Role ARN has ':root:' - typical format is arn:aws:iam::ACCOUNT:role/NAME")
         print(f"        Suggested: {suggested}")
     else:
         print(f"   OK  {role_arn}")
@@ -63,7 +63,10 @@ def main():
         resp = getattr(e, "response", None)
         err_code = resp.get("Error", {}).get("Code", "") if resp else ""
         if err_code == "AccessDenied":
-            print(f"   SKIP Cannot verify (sagemaker-user lacks iam:GetRole). Ensure role exists and you have iam:PassRole for training.")
+            print(
+                "   SKIP Cannot verify (sagemaker-user lacks iam:GetRole). "
+                "Ensure role exists and you have iam:PassRole for training.",
+            )
         elif "NoSuchEntity" in str(e) or err_code == "NoSuchEntity":
             errors.append(f"IAM role '{role_name}' not found")
             print(f"   FAIL Role '{role_name}' not found")
@@ -82,7 +85,7 @@ def main():
             s3.head_bucket(Bucket=bucket)
             print(f"   OK  Bucket: {bucket}")
             s3.list_objects_v2(Bucket=bucket, MaxKeys=1)
-            print(f"   OK  Bucket accessible (list works)")
+            print("   OK  Bucket accessible (list works)")
         except Exception as e:
             resp = getattr(e, "response", None)
             code = resp.get("Error", {}).get("Code", "") if resp else ""
@@ -112,7 +115,11 @@ def main():
         except Exception as e:
             if "ResourceNotFoundException" in type(e).__name__ or "ResourceNotFound" in str(e):
                 errors.append(f"Secret '{secret_name}' not found")
-                print(f"   FAIL Secret not found. Create it: aws secretsmanager create-secret --name {secret_name} --secret-string 'hf_xxx'")
+                print(
+                    f"   FAIL Secret not found. Create it: "
+                    f"aws secretsmanager create-secret --name {secret_name} "
+                    "--secret-string 'hf_xxx'",
+                )
             else:
                 errors.append(f"Secrets Manager: {e}")
                 print(f"   FAIL {e}")

@@ -5,7 +5,6 @@ Detects metrical patterns, measures consistency, identifies strategic variations
 """
 import argparse
 import json
-import re
 import string
 import sys
 from pathlib import Path
@@ -16,7 +15,6 @@ from scripts.eval.form_registry import (
     detect_form,
     get_meter,
     get_meter_spec,
-    METERS,
 )
 
 # ---------------------------------------------------------------------------
@@ -241,7 +239,9 @@ def analyze(
         "dominant_foot_name": dominant_name,
         "consistency": round(consistency, 2),
         "syllable_counts": syllable_counts,
-        "avg_syllables_per_line": round(sum(syllable_counts) / len(syllable_counts), 1) if syllable_counts else 0,
+        "avg_syllables_per_line": (
+            round(sum(syllable_counts) / len(syllable_counts), 1) if syllable_counts else 0
+        ),
         "expected_meter": expected_meter_name,
         "matches_meter": matches_meter,
         "variations": variations,

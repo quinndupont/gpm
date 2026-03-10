@@ -5,25 +5,26 @@ and model configs (trained GGUF vs vanilla Ollama). Evaluates process dynamics, 
 """
 import argparse
 import json
-import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[3]
-
-MODELS_CONFIG = ROOT / "config" / "rev_flux_models.yaml"
-
-from scripts.benchmarks.rev_flux.prompts import CATEGORIES
 from scripts.benchmarks.rev_flux.line_change import (
-    revision_round_changes,
     aggregate_line_changes,
-    revised_lines_per_round,
     lines_changed_per_round,
+    revised_lines_per_round,
+    revision_round_changes,
 )
+from scripts.benchmarks.rev_flux.prompts import CATEGORIES
+
+ROOT = Path(__file__).resolve().parents[3]
+MODELS_CONFIG = ROOT / "config" / "rev_flux_models.yaml"
 
 
 def _load_models_config() -> tuple[list[dict], list[str] | None]:
     import yaml
-    default = [{"id": "trained", "label": "Trained (GGUF)", "educator": "gguf", "poet": "gguf", "revisions": [0, 1, 3, 5]}]
+    default = [
+        {"id": "trained", "label": "Trained (GGUF)", "educator": "gguf", "poet": "gguf",
+         "revisions": [0, 1, 3, 5]},
+    ]
     if not MODELS_CONFIG.exists():
         return default, None
     data = yaml.safe_load(open(MODELS_CONFIG)) or {}
@@ -73,7 +74,11 @@ def run_single(
         "lines_changed_per_round": lines_changed,
         "revision_history": hist,
         "final_poem": result["final_poem"],
-        "metadata": {**meta, "approved": meta.get("approved", False), "approved_at_round": meta.get("approved_at_round")},
+        "metadata": {
+            **meta,
+            "approved": meta.get("approved", False),
+            "approved_at_round": meta.get("approved_at_round"),
+        },
     }
 
 
@@ -99,7 +104,7 @@ def main():
         "--num-revisions",
         type=int,
         default=None,
-        help="Number of revision levels for all models (1-4, from [0,1,3,5]). Default in --test: 3.",
+        help="Revision levels for all models (1-4). Default in --test: 3.",
     )
     parser.add_argument(
         "--test",
@@ -158,7 +163,7 @@ def main():
         "--min-revisions",
         type=int,
         default=1,
-        help="Minimum revision rounds before honoring educator approval (default: 1). Use 0 to allow early approval.",
+        help="Min revision rounds before honoring educator approval (default: 1). Use 0 for early.",
     )
     args = parser.parse_args()
 
@@ -267,7 +272,11 @@ def main():
             n_prompts = 1 if args.test else (args.limit or len(prompts))
             for idx, request in enumerate(prompts[:n_prompts]):
                 for max_rev in revs_to_run:
-                    print(f"[{mid}] [{category}] prompt {idx + 1}/{n_prompts}, max_revisions={max_rev}...", flush=True)
+                    msg = (
+                        f"[{mid}] [{category}] prompt {idx + 1}/{n_prompts}, "
+                        f"max_revisions={max_rev}..."
+                    )
+                    print(msg, flush=True)
                     run = run_single(
                         pipeline,
                         request,
@@ -380,14 +389,14 @@ def main():
     if args.visualize and runs:
         import subprocess
         viz_py = ["uv", "run", "--with", "matplotlib", "python"]
-        harness_script = str(ROOT / "scripts" / "benchmarks" / "rev_flux" / "visualize_harness.py")
-        dashboard_script = str(ROOT / "scripts" / "benchmarks" / "rev_flux" / "visualize_dashboard.py")
+        rev_flux_dir = ROOT / "scripts" / "benchmarks" / "rev_flux"
+        harness_script = str(rev_flux_dir / "visualize_harness.py")
+        dashboard_script = str(rev_flux_dir / "visualize_dashboard.py")
         out_plots = str(args.output_dir / "plots")
-        subprocess.run(
-            viz_py + [harness_script, str(args.output_dir), "-o", out_plots, "--comparison-only"],
-            cwd=str(ROOT),
-            check=True,
-        )
+        harness_cmd = viz_py + [
+            harness_script, str(args.output_dir), "-o", out_plots, "--comparison-only",
+        ]
+        subprocess.run(harness_cmd, cwd=str(ROOT), check=True)
         subprocess.run(
             viz_py + [dashboard_script, str(args.output_dir), "-o", out_plots],
             cwd=str(ROOT),

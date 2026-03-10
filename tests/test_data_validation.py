@@ -1,7 +1,8 @@
 """Data validation tests — schema, quality gate, chat format."""
 import json
-import pytest
 from pathlib import Path
+
+import pytest
 
 from scripts.data_generation.quality_gate import check as quality_gate_check
 
@@ -75,7 +76,10 @@ class TestQualityGateIntegration:
     def test_quality_gate_passes_good_critique(self):
         entry = {
             "poem": "The cat sat on the mat.",
-            "critique": "The moment in line 1 holds attention. The rhyme works. This poem has found its shape.",
+            "critique": (
+                "The moment in line 1 holds attention. The rhyme works. "
+                "This poem has found its shape.",
+            ),
         }
         ok, reasons = quality_gate_check(entry)
         assert ok is True
@@ -84,7 +88,10 @@ class TestQualityGateIntegration:
     def test_quality_gate_rejects_llm_ism(self):
         entry = {
             "poem": "Roses are red",
-            "critique": "This poem delves into the rich tapestry of emotion. It's worth noting how it resonates deeply.",
+            "critique": (
+                "This poem delves into the rich tapestry of emotion. "
+                "It's worth noting how it resonates deeply.",
+            ),
         }
         ok, reasons = quality_gate_check(entry)
         assert ok is False
@@ -120,7 +127,11 @@ class TestNoEmptyFields:
     """No blank poem, critique, brief, etc."""
 
     def test_fixtures_no_empty_content(self):
-        for fname in ["sample_critique.jsonl", "sample_pairs.jsonl", "sample_rhyme_pairs.jsonl", "sample_train.jsonl"]:
+        fnames = [
+            "sample_critique.jsonl", "sample_pairs.jsonl",
+            "sample_rhyme_pairs.jsonl", "sample_train.jsonl",
+        ]
+        for fname in fnames:
             data = _load_jsonl(FIXTURES_DIR / fname)
             for entry in data:
                 if "messages" in entry:
@@ -129,7 +140,10 @@ class TestNoEmptyFields:
                 else:
                     for key in ["poem", "critique", "brief"]:
                         if key in entry:
-                            assert entry[key].strip() if isinstance(entry[key], str) else entry[key], f"Empty {key} in {fname}"
+                            val = entry[key]
+                        assert (
+                            val.strip() if isinstance(val, str) else val
+                        ), f"Empty {key} in {fname}"
 
 
 @pytest.mark.data

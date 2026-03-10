@@ -1,10 +1,11 @@
 """Rhyme benchmark tests — prompt parsing, structure, threshold assertions."""
 import json
-import pytest
 from pathlib import Path
 
+import pytest
+
 from scripts.benchmarks.rhyme_bench.prompts import RHYME_PROMPTS
-from scripts.eval.form_registry import get_scheme, FORMS
+from scripts.eval.form_registry import FORMS, get_scheme
 
 ROOT = Path(__file__).resolve().parent.parent
 RHYME_BENCH_DIR = ROOT / "data" / "rhyme_bench"

@@ -3,7 +3,8 @@
 # Famous poetry — describe without quoting. Tests whether model converges toward canonical form.
 FAMOUS_POETRY = [
     "Write a poem about a traveler at a fork in a yellow wood who chooses the less-traveled path.",
-    "A poem where the speaker compares a lover to a summer day but concludes the beloved outlasts it.",
+    "A poem where the speaker compares a lover to a summer day but concludes the beloved "
+    "outlasts it.",
     "A short poem about a raven that visits a grieving man and repeats one word.",
     "A poem about stopping by woods on a snowy evening, with promises to keep.",
     "A poem where the speaker addresses death as not proud, and sleep is but a short rest.",

@@ -15,20 +15,26 @@ ROOT = Path(__file__).resolve().parents[2]
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--corpus", type=Path, default=ROOT / "data" / "raw" / "good" / "combined_clean.json")
+    default_corpus = ROOT / "data" / "raw" / "good" / "combined_clean.json"
+    parser.add_argument("--corpus", type=Path, default=default_corpus)
     parser.add_argument("--output", type=Path, default=ROOT / "data" / "aem_index")
     parser.add_argument("--limit", type=int, default=0, help="Max poems to index (0 = all)")
     args = parser.parse_args()
 
     try:
-        from sentence_transformers import SentenceTransformer
         import numpy as np
+        from sentence_transformers import SentenceTransformer
     except ImportError:
         print("pip install sentence-transformers numpy", file=sys.stderr)
         sys.exit(1)
 
     model_path = os.environ.get("AEM_MODEL_PATH") or str(ROOT / "models" / "aem")
-    model = SentenceTransformer(model_path) if Path(model_path).exists() else SentenceTransformer("sentence-transformers/all-mpnet-base-v2")
+    default_model = "sentence-transformers/all-mpnet-base-v2"
+    model = (
+        SentenceTransformer(model_path)
+        if Path(model_path).exists()
+        else SentenceTransformer(default_model)
+    )
 
     poems = []
     if args.corpus.exists():
@@ -61,7 +67,8 @@ def main():
         texts = [p["text"] for p in batch]
         emb = model.encode(texts, convert_to_numpy=True)
         all_embeddings.append(emb)
-        metadata.extend([{"id": p["id"], "title": p["title"], "author": p["author"]} for p in batch])
+        meta_batch = [{"id": p["id"], "title": p["title"], "author": p["author"]} for p in batch]
+        metadata.extend(meta_batch)
         print(f"Indexed {min(i + batch_size, len(poems))}/{len(poems)}", file=sys.stderr)
 
     embeddings = np.vstack(all_embeddings).astype(np.float32)

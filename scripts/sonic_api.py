@@ -1,20 +1,16 @@
 #!/usr/bin/env python3
 """FastAPI service for sonic (rhyme + phoneme) analysis of poems."""
-import json
-import re
 import string
-import sys
 from pathlib import Path
-
-ROOT = Path(__file__).resolve().parents[1]
 
 import pronouncing
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-# Import rhyme analyzer
 from scripts.eval.rhyme_analyzer import analyze as analyze_rhyme
+
+ROOT = Path(__file__).resolve().parents[1]
 
 app = FastAPI(title="GPM Sonic API")
 app.add_middleware(

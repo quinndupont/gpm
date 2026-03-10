@@ -1,5 +1,4 @@
 """Form registry — maps poetic form names to expected rhyme schemes and constraints."""
-import re
 
 FORMS = {
     "sonnet": {
@@ -7,10 +6,18 @@ FORMS = {
         "line_count": 14,
         "meter": "iambic pentameter",
         "variants": {
-            "petrarchan": {"rhyme_scheme": "ABBAABBA CDECDE", "line_count": 14, "meter": "iambic pentameter"},
-            "italian": {"rhyme_scheme": "ABBAABBA CDECDE", "line_count": 14, "meter": "iambic pentameter"},
-            "spenserian": {"rhyme_scheme": "ABAB BCBC CDCD EE", "line_count": 14, "meter": "iambic pentameter"},
-            "shakespearean": {"rhyme_scheme": "ABAB CDCD EFEF GG", "line_count": 14, "meter": "iambic pentameter"},
+            "petrarchan": {
+                "rhyme_scheme": "ABBAABBA CDECDE", "line_count": 14, "meter": "iambic pentameter",
+            },
+            "italian": {
+                "rhyme_scheme": "ABBAABBA CDECDE", "line_count": 14, "meter": "iambic pentameter",
+            },
+            "spenserian": {
+                "rhyme_scheme": "ABAB BCBC CDCD EE", "line_count": 14, "meter": "iambic pentameter",
+            },
+            "shakespearean": {
+                "rhyme_scheme": "ABAB CDCD EFEF GG", "line_count": 14, "meter": "iambic pentameter",
+            },
         },
     },
     "villanelle": {

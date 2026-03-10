@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
-"""Run deterministic rhyme analysis on all good poems; save those with strong rhyme schemes for fine-tuning."""
+"""Run rhyme analysis on good poems; save those with strong rhyme schemes for fine-tuning."""
 import argparse
 import json
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
-
-from scripts.data_generation.claude_utils import load_poems, poem_text, RAW_GOOD
+from scripts.data_generation.claude_utils import RAW_GOOD, load_poems, poem_text
 from scripts.eval.rhyme_analyzer import analyze
 
+ROOT = Path(__file__).resolve().parents[2]
 ANNOTATED = ROOT / "data" / "annotated"
 DEFAULT_OUT = ANNOTATED / "strong_rhyme_poems.jsonl"
 
@@ -43,15 +42,32 @@ def is_strong_rhyme(
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Select good poems with strong rhyme schemes for fine-tuning")
+    parser = argparse.ArgumentParser(
+        description="Select good poems with strong rhyme schemes for fine-tuning",
+    )
     parser.add_argument("--input", type=Path, default=RAW_GOOD, help="Directory of good poems")
     parser.add_argument("--output", type=Path, default=DEFAULT_OUT, help="Output JSONL path")
-    parser.add_argument("--min-strict-density", type=float, default=0.85, help="Min strict rhyme density (CMU perfect only, 0–1)")
+    parser.add_argument(
+        "--min-strict-density", type=float, default=0.85,
+        help="Min strict rhyme density (CMU perfect only, 0–1)",
+    )
     parser.add_argument("--min-lines", type=int, default=6, help="Min line count")
-    parser.add_argument("--min-perfect-pairs", type=int, default=3, help="Min CMU-verified perfect rhyme pairs")
-    parser.add_argument("--all", action="store_true", help="Write all poems with their analysis; only strong ones get strong_rhyme=True")
-    parser.add_argument("--verbose", "-v", action="store_true", help="Print progress and rejection reasons")
-    parser.add_argument("--progress", type=int, default=5000, help="Print progress every N poems (0=off)")
+    parser.add_argument(
+        "--min-perfect-pairs", type=int, default=3,
+        help="Min CMU-verified perfect rhyme pairs",
+    )
+    parser.add_argument(
+        "--all", action="store_true",
+        help="Write all poems with analysis; only strong ones get strong_rhyme=True",
+    )
+    parser.add_argument(
+        "--verbose", "-v", action="store_true",
+        help="Print progress and rejection reasons",
+    )
+    parser.add_argument(
+        "--progress", type=int, default=5000,
+        help="Print progress every N poems (0=off)",
+    )
     args = parser.parse_args()
 
     poems = load_poems(args.input)
@@ -60,7 +76,11 @@ def main():
         sys.exit(1)
 
     print(f"Loaded {len(poems)} poems from {args.input}", file=sys.stderr)
-    print(f"Criteria: strict_density>={args.min_strict_density}, min_lines>={args.min_lines}, min_pairs>={args.min_perfect_pairs}", file=sys.stderr)
+    print(
+        f"Criteria: strict_density>={args.min_strict_density}, min_lines>={args.min_lines}, "
+        f"min_pairs>={args.min_perfect_pairs}",
+        file=sys.stderr,
+    )
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
     strong_count = 0
@@ -88,7 +108,13 @@ def main():
                 strong_count += 1
                 if args.verbose:
                     title = rec.get("title", "(untitled)")
-                    print(f"  PASS {title}: strict={analysis.get('strict_rhyme_density', 0):.2f} pairs={len(analysis.get('strict_rhyme_pairs', []))} scheme={analysis.get('strict_detected_scheme', '')}", file=sys.stderr)
+                    sd = analysis.get("strict_rhyme_density", 0)
+                    npairs = len(analysis.get("strict_rhyme_pairs", []))
+                    scheme = analysis.get("strict_detected_scheme", "")
+                    print(
+                    f"  PASS {title}: strict={sd:.2f} pairs={npairs} scheme={scheme}",
+                    file=sys.stderr,
+                )
             else:
                 key = (reason or "unknown").split("=")[0].split("(")[0].strip() or "unknown"
                 reject_reasons[key] = reject_reasons.get(key, 0) + 1
@@ -120,11 +146,16 @@ def main():
                 f.write(json.dumps(out, ensure_ascii=False) + "\n")
 
     processed = len(poems) - empty_count
-    print(f"Processed {processed} poems → {strong_count} strong rhyme (saved to {args.output})")
+    print(
+        f"Processed {processed} poems → {strong_count} strong rhyme (saved to {args.output})",
+    )
     if empty_count:
         print(f"  Skipped {empty_count} empty poems", file=sys.stderr)
     if perfect_count:
-        print(f"  {perfect_count} matched an expected form (when form was provided)", file=sys.stderr)
+        print(
+            f"  {perfect_count} matched an expected form (when form was provided)",
+            file=sys.stderr,
+        )
     if reject_reasons:
         print("  Rejection breakdown:", file=sys.stderr)
         for k, v in sorted(reject_reasons.items(), key=lambda x: -x[1]):

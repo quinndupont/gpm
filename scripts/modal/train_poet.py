@@ -65,8 +65,14 @@ if __name__ == "__main__":
     import argparse
     ap = argparse.ArgumentParser()
     ap.add_argument("--num-epochs-override", type=int, default=None)
-    ap.add_argument("--base-model", type=str, default=None, dest="base_model_override", help="HuggingFace base model ID")
+    ap.add_argument(
+        "--base-model", type=str, default=None, dest="base_model_override",
+        help="HuggingFace base model ID",
+    )
     a = ap.parse_args()
     with app.run():
-        path = train_poet.remote(num_epochs_override=a.num_epochs_override, base_model_override=a.base_model_override)
+        path = train_poet.remote(
+            num_epochs_override=a.num_epochs_override,
+            base_model_override=a.base_model_override,
+        )
         print(f"Done: {path}")

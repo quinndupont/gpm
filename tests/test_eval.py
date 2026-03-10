@@ -1,23 +1,22 @@
 """Rhyme, meter, and form evaluation tests."""
-import pytest
 from pathlib import Path
 
-from scripts.eval.rhyme_analyzer import analyze as analyze_rhyme, format_analysis_for_prompt
+import pytest
+
 from scripts.eval.form_registry import (
     FORMS,
-    RHYMING_FORMS,
     detect_form,
-    get_scheme,
-    parse_scheme,
+    form_description,
     get_line_count,
     get_meter,
-    get_meter_spec,
-    is_rhyming_form,
+    get_scheme,
     is_metered_form,
-    form_description,
+    is_rhyming_form,
+    parse_scheme,
 )
 from scripts.eval.meter_analyzer import analyze as analyze_meter
-
+from scripts.eval.rhyme_analyzer import analyze as analyze_rhyme
+from scripts.eval.rhyme_analyzer import format_analysis_for_prompt
 
 FIXTURES_DIR = Path(__file__).resolve().parent / "fixtures"
 

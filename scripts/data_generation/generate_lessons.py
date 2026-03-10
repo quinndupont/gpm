@@ -5,11 +5,15 @@ import json
 import sys
 from pathlib import Path
 
+from models.prompts.loader import render_prompt
+from scripts.data_generation.claude_utils import (
+    CLAUDE_SONNET_4_5,
+    call_claude,
+    get_educator_system_prompt,
+)
+
 ROOT = Path(__file__).resolve().parents[2]
 EDUCATOR_TRAINING = ROOT / "data" / "educator_training"
-
-from scripts.data_generation.claude_utils import call_claude, get_educator_system_prompt, CLAUDE_SONNET_4_5
-from models.prompts.loader import render_prompt
 
 CRAFT_QUESTIONS = [
     "What does it mean to earn an abstraction?",
@@ -24,7 +28,9 @@ def main():
     parser.add_argument("--questions", type=Path, help="File with questions (one per line)")
     parser.add_argument("--limit", type=int, default=0)
     parser.add_argument("--output", type=Path, default=EDUCATOR_TRAINING / "lessons.jsonl")
-    parser.add_argument("--replace", action="store_true", help="Overwrite output file (default: append)")
+    parser.add_argument(
+        "--replace", action="store_true", help="Overwrite output file (default: append)"
+    )
     parser.add_argument("--model", type=str, default=CLAUDE_SONNET_4_5)
     args = parser.parse_args()
 

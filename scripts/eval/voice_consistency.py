@@ -27,7 +27,7 @@ def check_anti_llm(output: str) -> list[str]:
 def check_specificity(output: str) -> int:
     """Count line-specific references."""
     import re
-    return len(re.findall(r"line \d+|stanza \d+|"[^"]{10,}"", output, re.I))
+    return len(re.findall(r'line \d+|stanza \d+|"[^"]{10,}"', output, re.I))
 
 
 def main():

@@ -101,7 +101,10 @@ def main():
         default=ROOT / "data" / "rhyme_bench",
         help="Directory with rhyme bench output JSONs",
     )
-    parser.add_argument("-o", "--output", type=Path, default=None, help="Output directory (default: data_dir/plots)")
+    parser.add_argument(
+        "-o", "--output", type=Path, default=None,
+        help="Output directory (default: data_dir/plots)",
+    )
     parser.add_argument("--title", type=str, default=None, help="Plot title prefix")
     args = parser.parse_args()
 
@@ -114,8 +117,14 @@ def main():
     out_dir.mkdir(parents=True, exist_ok=True)
     prefix = (args.title + ": ") if args.title else ""
 
-    plot_model_comparison(runs, out_dir / "model_comparison.png", title=prefix + "Strict Rhyme Density by Model")
-    plot_matches_form_rate(runs, out_dir / "matches_form_rate.png", title=prefix + "Form Adherence Rate by Model")
+    plot_model_comparison(
+        runs, out_dir / "model_comparison.png",
+        title=prefix + "Strict Rhyme Density by Model",
+    )
+    plot_matches_form_rate(
+        runs, out_dir / "matches_form_rate.png",
+        title=prefix + "Form Adherence Rate by Model",
+    )
     print(f"Saved plots to {out_dir}")
     return 0
 

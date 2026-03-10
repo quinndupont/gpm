@@ -6,7 +6,6 @@ and model comparison. Produces a 2x3 multi-panel figure.
 import argparse
 import json
 import math
-import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -28,8 +27,8 @@ def _load_model_labels() -> dict[str, str]:
 def _ensure_matplotlib():
     import matplotlib
     matplotlib.use("Agg")
-    import matplotlib.pyplot as plt
     import matplotlib.patches as mpatches
+    import matplotlib.pyplot as plt
     return plt, mpatches
 
 
@@ -51,7 +50,9 @@ def _get_model_id(run: dict) -> str:
     return run.get("model_id") or run.get("metadata", {}).get("model_poet", "unknown")
 
 
-def _normalize(values: list[float], low: float | None = None, high: float | None = None) -> list[float]:
+def _normalize(
+    values: list[float], low: float | None = None, high: float | None = None,
+) -> list[float]:
     """Normalize to [0, 1]. If low/high given, use those; else min/max of values."""
     if not values:
         return []
@@ -90,12 +91,12 @@ def main():
         return
 
     from scripts.benchmarks.rev_flux.line_change import (
+        change_entropy,
+        head_preservation,
         positional_change_profile,
         revision_coverage,
-        head_preservation,
-        tail_attention,
         structural_growth,
-        change_entropy,
+        tail_attention,
     )
 
     plt, mpatches = _ensure_matplotlib()
@@ -123,7 +124,10 @@ def main():
             profiles.append(p)
         if profiles:
             mean_profile = [sum(p[i] for p in profiles) / len(profiles) for i in range(n_bins)]
-            ax.plot(x_bins, mean_profile, label=model_labels.get(mid, mid), color=model_color[mid], linewidth=2)
+            ax.plot(
+                x_bins, mean_profile,
+                label=model_labels.get(mid, mid), color=model_color[mid], linewidth=2,
+            )
     ax.set_xlabel("Normalized position (0=start, 1=end)")
     ax.set_ylabel("Mean change (%)")
     ax.set_title("Positional Change Profile")
@@ -165,7 +169,10 @@ def main():
             covs.append(revision_coverage(r["change_pcts"]))
             tails.append(tail_attention(r["change_pcts"]))
         if covs:
-            ax.scatter(covs, tails, c=[model_color[mid]], label=model_labels.get(mid, mid), alpha=0.8, s=40)
+            ax.scatter(
+                covs, tails, c=[model_color[mid]],
+                label=model_labels.get(mid, mid), alpha=0.8, s=40,
+            )
     ax.set_xlabel("Revision coverage")
     ax.set_ylabel("Tail attention (mean change % in last 33%)")
     ax.set_title("Coverage vs Tail Attention")
@@ -207,7 +214,9 @@ def main():
         vals = [agg[m].get(k, 0) for m in models]
         if vals and max(vals) > min(vals):
             for m in models:
-                agg[m][f"{k}_norm"] = (agg[m].get(k, 0) - min(vals)) / (max(vals) - min(vals))
+                agg[m][f"{k}_norm"] = (
+                    (agg[m].get(k, 0) - min(vals)) / (max(vals) - min(vals))
+                )
         else:
             for m in models:
                 agg[m][f"{k}_norm"] = 0.5
@@ -222,12 +231,18 @@ def main():
             agg[mid].get("perf_norm", 0.5),
         ]
         vals += vals[:1]
-        ax_radar.plot(angles, vals, "o-", linewidth=2, label=model_labels.get(mid, mid), color=model_color[mid])
+        ax_radar.plot(
+            angles, vals, "o-", linewidth=2,
+            label=model_labels.get(mid, mid), color=model_color[mid],
+        )
         ax_radar.fill(angles, vals, alpha=0.15, color=model_color[mid])
     ax_radar.set_xticks(angles[:-1])
     ax_radar.set_xticklabels(radar_labels, fontsize=8)
     ax_radar.set_title("Model Comparison Radar")
-    ax_radar.legend(loc="upper right", bbox_to_anchor=(1.3, 1.0), fontsize=7 if len(models) <= 4 else 6)
+    ax_radar.legend(
+        loc="upper right", bbox_to_anchor=(1.3, 1.0),
+        fontsize=7 if len(models) <= 4 else 6,
+    )
 
     # 5. Structural Growth by Category (bottom-center)
     ax = axes[1, 1]
@@ -238,10 +253,16 @@ def main():
         vals = []
         for cat in cats:
             combo = [r for r in by_model[mid] if r.get("category") == cat]
-            grows = [structural_growth(r.get("revision_history", [])) for r in combo if r.get("revision_history")]
+            grows = [
+                structural_growth(r.get("revision_history", []))
+                for r in combo if r.get("revision_history")
+            ]
             vals.append(sum(grows) / len(grows) if grows else 1.0)
         offset = (i - len(models) / 2 + 0.5) * width
-        ax.bar([xi + offset for xi in x], vals, width, label=model_labels.get(mid, mid), color=model_color[mid], alpha=0.8)
+        ax.bar(
+            [xi + offset for xi in x], vals, width,
+            label=model_labels.get(mid, mid), color=model_color[mid], alpha=0.8,
+        )
     ax.set_xticks(x)
     ax.set_xticklabels(cats, rotation=15, ha="right")
     ax.set_ylabel("Structural growth (final/initial lines)")
@@ -266,7 +287,11 @@ def main():
         score = 0.3 * cov + 0.3 * tail + 0.2 * ent + 0.2 * (1 - head)
         scores.append((mid, score, cov, tail, head, ent))
     scores.sort(key=lambda x: -x[1])
-    table_data = [[model_labels.get(s[0], s[0]), f"{s[1]:.3f}", f"{s[2]:.2f}", f"{s[3]:.2f}", f"{s[4]:.2f}", f"{s[5]:.2f}"] for s in scores]
+    table_data = [
+        [model_labels.get(s[0], s[0]), f"{s[1]:.3f}", f"{s[2]:.2f}", f"{s[3]:.2f}",
+         f"{s[4]:.2f}", f"{s[5]:.2f}"]
+        for s in scores
+    ]
     col_labels = ["Model", "Score", "Cov", "Tail", "Head", "Ent"]
     table = ax.table(
         cellText=table_data,

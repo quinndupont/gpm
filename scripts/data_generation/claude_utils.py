@@ -33,7 +33,7 @@ def get_educator_system_prompt() -> str:
 
 
 def load_poems(directory: Path) -> list[dict]:
-    """Load poems from directory. Supports standardized {author, title, poem} in .json, .jsonl; .txt as {poem}."""
+    """Load poems from directory. Supports {author, title, poem} in .json, .jsonl; .txt as poem."""
     poems = []
     if not directory.exists():
         return poems
@@ -44,13 +44,23 @@ def load_poems(directory: Path) -> list[dict]:
             if isinstance(obj, dict) and obj.get("poem"):
                 poems.append(obj)
             elif isinstance(obj, dict) and (obj.get("text") or obj.get("content")):
-                poems.append({"author": obj.get("author", ""), "title": obj.get("title", ""), "poem": obj.get("text") or obj.get("content", "")})
+                poems.append({
+                    "author": obj.get("author", ""),
+                    "title": obj.get("title", ""),
+                    "poem": obj.get("text") or obj.get("content", ""),
+                })
     for p in directory.glob("**/*.jsonl"):
         for line in p.read_text().splitlines():
             if line.strip():
                 obj = json.loads(line)
-                if isinstance(obj, dict) and (obj.get("poem") or obj.get("text") or obj.get("content")):
-                    poems.append({"author": obj.get("author", ""), "title": obj.get("title", ""), "poem": obj.get("poem") or obj.get("text") or obj.get("content", "")})
+                if isinstance(obj, dict) and (
+                    obj.get("poem") or obj.get("text") or obj.get("content")
+                ):
+                    poems.append({
+                        "author": obj.get("author", ""),
+                        "title": obj.get("title", ""),
+                        "poem": obj.get("poem") or obj.get("text") or obj.get("content", ""),
+                    })
     for p in directory.glob("**/*.txt"):
         poems.append({"author": "", "title": p.stem, "poem": p.read_text(), "source": str(p)})
     return poems
@@ -60,11 +70,13 @@ def poem_text(poem) -> str:
     """Extract poem text from standardized {author, title, poem} or legacy keys."""
     if isinstance(poem, str):
         return poem
-    return poem.get("poem", poem.get("text", poem.get("content", ""))) if isinstance(poem, dict) else ""
+    if isinstance(poem, dict):
+        return poem.get("poem", poem.get("text", poem.get("content", "")))
+    return ""
 
 
 def load_requests(source: Path) -> list[str]:
-    """Load user requests from file or directory. For {author, title, poem} uses title as request."""
+    """Load user requests from file or directory. For {author, title, poem} uses title."""
     requests = []
     if not source.exists():
         return requests
@@ -74,7 +86,10 @@ def load_requests(source: Path) -> list[str]:
             items = data if isinstance(data, list) else [data]
             for obj in items:
                 if isinstance(obj, dict):
-                    r = obj.get("request") or obj.get("prompt") or obj.get("title") or (obj.get("poem", "")[:80] + "..." if len(obj.get("poem", "")) > 80 else obj.get("poem", ""))
+                    poem_val = obj.get("poem", "")
+                    r = obj.get("request") or obj.get("prompt") or obj.get("title")
+                    if not r and poem_val:
+                        r = poem_val[:80] + "..." if len(poem_val) > 80 else poem_val
                     if r:
                         requests.append(r if isinstance(r, str) else str(r))
         elif source.suffix == ".jsonl":
@@ -91,7 +106,10 @@ def load_requests(source: Path) -> list[str]:
             items = data if isinstance(data, list) else [data]
             for obj in items:
                 if isinstance(obj, dict) and obj.get("poem"):
-                    r = obj.get("request") or obj.get("prompt") or obj.get("title") or (obj["poem"][:80] + "..." if len(obj.get("poem", "")) > 80 else obj.get("poem", ""))
+                    poem_val = obj.get("poem", "")
+                    r = obj.get("request") or obj.get("prompt") or obj.get("title")
+                    if not r and poem_val:
+                        r = poem_val[:80] + "..." if len(poem_val) > 80 else poem_val
                     if r:
                         requests.append(r if isinstance(r, str) else str(r))
         for p in source.glob("**/*.jsonl"):
@@ -108,7 +126,10 @@ def load_requests(source: Path) -> list[str]:
 def _load_quota_config():
     cfg_path = ROOT / "config" / "data_generation.yaml"
     if not cfg_path.exists():
-        return {"opus_max": 50, "sonnet_max": 150}, {"backend": "ollama", "model": "qwen2.5:7b-instruct"}
+        return (
+            {"opus_max": 50, "sonnet_max": 150},
+            {"backend": "ollama", "model": "qwen2.5:7b-instruct"},
+        )
     import yaml
     data = yaml.safe_load(cfg_path.read_text()) or {}
     quotas = data.get("quotas", {})
@@ -130,7 +151,9 @@ def _save_quota_state(state: dict):
     QUOTA_FILE.write_text(json.dumps(state))
 
 
-def _select_model(requested: str, quotas: dict, state: dict, force_anthropic: bool = False) -> tuple[str, str]:
+def _select_model(
+    requested: str, quotas: dict, state: dict, force_anthropic: bool = False
+) -> tuple[str, str]:
     """Return (actual_model, provider) where provider is 'claude' or 'local'."""
     import os
     if force_anthropic or os.environ.get("FORCE_ANTHROPIC"):
@@ -158,7 +181,9 @@ def _select_model(requested: str, quotas: dict, state: dict, force_anthropic: bo
     return requested, "claude" if requested.startswith("claude-") else "local"
 
 
-def _call_local(user_message: str, system_message: str | None, max_tokens: int, local_cfg: dict) -> str:
+def _call_local(
+    user_message: str, system_message: str | None, max_tokens: int, local_cfg: dict
+) -> str:
     """Call local model via Ollama."""
     model = local_cfg.get("model", "qwen2.5:7b-instruct")
     try:
@@ -198,7 +223,9 @@ def call_claude(
 
     if provider == "local":
         if force_anthropic:
-            raise RuntimeError("force_anthropic=True but quota exhausted. Use Anthropic API for hard tasks.")
+            raise RuntimeError(
+                "force_anthropic=True but quota exhausted. Use Anthropic API for hard tasks."
+            )
         print(f"  [local/{local_cfg.get('model', 'ollama')}]", file=sys.stderr, flush=True)
         return _call_local(user_message, system_message, max_tokens, local_cfg)
 
@@ -228,7 +255,11 @@ def call_claude(
         return text
     except APIStatusError as e:
         if e.status_code == 529 and fallback_model and fallback_model != actual_model:
-            print(f"  [529 over capacity, falling back to {fallback_model}]", file=sys.stderr, flush=True)
+            print(
+                f"  [529 over capacity, falling back to {fallback_model}]",
+                file=sys.stderr,
+                flush=True,
+            )
             kwargs["model"] = fallback_model
             response = client.messages.create(**kwargs)
             text = response.content[0].text

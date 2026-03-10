@@ -5,17 +5,17 @@ import json
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
-EDUCATOR_TRAINING = ROOT / "data" / "educator_training"
-
+from models.prompts.loader import render_prompt
 from scripts.data_generation.claude_utils import (
+    CLAUDE_SONNET_4_5,
+    RAW_GOOD,
     call_claude,
     get_educator_system_prompt,
-    CLAUDE_SONNET_4_5,
     load_requests,
-    RAW_GOOD,
 )
-from models.prompts.loader import render_prompt
+
+ROOT = Path(__file__).resolve().parents[2]
+EDUCATOR_TRAINING = ROOT / "data" / "educator_training"
 
 
 def main():
@@ -23,7 +23,9 @@ def main():
     parser.add_argument("--input", type=Path, help="File or dir with user requests")
     parser.add_argument("--limit", type=int, default=0)
     parser.add_argument("--output", type=Path, default=EDUCATOR_TRAINING / "briefs.jsonl")
-    parser.add_argument("--replace", action="store_true", help="Overwrite output file (default: append)")
+    parser.add_argument(
+        "--replace", action="store_true", help="Overwrite output file (default: append)"
+    )
     parser.add_argument("--model", type=str, default=CLAUDE_SONNET_4_5)
     args = parser.parse_args()
 

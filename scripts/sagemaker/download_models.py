@@ -19,7 +19,10 @@ def _load_config() -> dict:
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("files", nargs="*", help="GGUF filenames (e.g. llama3.1-8b-educator-Q4_K_M.gguf). If empty, download all.")
+    ap.add_argument(
+        "files", nargs="*",
+        help="GGUF filenames (e.g. llama3.1-8b-educator-Q4_K_M.gguf). If empty, all.",
+    )
     args = ap.parse_args()
 
     cfg = _load_config()

@@ -7,7 +7,7 @@ Requires: pip install llama-cpp-python pyyaml
 """
 import json
 import sys
-from http.server import HTTPServer, BaseHTTPRequestHandler
+from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
@@ -22,8 +22,8 @@ def _get_stop_tokens():
     stop = edu.get("generation_brief", {}).get("stop") or edu.get("critique", {}).get("stop")
     if stop:
         return stop
-    from scripts.training.model_registry import DEFAULT_STOP_TOKENS, stop_tokens_for
     from scripts.inference.pipeline import _infer_short_from_gguf_path
+    from scripts.training.model_registry import DEFAULT_STOP_TOKENS, stop_tokens_for
     path = edu.get("model_path", "./models/qwen2.5-7b-educator-Q4_K_M.gguf")
     full_path = str(ROOT / path.lstrip("./"))
     short = _infer_short_from_gguf_path(full_path)

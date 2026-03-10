@@ -153,7 +153,7 @@ python scripts/modal/upload_data.py
 
 Uploads `data/educator_training/`, `data/poet_training/`, and `data/rhyme_training/` to `poetry-data` volume.
 
-### 4a. Train + export (Modal)
+### 4. Train + export (Modal)
 
 ```bash
 # Educator
@@ -169,29 +169,6 @@ modal run scripts/modal/export_gguf.py::export_poet_rhyme
 # Or orchestrate
 modal run scripts/modal/modal_app.py [--educator-only] [--poet-only] [--train-only] [--num-epochs N]
 ```
-
-### 4b. Train + export (SageMaker)
-
-Use **SageMaker** when you have AWS credits or prefer AWS over Modal. Config: `config/sagemaker.yaml` (S3 bucket, IAM role, region). Prerequisites: AWS account, S3 bucket, IAM role with SageMaker/S3/Secrets Manager, and `iam:PassRole`. HuggingFace token: Secrets Manager (`hf_secret_name` in config) or env `HF_TOKEN`.
-
-```bash
-# Validate credentials and access
-python scripts/sagemaker/validate_setup.py
-
-# Upload data to S3
-python scripts/sagemaker/upload_to_s3.py
-
-# Train (educator, poet, rhyme)
-python scripts/sagemaker/train_sagemaker.py --task educator [--num-epochs-override N] [--base-model "HF_ID"]
-python scripts/sagemaker/train_sagemaker.py --task poet [--base-model "HF_ID"]
-python scripts/sagemaker/train_sagemaker.py --task rhyme [--base-model "HF_ID"]
-
-# Export to GGUF and download to models/
-python scripts/sagemaker/export_gguf_sagemaker.py --task educator   # or poet, poet_rhyme
-python scripts/sagemaker/download_models.py
-```
-
-Or use the orchestrator: `python scripts/modal/modal_app.py --backend sagemaker [--educator-only] [--poet-only] [--train-rhyme]`. Full pipeline: `BACKEND=sagemaker ./scripts/run_full_workflow.sh`. See [scripts/TRAINING.md](scripts/TRAINING.md).
 
 ### 5. Download + inference
 

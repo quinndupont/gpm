@@ -36,8 +36,9 @@ def _build_source_dir() -> Path:
     """Build source package with entry point, qlora_train, and configs."""
     d = Path(tempfile.mkdtemp(prefix="gpm-sagemaker-"))
     (d / "config").mkdir()
-    shutil.copy(ROOT / "scripts" / "sagemaker" / "entrypoint" / "train.py", d / "train.py")
-    shutil.copy(ROOT / "scripts" / "sagemaker" / "entrypoint" / "requirements.txt", d / "requirements.txt")
+    entry = ROOT / "scripts" / "sagemaker" / "entrypoint"
+    shutil.copy(entry / "train.py", d / "train.py")
+    shutil.copy(entry / "requirements.txt", d / "requirements.txt")
     shutil.copy(ROOT / "scripts" / "training" / "qlora_train.py", d / "qlora_train.py")
     for name in ["educator_training.yaml", "poet_training.yaml", "rhyme_training.yaml"]:
         shutil.copy(ROOT / "config" / name, d / "config" / name)
@@ -48,7 +49,10 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--task", choices=["educator", "poet", "rhyme"], required=True)
     ap.add_argument("--num-epochs-override", type=int, default=None)
-    ap.add_argument("--base-model", type=str, default=None, help="HuggingFace base model ID (e.g. meta-llama/Llama-3.1-8B-Instruct)")
+    ap.add_argument(
+        "--base-model", type=str, default=None,
+        help="HuggingFace base model ID (e.g. meta-llama/Llama-3.1-8B-Instruct)",
+    )
     args = ap.parse_args()
 
     cfg = _load_config()
@@ -67,9 +71,12 @@ def main():
     try:
         env = {"HF_TOKEN": hf_token} if hf_token else {}
         if "ACCOUNT_ID" in role:
-            raise ValueError("Replace ACCOUNT_ID in config/sagemaker.yaml iam_role with your AWS account ID")
+            raise ValueError(
+                "Replace ACCOUNT_ID in config/sagemaker.yaml iam_role with your AWS account ID",
+            )
 
-        job_name = f"gpm-{args.task}-{__import__('time').strftime('%Y%m%d-%H%M%S', __import__('time').gmtime())}"
+        import time as _t
+        job_name = f"gpm-{args.task}-{_t.strftime('%Y%m%d-%H%M%S', _t.gmtime())}"
         output_path = f"s3://{bucket}/checkpoints/{args.task}/"
 
         huggingface_estimator = HuggingFace(
@@ -84,11 +91,16 @@ def main():
             output_path=output_path,
             hyperparameters={
                 "task": args.task,
-                **({"num_epochs_override": str(args.num_epochs_override)} if args.num_epochs_override is not None else {}),
+                **(
+                    {"num_epochs_override": str(args.num_epochs_override)}
+                    if args.num_epochs_override is not None else {}
+                ),
                 **({"base_model": args.base_model} if args.base_model else {}),
             },
             environment=env,
-            sagemaker_session=__import__("sagemaker").Session(boto_session=boto3.Session(region_name=region)),
+            sagemaker_session=__import__("sagemaker").Session(
+                boto_session=boto3.Session(region_name=region),
+            ),
         )
 
         training_data = TrainingInput(s3_data=f"s3://{bucket}/data/", input_mode="File")

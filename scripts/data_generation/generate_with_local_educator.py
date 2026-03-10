@@ -1,25 +1,25 @@
 #!/usr/bin/env python3
-"""Generate briefs, autopsies, lessons using the local interim educator model (llama.cpp)."""
+"""Generate briefs, autopsies, lessons using local interim educator (llama.cpp)."""
 import argparse
 import json
 import sys
 from pathlib import Path
 
+from models.prompts.loader import render_prompt
+from scripts.data_generation.claude_utils import (
+    RAW_BAD,
+    RAW_GOOD,
+    get_educator_system_prompt,
+    load_poems,
+    load_requests,
+    poem_text,
+)
+from scripts.data_generation.generate_lessons import CRAFT_QUESTIONS
+
 ROOT = Path(__file__).resolve().parents[2]
 ANNOTATED = ROOT / "data" / "annotated"
 EDUCATOR_TRAINING = ROOT / "data" / "educator_training"
 MODELS = ROOT / "models"
-
-from scripts.data_generation.claude_utils import (
-    load_poems,
-    load_requests,
-    poem_text,
-    get_educator_system_prompt,
-    RAW_GOOD,
-    RAW_BAD,
-)
-from scripts.data_generation.generate_lessons import CRAFT_QUESTIONS
-from models.prompts.loader import render_prompt
 
 
 def _load_educator(model_path: Path):
@@ -95,11 +95,15 @@ def generate_lessons(llm, system: str, output: Path, limit: int):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model", type=Path, default=MODELS / "qwen2.5-7b-educator-interim-Q4_K_M.gguf")
+    default_model = MODELS / "qwen2.5-7b-educator-interim-Q4_K_M.gguf"
+    parser.add_argument("--model", type=Path, default=default_model)
     parser.add_argument("--briefs", action="store_true", help="Generate briefs")
     parser.add_argument("--autopsies", action="store_true", help="Generate autopsies")
     parser.add_argument("--lessons", action="store_true", help="Generate lessons")
-    parser.add_argument("--all", action="store_true", help="Generate all (briefs, autopsies, lessons)")
+    parser.add_argument(
+        "--all", action="store_true",
+        help="Generate all (briefs, autopsies, lessons)",
+    )
     parser.add_argument("--limit-briefs", type=int, default=200)
     parser.add_argument("--limit-autopsies", type=int, default=0)
     parser.add_argument("--limit-lessons", type=int, default=10)
@@ -108,10 +112,15 @@ def main():
 
     if not args.model.exists():
         print(f"Interim educator model not found: {args.model}", file=sys.stderr)
-        print("Run the workflow through Step 6 (download interim educator) first.", file=sys.stderr)
+        print(
+            "Run the workflow through Step 6 (download interim educator) first.",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
-    do_all = args.all or (not args.briefs and not args.autopsies and not args.lessons)
+    do_all = (
+        args.all or (not args.briefs and not args.autopsies and not args.lessons)
+    )
     if do_all:
         args.briefs = args.autopsies = args.lessons = True
 
@@ -121,10 +130,16 @@ def main():
     if args.briefs:
         requests = load_requests(args.input) if args.input.exists() else []
         if not requests:
-            requests = ["Write a poem about winter light", "Write a poem about grief", "Write a poem about a meal shared with friends"]
-        generate_briefs(llm, system, requests, EDUCATOR_TRAINING / "briefs.jsonl", args.limit_briefs)
+            requests = [
+            "Write a poem about winter light",
+            "Write a poem about grief",
+            "Write a poem about a meal shared with friends",
+        ]
+        briefs_out = EDUCATOR_TRAINING / "briefs.jsonl"
+        generate_briefs(llm, system, requests, briefs_out, args.limit_briefs)
     if args.autopsies:
-        generate_autopsies(llm, system, ANNOTATED / "autopsies.jsonl", args.limit_autopsies if args.limit_autopsies else None)
+        limit_aut = args.limit_autopsies if args.limit_autopsies else None
+        generate_autopsies(llm, system, ANNOTATED / "autopsies.jsonl", limit_aut)
     if args.lessons:
         generate_lessons(llm, system, EDUCATOR_TRAINING / "lessons.jsonl", args.limit_lessons)
 

@@ -95,9 +95,15 @@ def ollama_tag_to_short(tag: str) -> str | None:
     if "command" in tag_norm or "cohere" in tag_norm:
         return "command-r7b"
     if "qwen" in tag_norm:
-        return "qwen2.5-7b" if "7b" in tag_norm else ("qwen2.5-14b" if "14b" in tag_norm else "qwen2.5-32b")
+        return (
+            "qwen2.5-7b" if "7b" in tag_norm
+            else ("qwen2.5-14b" if "14b" in tag_norm else "qwen2.5-32b")
+        )
     if "llama3.1" in tag_norm:
-        return "llama3.1-8b" if "8b" in tag_norm else ("llama3.1-14b" if "14b" in tag_norm else "llama3.1-32b")
+        return (
+            "llama3.1-8b" if "8b" in tag_norm
+            else ("llama3.1-14b" if "14b" in tag_norm else "llama3.1-32b")
+        )
     if "llama3.2" in tag_norm:
         return "llama3.2-3b" if "3b" in tag_norm else "llama3.2-8b"
     return None

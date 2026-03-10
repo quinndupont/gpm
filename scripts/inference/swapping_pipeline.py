@@ -6,11 +6,12 @@ Use when 14B poet quality is insufficient and 32B doesn't fit alongside educator
 import gc
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
-import sys
 from models.prompts.loader import get_persona
 from scripts.training.model_registry import DEFAULT_STOP_TOKENS, stop_tokens_for
-from .pipeline import PoetryPipeline, Config, _infer_short_from_gguf_path
+
+from .pipeline import Config, PoetryPipeline, _infer_short_from_gguf_path
+
+ROOT = Path(__file__).resolve().parents[2]
 
 
 class SwappingPipeline(PoetryPipeline):
@@ -20,8 +21,12 @@ class SwappingPipeline(PoetryPipeline):
         with open(path) as f:
             cfg = yaml.safe_load(f)
         self.config = Config(cfg)
-        self.config.educator_model_path = str(ROOT / self.config.educator_model_path.lstrip("./"))
-        self.config.poet_model_path = str(ROOT / self.config.poet_model_path.lstrip("./"))
+        self.config.educator_model_path = str(
+            ROOT / self.config.educator_model_path.lstrip("./"),
+        )
+        self.config.poet_model_path = str(
+            ROOT / self.config.poet_model_path.lstrip("./"),
+        )
         self.active_model = None
         self.active_role = None
         self.educator_system = self.config.educator_persona_condensed
@@ -32,7 +37,11 @@ class SwappingPipeline(PoetryPipeline):
         self._load("educator")
 
     def _get_stop_tokens(self, role: str) -> list[str]:
-        path = self.config.educator_model_path if role == "educator" else self.config.poet_model_path
+        path = (
+            self.config.educator_model_path
+            if role == "educator"
+            else self.config.poet_model_path
+        )
         short = _infer_short_from_gguf_path(path)
         return stop_tokens_for(short_name=short) if short else DEFAULT_STOP_TOKENS
 
@@ -46,7 +55,11 @@ class SwappingPipeline(PoetryPipeline):
             from llama_cpp import Llama
         except ImportError:
             raise ImportError("pip install llama-cpp-python")
-        path = self.config.educator_model_path if role == "educator" else self.config.poet_model_path
+        path = (
+            self.config.educator_model_path
+            if role == "educator"
+            else self.config.poet_model_path
+        )
         n_ctx = self.config.educator_ctx if role == "educator" else self.config.poet_ctx
         self.active_model = Llama(
             model_path=path,

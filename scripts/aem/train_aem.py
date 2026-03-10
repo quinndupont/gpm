@@ -24,7 +24,7 @@ def main():
     args = parser.parse_args()
 
     try:
-        from sentence_transformers import SentenceTransformer, InputExample, losses
+        from sentence_transformers import InputExample, SentenceTransformer, losses
         from torch.utils.data import DataLoader
     except ImportError:
         print("pip install sentence-transformers torch", file=sys.stderr)
@@ -48,7 +48,11 @@ def main():
 
     model = SentenceTransformer(args.backbone)
     train_dataloader = DataLoader(examples, shuffle=True, batch_size=args.batch)
-    train_loss = losses.TripletLoss(model=model, distance_metric=losses.TripletDistanceMetric.COSINE, triplet_margin=args.margin)
+    train_loss = losses.TripletLoss(
+        model=model,
+        distance_metric=losses.TripletDistanceMetric.COSINE,
+        triplet_margin=args.margin,
+    )
 
     model.fit(
         train_objectives=[(train_dataloader, train_loss)],

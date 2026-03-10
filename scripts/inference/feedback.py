@@ -28,8 +28,13 @@ def record(pipeline_result: dict, user_feedback: dict):
 
 if __name__ == "__main__":
     # Example usage
-    record(
-        {"user_request": "test", "final_poem": "", "educator_note": "", "generation_brief": "", "revision_history": [], "metadata": {}},
-        {"rating": 3, "kept_poem": True, "notes": "", "educator_helpful": True, "changes": ""},
-    )
+    rec = {
+        "user_request": "test", "final_poem": "", "educator_note": "",
+        "generation_brief": "", "revision_history": [], "metadata": {},
+    }
+    feedback = {
+        "rating": 3, "kept_poem": True, "notes": "",
+        "educator_helpful": True, "changes": "",
+    }
+    record(rec, feedback)
     print(f"Recorded to {FEEDBACK_FILE}")

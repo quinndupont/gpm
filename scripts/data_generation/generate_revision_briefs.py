@@ -5,29 +5,38 @@ import json
 import sys
 from pathlib import Path
 
+from models.prompts.loader import render_prompt
+from scripts.data_generation.claude_utils import (
+    CLAUDE_SONNET_4_5,
+    call_claude,
+    get_educator_system_prompt,
+    poem_text,
+)
+
 ROOT = Path(__file__).resolve().parents[2]
 ANNOTATED = ROOT / "data" / "annotated"
 EDUCATOR_TRAINING = ROOT / "data" / "educator_training"
-
-from scripts.data_generation.claude_utils import (
-    call_claude,
-    get_educator_system_prompt,
-    CLAUDE_SONNET_4_5,
-    poem_text,
-)
-from models.prompts.loader import render_prompt
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--critiques", type=Path, default=ANNOTATED / "critiques_seed.jsonl")
     parser.add_argument("--limit", type=int, default=50, help="Max revision briefs to generate")
-    parser.add_argument("--output", type=Path, default=EDUCATOR_TRAINING / "revision_briefs_seed.jsonl")
-    parser.add_argument("--replace", action="store_true", help="Overwrite output file (default: append)")
+    parser.add_argument(
+        "--output",
+        type=Path,
+        default=EDUCATOR_TRAINING / "revision_briefs_seed.jsonl",
+    )
+    parser.add_argument(
+        "--replace", action="store_true", help="Overwrite output file (default: append)"
+    )
     args = parser.parse_args()
 
     if not args.critiques.exists():
-        print(f"Run generate_critiques_seed.py first. Missing: {args.critiques}", file=sys.stderr)
+        print(
+            f"Run generate_critiques_seed.py first. Missing: {args.critiques}",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
     entries = []

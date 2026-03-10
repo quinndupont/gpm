@@ -23,7 +23,7 @@ def _poem_text(obj: dict) -> str:
 
 
 def _line_count(text: str) -> int:
-    return len([l for l in text.splitlines() if l.strip()]) if text else 0
+    return len([ln for ln in text.splitlines() if ln.strip()]) if text else 0
 
 
 def _load_raw(source_type: str, directory: Path) -> list[dict]:
@@ -86,7 +86,7 @@ def _load_annotated(path: Path) -> list[dict]:
 
 
 def _load_poet_training(path: Path) -> list[dict]:
-    """Load pairs.jsonl, train.jsonl, valid.jsonl; poem only. Author = poet_training:<stem> for source distinction."""
+    """Load pairs.jsonl, train.jsonl, valid.jsonl; poem only. Author = poet_training:<stem>."""
     records = []
     if not path.exists():
         return records
@@ -102,7 +102,8 @@ def _load_poet_training(path: Path) -> list[dict]:
         text = obj.get("poem", "")
         if not text.strip():
             continue
-        title = obj.get("user_request", obj.get("brief", ""))[:80] if obj.get("user_request") or obj.get("brief") else ""
+        brief = obj.get("user_request") or obj.get("brief")
+        title = (obj.get("user_request", obj.get("brief", ""))[:80] if brief else "")
         records.append({
             "source_path": str(path),
             "source_type": SOURCE_TYPE_SYNTHETIC,
@@ -116,7 +117,7 @@ def _load_poet_training(path: Path) -> list[dict]:
 
 
 def _load_rev_flux(directory: Path) -> list[dict]:
-    """Load rev_flux/*.json final_poem outputs. Author = model_id for source distinction."""
+    """Load rev_flux/*.json final_poem outputs. Author = model_id."""
     records = []
     if not directory.exists():
         return records
@@ -130,7 +131,8 @@ def _load_rev_flux(directory: Path) -> list[dict]:
         text = obj.get("final_poem", "")
         if not text.strip():
             continue
-        author = obj.get("model_id") or obj.get("metadata", {}).get("model_poet", "rev_flux:unknown")
+        meta = obj.get("metadata", {})
+        author = obj.get("model_id") or meta.get("model_poet", "rev_flux:unknown")
         category = obj.get("category", "")
         prompt_idx = obj.get("prompt_idx", "")
         title = f"{category}_{prompt_idx}" if category or prompt_idx != "" else ""

@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Upload training data to Modal volume."""
-import modal
 from pathlib import Path
+
+import modal
 
 ROOT = Path(__file__).resolve().parents[2]
 EDUCATOR_TRAINING = ROOT / "data" / "educator_training"

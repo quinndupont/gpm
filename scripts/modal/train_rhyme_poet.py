@@ -7,7 +7,11 @@ import modal
 _CONFIG = Path("config/rhyme_training.yaml")
 if not _CONFIG.exists():
     _p = Path(__file__).resolve()
-    _CONFIG = _p.parents[2] / "config" / "rhyme_training.yaml" if len(_p.parents) > 2 else _CONFIG
+    _CONFIG = (
+        _p.parents[2] / "config" / "rhyme_training.yaml"
+        if len(_p.parents) > 2
+        else _CONFIG
+    )
 
 _ROOT = Path(__file__).resolve().parents[2]
 VOLUME_NAME = "poetry-data"
@@ -43,7 +47,10 @@ checkpoint_vol = modal.Volume.from_name(CHECKPOINT_VOLUME, create_if_missing=Tru
     volumes={"/vol/data": data_vol, "/vol/checkpoints": checkpoint_vol},
     secrets=[modal.Secret.from_name("huggingface-secret")],
 )
-def train_rhyme_poet(num_epochs_override: int | None = None, base_model_override: str | None = None):
+def train_rhyme_poet(
+    num_epochs_override: int | None = None,
+    base_model_override: str | None = None,
+):
     from scripts.training.qlora_train import run_qlora_training
 
     data_vol.reload()
@@ -64,8 +71,14 @@ if __name__ == "__main__":
     import argparse
     ap = argparse.ArgumentParser()
     ap.add_argument("--num-epochs-override", type=int, default=None)
-    ap.add_argument("--base-model", type=str, default=None, dest="base_model_override", help="HuggingFace base model ID")
+    ap.add_argument(
+        "--base-model", type=str, default=None, dest="base_model_override",
+        help="HuggingFace base model ID",
+    )
     a = ap.parse_args()
     with app.run():
-        path = train_rhyme_poet.remote(num_epochs_override=a.num_epochs_override, base_model_override=a.base_model_override)
+        path = train_rhyme_poet.remote(
+            num_epochs_override=a.num_epochs_override,
+            base_model_override=a.base_model_override,
+        )
         print(f"Done: {path}")

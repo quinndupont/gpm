@@ -8,19 +8,26 @@ import re
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
-CONFIG_PATH = ROOT / "config" / "inference_config.yaml"
-BRIEF_CAP = 1200  # ~300 tokens for poet input
-
 from models.prompts.loader import get_persona, render_prompt
-from scripts.eval.form_registry import detect_form, get_scheme, is_rhyming_form, is_metered_form, form_description
-from scripts.eval.rhyme_analyzer import analyze as analyze_rhyme, format_analysis_for_prompt
-from scripts.eval.meter_analyzer import analyze as analyze_meter, format_analysis_for_prompt as format_meter_for_prompt
+from scripts.eval.form_registry import (
+    detect_form,
+    get_scheme,
+    is_metered_form,
+    is_rhyming_form,
+)
+from scripts.eval.meter_analyzer import analyze as analyze_meter
+from scripts.eval.meter_analyzer import format_analysis_for_prompt as format_meter_for_prompt
+from scripts.eval.rhyme_analyzer import analyze as analyze_rhyme
+from scripts.eval.rhyme_analyzer import format_analysis_for_prompt
 from scripts.training.model_registry import (
     DEFAULT_STOP_TOKENS,
     ollama_tag_to_short,
     stop_tokens_for,
 )
+
+ROOT = Path(__file__).resolve().parents[2]
+CONFIG_PATH = ROOT / "config" / "inference_config.yaml"
+BRIEF_CAP = 1200  # ~300 tokens for poet input
 
 
 def load_config(path: Path):
@@ -45,13 +52,23 @@ class Config:
     def __init__(self, yaml_config: dict):
         edu = yaml_config.get("educator", {})
         poet = yaml_config.get("poet", {})
-        self.educator_model_path = edu.get("model_path", "./models/qwen2.5-7b-educator-Q4_K_M.gguf")
+        self.educator_model_path = edu.get(
+            "model_path", "./models/qwen2.5-7b-educator-Q4_K_M.gguf",
+        )
         self.educator_ctx = edu.get("n_ctx", 4096)
         self.poet_model_path = poet.get("model_path", "./models/qwen2.5-7b-poet-Q4_K_M.gguf")
         self.poet_ctx = poet.get("n_ctx", 2048)
         self.max_revisions = yaml_config.get("max_revisions", 3)
-        self.educator_stop = edu.get("generation_brief", {}).get("stop") or edu.get("critique", {}).get("stop") or DEFAULT_STOP_TOKENS
-        self.poet_stop = poet.get("generation", {}).get("stop") or poet.get("revision", {}).get("stop") or DEFAULT_STOP_TOKENS
+        self.educator_stop = (
+            edu.get("generation_brief", {}).get("stop")
+            or edu.get("critique", {}).get("stop")
+            or DEFAULT_STOP_TOKENS
+        )
+        self.poet_stop = (
+            poet.get("generation", {}).get("stop")
+            or poet.get("revision", {}).get("stop")
+            or DEFAULT_STOP_TOKENS
+        )
         try:
             self.educator_persona_condensed = get_persona("educator_neutral")
         except FileNotFoundError:
@@ -70,8 +87,12 @@ class PoetryPipeline:
         cfg = load_config(path)
         # Resolve paths relative to project root
         self.config = Config(cfg)
-        self.config.educator_model_path = str(ROOT / self.config.educator_model_path.lstrip("./"))
-        self.config.poet_model_path = str(ROOT / self.config.poet_model_path.lstrip("./"))
+        self.config.educator_model_path = str(
+            ROOT / self.config.educator_model_path.lstrip("./"),
+        )
+        self.config.poet_model_path = str(
+            ROOT / self.config.poet_model_path.lstrip("./"),
+        )
         self.educator = None
         self.poet = None
         self.educator_system = self.config.educator_persona_condensed
@@ -91,7 +112,11 @@ class PoetryPipeline:
             path = override[5:]
             short = _infer_short_from_gguf_path(path)
             return stop_tokens_for(short_name=short) if short else DEFAULT_STOP_TOKENS
-        path = self.config.educator_model_path if role == "educator" else self.config.poet_model_path
+        path = (
+            self.config.educator_model_path
+            if role == "educator"
+            else self.config.poet_model_path
+        )
         short = _infer_short_from_gguf_path(path)
         if short:
             return stop_tokens_for(short_name=short)
@@ -113,7 +138,10 @@ class PoetryPipeline:
         except ImportError:
             raise ImportError("pip install ollama. Run: ollama pull " + model)
         messages = [{"role": "system", "content": system}, {"role": "user", "content": user}]
-        opts = {"temperature": temperature, "num_predict": max_tokens, "top_p": top_p, "repeat_penalty": repeat_penalty}
+        opts = {
+            "temperature": temperature, "num_predict": max_tokens,
+            "top_p": top_p, "repeat_penalty": repeat_penalty,
+        }
         r = chat(model=model, messages=messages, options=opts)
         if hasattr(r, "message"):
             return getattr(r.message, "content", "") or ""
@@ -124,8 +152,14 @@ class PoetryPipeline:
             from llama_cpp import Llama
         except ImportError:
             raise ImportError("pip install llama-cpp-python")
-        use_edu_gguf = not (self.educator_model_override and self.educator_model_override.startswith("ollama:"))
-        use_poet_gguf = not (self.poet_model_override and self.poet_model_override.startswith("ollama:"))
+        use_edu_gguf = not (
+            self.educator_model_override
+            and self.educator_model_override.startswith("ollama:")
+        )
+        use_poet_gguf = not (
+            self.poet_model_override
+            and self.poet_model_override.startswith("ollama:")
+        )
         edu_path = self.config.educator_model_path
         poet_path = self.config.poet_model_path
         if self.educator_model_override and self.educator_model_override.startswith("gguf:"):
@@ -194,7 +228,9 @@ class PoetryPipeline:
                     "Every end-word pair must be a true phonetic rhyme. "
                     "Plan your end-words before writing each line."
                 )
-        return render_prompt("inference", "poet_generation", brief=brief, scheme_reminder=scheme_reminder)
+        return render_prompt(
+            "inference", "poet_generation", brief=brief, scheme_reminder=scheme_reminder,
+        )
 
     def _build_poet_revision_instructions(
         self,
@@ -213,14 +249,15 @@ class PoetryPipeline:
         user_ctx = f"\n\nPoet's direction: {user_input.strip()}\n" if user_input.strip() else ""
         draft_label = "Current draft (poet's latest revision)" if past_ctx else "Draft"
         past_section = (
-            f"Past revision rounds (poet has already revised after each; draft above is the result):\n---\n{past_ctx}\n---\n"
+            f"Past revision rounds (poet revised after each; draft above is result):\n"
+            f"---\n{past_ctx}\n---\n"
             if past_ctx else ""
         )
         draft_trunc = draft[:1200] + ("..." if len(draft) > 1200 else "")
         prompt = render_prompt(
             "inference", "poet_revision_instructions",
-            draft_label=draft_label, draft=draft_trunc, critique=critique, revision_brief=revision_brief,
-            past_section=past_section, user_ctx=user_ctx,
+            draft_label=draft_label, draft=draft_trunc, critique=critique,
+            revision_brief=revision_brief, past_section=past_section, user_ctx=user_ctx,
         )
         return self._educator_generate(prompt, task="poet_instructions")
 
@@ -262,7 +299,8 @@ class PoetryPipeline:
 
         return render_prompt(
             "inference", "poet_revision",
-            draft=draft, instructions=instructions, rhyme_ctx=rhyme_ctx, user_ctx=user_ctx,
+            draft=draft, instructions=instructions,
+            rhyme_ctx=rhyme_ctx, user_ctx=user_ctx,
         )
 
     def _poet_generate(self, prompt: str, is_revision: bool = False) -> str:
@@ -276,8 +314,12 @@ class PoetryPipeline:
                 temperature=temp, max_tokens=4096, top_p=0.95, repeat_penalty=1.15,
             )
         self._load_models()
+        messages = [
+            {"role": "system", "content": system},
+            {"role": "user", "content": poet_prompt},
+        ]
         r = self.poet.create_chat_completion(
-            messages=[{"role": "system", "content": system}, {"role": "user", "content": poet_prompt}],
+            messages=messages,
             temperature=temp,
             top_p=0.95,
             repeat_penalty=1.15,
@@ -287,7 +329,7 @@ class PoetryPipeline:
         return r["choices"][0]["message"]["content"]
 
     def _summarize_critique_history(self, revision_history: list) -> str:
-        """Compress past draft+critique pairs. Each round: poet revised after the previous critique."""
+        """Compress past draft+critique pairs. Each round: poet revised after critique."""
         if not revision_history:
             return ""
         prev = revision_history[-2:] if len(revision_history) > 2 else revision_history
@@ -300,8 +342,8 @@ class PoetryPipeline:
         combined = "\n---\n".join(parts)
         prompt = (
             f"This is a revision chain. After each round the poet revised. "
-            f"Summarize into 3-5 bullet points: what was wrong at each stage, what direction was given. "
-            f"Note which issues the poet has already addressed in later drafts. No preamble.\n\n{combined}"
+            f"Summarize into 3-5 bullet points: what was wrong, what direction was given. "
+            f"Note which issues the poet addressed in later drafts. No preamble.\n\n{combined}"
         )
         return self._educator_generate(prompt, task="summarize")
 
@@ -310,8 +352,8 @@ class PoetryPipeline:
         if len(critique) <= 400:
             return critique
         prompt = (
-            f"Compress this workshop critique to ~100 words. Keep: failure types, specific directions. "
-            f"No preamble.\n\n{critique}"
+            f"Compress this workshop critique to ~100 words. "
+            f"Keep: failure types, specific directions. No preamble.\n\n{critique}"
         )
         return self._educator_generate(prompt, task="summarize")
 
@@ -364,7 +406,10 @@ class PoetryPipeline:
         history_ctx = ""
         if history:
             prev = history[-1]
-            history_ctx = f"\n\nPrevious draft and your critique:\n---\n{prev['draft']}\n---\nYour notes:\n{prev['critique']}\n\nThis is the revision.\n"
+            history_ctx = (
+            f"\n\nPrevious draft and your critique:\n---\n{prev['draft']}\n---\n"
+            f"Your notes:\n{prev['critique']}\n\nThis is the revision.\n"
+        )
 
         # If the brief specifies a formal form, run deterministic analysis
         # and inject the results so the educator has concrete data to work with.
@@ -385,11 +430,14 @@ class PoetryPipeline:
             if form_parts:
                 form_ctx = (
                     "\n\n" + "\n\n".join(form_parts) + "\n\n"
-                    "Address form adherence in your critique — rhyme scheme and meter where applicable. "
+                    "Address form adherence in your critique — rhyme and meter where applicable. "
                     "Name specific lines and words.\n"
                 )
 
-        return render_prompt("inference", "critique", brief=brief, draft=draft, history_ctx=history_ctx, form_ctx=form_ctx)
+        return render_prompt(
+            "inference", "critique",
+            brief=brief, draft=draft, history_ctx=history_ctx, form_ctx=form_ctx,
+        )
 
     def _build_revision_brief_prompt(
         self,
@@ -404,7 +452,11 @@ class PoetryPipeline:
         history_ctx = ""
         prev = revision_history
         if prev:
-            summary = past_summary if past_summary is not None else self._summarize_critique_history(prev)
+            summary = (
+                past_summary
+                if past_summary is not None
+                else self._summarize_critique_history(prev)
+            )
             history_ctx = (
                 f"\n\nSummary of previous critiques:\n---\n{summary}\n---\n\n"
                 "This is the current draft. Ensure your brief targets what still needs fixing."
@@ -415,7 +467,11 @@ class PoetryPipeline:
                 f"\n\nPoet's additional direction (incorporate into your brief):\n---\n"
                 f"{user_input.strip()}\n---\n\n"
             )
-        return render_prompt("inference", "revision_brief", brief=brief, draft=draft, critique=critique, history_ctx=history_ctx, user_ctx=user_ctx)
+        return render_prompt(
+            "inference", "revision_brief",
+            brief=brief, draft=draft, critique=critique,
+            history_ctx=history_ctx, user_ctx=user_ctx,
+        )
 
     def _build_final_note_prompt(self, final_draft: str, brief: str) -> str:
         return render_prompt("inference", "final_note", final_draft=final_draft)
@@ -442,8 +498,10 @@ class PoetryPipeline:
         if revisions == 0:
             if verbose:
                 print("→ Poet: generating (no educator)...", flush=True)
-            poet_prompt = f"Write a poem. Request: {user_request}\n\nOutput ONLY the poem. Do not add commentary."
-            t0 = time.perf_counter()
+            poet_prompt = (
+                f"Write a poem. Request: {user_request}\n\n"
+                "Output ONLY the poem. Do not add commentary."
+            )
             draft = self._poet_generate(poet_prompt, is_revision=False)
             t1 = time.perf_counter()
             t_total = t1 - t_start
@@ -507,20 +565,20 @@ class PoetryPipeline:
             past_summary = self._summarize_critique_history(prev_history) if prev_history else ""
 
             if verbose:
-                print(f"→ Educator: building revision brief...", flush=True)
+                print("→ Educator: building revision brief...", flush=True)
             revision_brief = self._educator_generate(
                 self._build_revision_brief_prompt(
                     draft, critique, brief, prev_history, user_input, verbose, past_summary
                 ),
                 task="revision_brief",
             )
-            out("EDUCATOR", f"Revision brief → Poet", revision_brief)
+            out("EDUCATOR", "Revision brief → Poet", revision_brief)
 
             if verbose:
                 print(f"→ Poet: generating revision {i + 1}...", flush=True)
             revision_prompt = self._build_poet_revision_prompt(
-                draft, critique, revision_brief, prev_history, user_input, verbose, past_summary,
-                brief=brief,
+                draft, critique, revision_brief, prev_history,
+                user_input, verbose, past_summary, brief=brief,
             )
             draft = self._poet_generate(revision_prompt, is_revision=True)
             out("POET", f"Revision {i + 1} draft → Educator", draft)
@@ -551,15 +609,28 @@ class PoetryPipeline:
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("request", nargs="?", type=str, help="User's poem request (omit for interactive)")
+    parser.add_argument(
+        "request", nargs="?", type=str,
+        help="User's poem request (omit for interactive)",
+    )
     parser.add_argument("--config", type=Path, default=CONFIG_PATH)
-    parser.add_argument("--max-revisions", type=int, choices=[0, 1, 2, 3, 4, 5], help="Max revisions (0=poet only)")
-    parser.add_argument("--train-rhyme", action="store_true", help="Local MLX rhyme fine-tune (strong_rhyme_poems + 20%% general)")
+    parser.add_argument(
+        "--max-revisions", type=int, choices=[0, 1, 2, 3, 4, 5],
+        help="Max revisions (0=poet only)",
+    )
+    parser.add_argument(
+        "--train-rhyme", action="store_true",
+        help="Local MLX rhyme fine-tune (strong_rhyme_poems + 20%% general)",
+    )
     args = parser.parse_args()
 
     if args.train_rhyme:
         import subprocess
-        subprocess.run([sys.executable, str(ROOT / "scripts" / "modal" / "modal_app.py"), "--train-rhyme"], cwd=str(ROOT), check=True)
+        modal_script = str(ROOT / "scripts" / "modal" / "modal_app.py")
+        subprocess.run(
+            [sys.executable, modal_script, "--train-rhyme"],
+            cwd=str(ROOT), check=True,
+        )
         return
 
     pipeline = PoetryPipeline(args.config)
@@ -568,7 +639,10 @@ def main():
     if args.request:
         max_rev = args.max_revisions if args.max_revisions is not None else pipeline.max_revisions
         result = pipeline.generate(
-            args.request, max_revisions=max_rev, verbose=verbose, interactive=False
+            args.request,
+            max_revisions=max_rev,
+            verbose=verbose,
+            interactive=False,
         )
         print("\n" + "═" * 60 + "\nFINAL POEM\n" + "═" * 60 + "\n")
         print(result["final_poem"])

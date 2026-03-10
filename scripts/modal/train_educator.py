@@ -8,7 +8,11 @@ import modal
 _CONFIG = Path("config/educator_training.yaml")
 if not _CONFIG.exists():
     _p = Path(__file__).resolve()
-    _CONFIG = _p.parents[1] / "config" / "educator_training.yaml" if len(_p.parents) > 1 else _CONFIG
+    _CONFIG = (
+        _p.parents[1] / "config" / "educator_training.yaml"
+        if len(_p.parents) > 1
+        else _CONFIG
+    )
 
 _ROOT = Path(__file__).resolve().parents[2]
 VOLUME_NAME = "poetry-data"
@@ -65,8 +69,14 @@ if __name__ == "__main__":
     import argparse
     ap = argparse.ArgumentParser()
     ap.add_argument("--num-epochs-override", type=int, default=None)
-    ap.add_argument("--base-model", type=str, default=None, dest="base_model_override", help="HuggingFace base model ID")
+    ap.add_argument(
+        "--base-model", type=str, default=None, dest="base_model_override",
+        help="HuggingFace base model ID",
+    )
     a = ap.parse_args()
     with app.run():
-        path = train_educator.remote(num_epochs_override=a.num_epochs_override, base_model_override=a.base_model_override)
+        path = train_educator.remote(
+            num_epochs_override=a.num_epochs_override,
+            base_model_override=a.base_model_override,
+        )
         print(f"Done: {path}")

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Upload training data to S3 (SageMaker backend)."""
-import yaml
 from pathlib import Path
 
 import boto3
+import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 EDUCATOR_TRAINING = ROOT / "data" / "educator_training"

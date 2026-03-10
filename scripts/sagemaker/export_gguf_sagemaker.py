@@ -46,7 +46,11 @@ def _hf_to_short(hf_id: str) -> str:
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--task", choices=["educator", "poet", "poet_rhyme", "educator-interim"], required=True)
+    ap.add_argument(
+        "--task",
+        choices=["educator", "poet", "poet_rhyme", "educator-interim"],
+        required=True,
+    )
     ap.add_argument("--checkpoint-s3", help="s3://bucket/path/to/model.tar.gz (default: latest)")
     args = ap.parse_args()
 
@@ -82,7 +86,10 @@ def main():
         with tarfile.open(model_tar) as tf:
             tf.extractall(tmp)
         # SageMaker tar has task/final/ (e.g. educator/final, poet/final, poet_rhyme/final)
-        ckpt_subdir = "educator" if "educator" in args.task else ("poet_rhyme" if "rhyme" in args.task else "poet")
+        ckpt_subdir = (
+            "educator" if "educator" in args.task
+            else ("poet_rhyme" if "rhyme" in args.task else "poet")
+        )
         candidates = [tmp / ckpt_subdir / "final", tmp / "final", tmp / ckpt_subdir]
         ckpt_path = None
         for cand in candidates:
@@ -90,17 +97,28 @@ def main():
                 ckpt_path = cand
                 break
         if not ckpt_path:
-            raise FileNotFoundError(f"Checkpoint not found in tar. Tried {candidates}. Contents: {list(tmp.iterdir())}")
+            raise FileNotFoundError(
+                f"Checkpoint not found in tar. Tried {candidates}. "
+                f"Contents: {list(tmp.iterdir())}",
+            )
 
         # Build llama.cpp
         llama_dir = tmp / "llama.cpp"
         subprocess.run(
-            ["git", "clone", "--depth", "1", "https://github.com/ggml-org/llama.cpp", str(llama_dir)],
-            check=True,
-            capture_output=True,
+            [
+                "git", "clone", "--depth", "1",
+                "https://github.com/ggml-org/llama.cpp", str(llama_dir),
+            ],
+            check=True, capture_output=True,
         )
-        subprocess.run(["cmake", "-B", "build"], cwd=llama_dir, check=True, capture_output=True)
-        subprocess.run(["cmake", "--build", "build", "--config", "Release", "-j4"], cwd=llama_dir, check=True, capture_output=True)
+        subprocess.run(
+            ["cmake", "-B", "build"], cwd=llama_dir,
+            check=True, capture_output=True,
+        )
+        subprocess.run(
+            ["cmake", "--build", "build", "--config", "Release", "-j4"],
+            cwd=llama_dir, check=True, capture_output=True,
+        )
 
         import torch
         from peft import PeftModel
@@ -137,13 +155,16 @@ def main():
             )
         gguf_f16 = tmp / f"{out_name}-f16.gguf"
         subprocess.run(
-            [sys.executable, str(convert_script), str(merge_dir), "--outfile", str(gguf_f16), "--outtype", "f16"],
-            cwd=str(llama_dir),
-            check=True,
+            [
+                sys.executable, str(convert_script), str(merge_dir),
+                "--outfile", str(gguf_f16), "--outtype", "f16",
+            ],
+            cwd=str(llama_dir), check=True,
         )
         gguf_out = tmp / gguf_name
+        quant_bin = str(llama_dir / "build" / "bin" / "llama-quantize")
         subprocess.run(
-            [str(llama_dir / "build" / "bin" / "llama-quantize"), str(gguf_f16), str(gguf_out), quant],
+            [quant_bin, str(gguf_f16), str(gguf_out), quant],
             check=True,
         )
         s3.upload_file(str(gguf_out), bucket, f"gguf/{gguf_name}")

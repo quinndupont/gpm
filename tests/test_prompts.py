@@ -1,11 +1,11 @@
 """Prompt loader and template tests."""
 import hashlib
 import json
-import pytest
 from pathlib import Path
 
-from models.prompts.loader import get_persona, get_prompt, render_prompt
+import pytest
 
+from models.prompts.loader import get_persona, get_prompt, render_prompt
 
 PROMPTS_DIR = Path(__file__).resolve().parent.parent / "models" / "prompts"
 MANIFEST_PATH = Path(__file__).resolve().parent / "fixtures" / "prompt_manifest.json"
@@ -96,7 +96,10 @@ class TestTemplateRendering:
         assert "Write a poem about winter" in out
 
     def test_render_poet_generation(self):
-        out = render_prompt("tuning", "poet_generation", "default", brief="Write a quatrain about rain.")
+        out = render_prompt(
+            "tuning", "poet_generation", "default",
+            brief="Write a quatrain about rain.",
+        )
         assert "Write a quatrain about rain." in out
         assert "Output ONLY the poem" in out
 
@@ -105,7 +108,10 @@ class TestTemplateRendering:
         assert "Roses are red" in out
 
     def test_render_comparison(self):
-        out = render_prompt("tuning", "comparison", "default", poem_a="Poem A text", poem_b="Poem B text")
+        out = render_prompt(
+            "tuning", "comparison", "default",
+            poem_a="Poem A text", poem_b="Poem B text",
+        )
         assert "Poem A text" in out
         assert "Poem B text" in out
 
@@ -190,7 +196,10 @@ class TestRegressionSnapshots:
         assert "Clichés" in out or "clichés" in out
 
     def test_poet_generation_snapshot(self):
-        out = render_prompt("tuning", "poet_generation", "default", brief="Write a quatrain.")
+        out = render_prompt(
+            "tuning", "poet_generation", "default",
+            brief="Write a quatrain.",
+        )
         assert "Write a quatrain." in out
         assert "Output ONLY the poem" in out
 
@@ -206,11 +215,15 @@ class TestPromptManifest:
             assert full_path.exists(), f"Prompt file {rel_path} missing"
             current_hash = hashlib.sha256(full_path.read_bytes()).hexdigest()[:16]
             assert current_hash == expected_hash, (
-                f"Prompt {rel_path} changed. Update tests/fixtures/prompt_manifest.json with hash {current_hash}"
+                f"Prompt {rel_path} changed. Update tests/fixtures/prompt_manifest.json "
+                f"with hash {current_hash}",
             )
 
     def test_no_orphan_prompts(self):
         manifest = json.loads(MANIFEST_PATH.read_text())
         for p in sorted(PROMPTS_DIR.rglob("*.json")):
             rel = str(p.relative_to(PROMPTS_DIR))
-            assert rel in manifest, f"New prompt {rel} not in manifest. Add it with: hashlib.sha256(p.read_bytes()).hexdigest()[:16]"
+            assert rel in manifest, (
+                f"New prompt {rel} not in manifest. Add it with: "
+                "hashlib.sha256(p.read_bytes()).hexdigest()[:16]",
+            )

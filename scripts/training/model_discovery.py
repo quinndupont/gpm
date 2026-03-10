@@ -10,11 +10,11 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal
 
+from scripts.training.model_registry import all_short_names, hf_to_short, short_to_hf
+
 ROOT = Path(__file__).resolve().parents[2]
 MODELS_DIR = ROOT / "models"
 ADAPTERS_DIR = ROOT / "adapters"
-
-from scripts.training.model_registry import all_short_names, hf_to_short, short_to_hf
 
 
 @dataclass

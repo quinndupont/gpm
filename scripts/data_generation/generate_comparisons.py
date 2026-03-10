@@ -6,26 +6,28 @@ import random
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
-ANNOTATED = ROOT / "data" / "annotated"
-
+from models.prompts.loader import render_prompt
 from scripts.data_generation.claude_utils import (
+    CLAUDE_SONNET_4_5,
+    RAW_BAD,
+    RAW_GOOD,
     call_claude,
     get_educator_system_prompt,
-    CLAUDE_SONNET_4_5,
     load_poems,
     poem_text,
-    RAW_GOOD,
-    RAW_BAD,
 )
-from models.prompts.loader import render_prompt
+
+ROOT = Path(__file__).resolve().parents[2]
+ANNOTATED = ROOT / "data" / "annotated"
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--limit", type=int, default=0, help="Max pairs (0=all bad poems)")
     parser.add_argument("--output", type=Path, default=ANNOTATED / "comparisons.jsonl")
-    parser.add_argument("--replace", action="store_true", help="Overwrite output file (default: append)")
+    parser.add_argument(
+        "--replace", action="store_true", help="Overwrite output file (default: append)"
+    )
     parser.add_argument("--seed", type=int, default=42)
     args = parser.parse_args()
 

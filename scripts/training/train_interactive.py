@@ -8,6 +8,16 @@ from pathlib import Path
 
 import yaml
 
+from scripts.training.data_generation_status import (
+    format_status,
+    get_data_generation_status,
+)
+from scripts.training.model_discovery import (
+    discover_all,
+    discover_by_task,
+    hf_to_short_name,
+)
+
 ROOT = Path(__file__).resolve().parents[2]
 CONFIG_DIR = ROOT / "config"
 REGISTRY_PATH = CONFIG_DIR / "model_registry.yaml"
@@ -15,16 +25,6 @@ EDUCATOR_CONFIG = CONFIG_DIR / "educator_training.yaml"
 POET_CONFIG = CONFIG_DIR / "poet_training.yaml"
 RHYME_CONFIG = CONFIG_DIR / "rhyme_training.yaml"
 EXPORT_CONFIG = CONFIG_DIR / "export_pipeline.yaml"
-
-from scripts.training.model_discovery import (
-    discover_all,
-    discover_by_task,
-    hf_to_short_name,
-)
-from scripts.training.data_generation_status import (
-    format_status,
-    get_data_generation_status,
-)
 
 
 def load_registry() -> list[dict]:
@@ -77,7 +77,10 @@ def select_model_from_registry(registry: list[dict], task: str) -> dict:
     fit_key = "educator_fit" if task == "educator" else "poet_fit"
     note_key = "educator_note" if task == "educator" else "poet_note"
     print(f"\nSelect base model for {task}:")
-    print("  Educator: instruct models best (critique, briefs). Poet: creative models often less formulaic.")
+    print(
+        "  Educator: instruct models best (critique, briefs). "
+        "Poet: creative models often less formulaic.",
+    )
     for i, m in enumerate(registry, 1):
         short = m["short_name"]
         param = m["param_b"]
@@ -110,23 +113,23 @@ def run_training(
 ):
     if task == "poet_rhyme":
         update_training_config(RHYME_CONFIG, base_model, save_path)
-        subprocess.run(
-            [sys.executable, str(ROOT / "scripts" / "data_generation" / "prepare_rhyme_training_data.py")],
-            cwd=str(ROOT),
-            check=True,
-        )
+        prep_rhyme = str(ROOT / "scripts" / "data_generation" / "prepare_rhyme_training_data.py")
+        subprocess.run([sys.executable, prep_rhyme], cwd=str(ROOT), check=True)
         subprocess.run(
             [sys.executable, str(ROOT / "scripts" / "modal" / "upload_data.py")],
             cwd=str(ROOT),
             check=True,
         )
         extra = ["--num-epochs-override", str(num_epochs)] if num_epochs else []
+        train_rhyme_script = str(ROOT / "scripts" / "modal" / "train_rhyme_poet.py")
         subprocess.run(
-            [sys.executable, "-m", "modal", "run", str(ROOT / "scripts" / "modal" / "train_rhyme_poet.py")] + extra,
-            cwd=str(ROOT),
-            check=True,
+            [sys.executable, "-m", "modal", "run", train_rhyme_script] + extra,
+            cwd=str(ROOT), check=True,
         )
-        print("Rhyme training done. Download: modal volume get poetry-checkpoints poet_rhyme/final ./models/")
+        print(
+            "Rhyme training done. Download: "
+            "modal volume get poetry-checkpoints poet_rhyme/final ./models/"
+        )
         return
 
     config = EDUCATOR_CONFIG if task == "educator" else POET_CONFIG
@@ -134,10 +137,10 @@ def run_training(
 
     script = "train_educator.py" if task == "educator" else "train_poet.py"
     extra = ["--num-epochs-override", str(num_epochs)] if num_epochs else []
+    script_path = str(ROOT / "scripts" / "modal" / script)
     subprocess.run(
-        [sys.executable, "-m", "modal", "run", str(ROOT / "scripts" / "modal" / script)] + extra,
-        cwd=str(ROOT),
-        check=True,
+        [sys.executable, "-m", "modal", "run", script_path] + extra,
+        cwd=str(ROOT), check=True,
     )
 
     if train_only:
@@ -147,12 +150,16 @@ def run_training(
     update_export_config(base_model, quant, save_path.rstrip("/") + "/final", out_name)
 
     export_fn = "export_educator" if task == "educator" else "export_poet"
+    export_script = str(ROOT / "scripts" / "modal" / "export_gguf.py") + f"::{export_fn}"
     subprocess.run(
-        [sys.executable, "-m", "modal", "run", str(ROOT / "scripts" / "modal" / "export_gguf.py") + f"::{export_fn}"],
-        cwd=str(ROOT),
-        check=True,
+        [sys.executable, "-m", "modal", "run", export_script],
+        cwd=str(ROOT), check=True,
     )
-    gguf_name = f"{short_name}-{task}-{quant}.gguf" if replace else f"{short_name}-{task}-v2-{quant}.gguf"
+    gguf_name = (
+        f"{short_name}-{task}-{quant}.gguf"
+        if replace
+        else f"{short_name}-{task}-v2-{quant}.gguf"
+    )
     print(f"Done. Download: modal volume get --force poetry-gguf {gguf_name} ./models/")
 
 
@@ -173,15 +180,23 @@ def main():
     parser.add_argument("--train-rhyme", action="store_true", help="Train rhyme-focused poet")
     parser.add_argument("--train-only", action="store_true", help="Skip export")
     parser.add_argument("--num-epochs", type=int, default=None)
-    parser.add_argument("--include-modal", action="store_true", help="Discover Modal checkpoints")
-    parser.add_argument("--skip-generation-prompt", action="store_true", help="Skip the run generation prompt (assume skip)")
+    parser.add_argument(
+        "--include-modal", action="store_true",
+        help="Discover Modal checkpoints",
+    )
+    parser.add_argument(
+        "--skip-generation-prompt", action="store_true",
+        help="Skip the run generation prompt (assume skip)",
+    )
     args = parser.parse_args()
 
     # Data generation: enumerate and prompt (default: skip)
     if not args.skip_generation_prompt:
         phases = get_data_generation_status()
         print("\n" + format_status(phases))
-        run_gen = prompt_choice("\nRun prompt generation (Opus + interim educator + local)?", "ny")
+        run_gen = prompt_choice(
+            "\nRun prompt generation (Opus + interim educator + local)?", "ny",
+        )
         if run_gen == "y":
             run_data_generation()
         else:
@@ -201,11 +216,14 @@ def main():
         print(f"ERROR: Poet data not found. Run generation or create {poet_data}")
         return
     if needs_rhyme and not rhyme_data.exists():
-        print(f"ERROR: Rhyme data not found. Run prepare_rhyme_training_data or create {rhyme_data}")
+        print(
+            f"ERROR: Rhyme data not found. Run prepare_rhyme_training_data or "
+            f"create {rhyme_data}",
+        )
         return
 
     registry = load_registry()
-    discovered = discover_all(include_modal=args.include_modal)
+    _ = discover_all(include_modal=args.include_modal)  # validate configs
 
     tasks_to_run: list[str] = []
     if args.train_rhyme:
@@ -227,14 +245,20 @@ def main():
             for m in existing:
                 print(f"  Found: {m.path}")
                 print(f"    Base: {m.base_model_hf_id}  Quant: {m.quant or 'N/A'}")
-            choice = prompt_choice("Replace existing or train new (keep both)?", "rn")
+            choice = prompt_choice(
+                "Replace existing or train new (keep both)?", "rn",
+            )
             replace = choice == "r"
             if replace:
                 base_model = existing[0].base_model_hf_id
                 short = hf_to_short_name(base_model)
                 entry = next((e for e in registry if e["hf_id"] == base_model), None)
                 quant = entry["recommended_inference_quant"] if entry else "Q4_K_M"
-                save_path = "/vol/checkpoints/educator/" if task == "educator" else "/vol/checkpoints/poet/"
+                save_path = (
+                    "/vol/checkpoints/educator/"
+                    if task == "educator"
+                    else "/vol/checkpoints/poet/"
+                )
                 if task == "poet_rhyme":
                     save_path = "/vol/checkpoints/poet_rhyme/"
             else:
@@ -248,11 +272,16 @@ def main():
             base_model = entry["hf_id"]
             short = entry["short_name"]
             quant = entry["recommended_inference_quant"]
-            save_path = f"/vol/checkpoints/{task}/" if task in ("educator", "poet") else f"/vol/checkpoints/{task}_{short}/"
+            save_path = (
+                f"/vol/checkpoints/{task}/"
+                if task in ("educator", "poet")
+                else f"/vol/checkpoints/{task}_{short}/"
+            )
             replace = True
 
         run_training(
-            task, base_model, short, quant, save_path, replace, args.num_epochs, train_only=args.train_only
+            task, base_model, short, quant, save_path, replace,
+            args.num_epochs, train_only=args.train_only,
         )
 
 

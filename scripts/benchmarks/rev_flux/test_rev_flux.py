@@ -5,7 +5,6 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).resolve().parents[3]
-import sys
 
 MODELS_CONFIG = ROOT / "config" / "rev_flux_models.yaml"
 
@@ -26,14 +25,17 @@ def _gguf_exists(model_cfg: dict) -> bool:
     if edu == "gguf" and poet == "gguf":
         from scripts.inference.pipeline import load_config
         cfg = load_config(ROOT / "config" / "inference_config.yaml")
-        for p in (cfg.get("educator", {}).get("model_path", ""), cfg.get("poet", {}).get("model_path", "")):
+        edu_path = cfg.get("educator", {}).get("model_path", "")
+        poet_path = cfg.get("poet", {}).get("model_path", "")
+        for p in (edu_path, poet_path):
             if p:
                 paths.append(str(ROOT / p.lstrip("./")))
     else:
         for val in (edu, poet):
             if val and val.startswith("gguf:"):
                 p = val[5:].strip()
-                paths.append(p if Path(p).is_absolute() else str(ROOT / p.lstrip("./")))
+                path = p if Path(p).is_absolute() else str(ROOT / p.lstrip("./"))
+                paths.append(path)
     for p in paths:
         if p and not Path(p).exists():
             return False
@@ -57,18 +59,23 @@ def test_rev_flux_output_structure(model_cfg):
         pytest.skip("Ollama models require running server")
     if not _gguf_exists(model_cfg):
         pytest.skip("GGUF files not found")
-    from scripts.inference.pipeline import PoetryPipeline
-    from scripts.benchmarks.rev_flux.run_harness import run_single
     from scripts.benchmarks.rev_flux.prompts import CATEGORIES
+    from scripts.benchmarks.rev_flux.run_harness import run_single
+    from scripts.inference.pipeline import PoetryPipeline
     edu = model_cfg.get("educator", "gguf")
     poet = model_cfg.get("poet", "gguf")
     edu_override = None if edu == "gguf" else edu
     poet_override = None if poet == "gguf" else poet
-    pipeline = PoetryPipeline(educator_model_override=edu_override, poet_model_override=poet_override)
+    pipeline = PoetryPipeline(
+        educator_model_override=edu_override, poet_model_override=poet_override,
+    )
     revs = model_cfg.get("revisions", [0])
     max_rev = 1 if 1 in revs else (revs[0] if revs else 0)
     prompt = list(CATEGORIES.values())[0][0]
-    run = run_single(pipeline, prompt, max_revisions=max_rev, category="famous_poetry", prompt_idx=0, model_id=model_cfg["id"])
+    run = run_single(
+        pipeline, prompt, max_revisions=max_rev, category="famous_poetry",
+        prompt_idx=0, model_id=model_cfg["id"],
+    )
     assert "revision_history" in run
     assert "final_poem" in run
     assert "change_pcts" in run
@@ -83,9 +90,9 @@ def test_rev_flux_output_structure(model_cfg):
 @pytest.mark.slow
 def test_rev_flux_full_sweep(models_config):
     """Full sweep: one prompt per category, all revision lengths (slow)."""
-    from scripts.inference.pipeline import PoetryPipeline
-    from scripts.benchmarks.rev_flux.run_harness import run_single
     from scripts.benchmarks.rev_flux.prompts import CATEGORIES
+    from scripts.benchmarks.rev_flux.run_harness import run_single
+    from scripts.inference.pipeline import PoetryPipeline
     for model_cfg in models_config:
         if _is_ollama(model_cfg) or not _gguf_exists(model_cfg):
             continue
@@ -93,11 +100,16 @@ def test_rev_flux_full_sweep(models_config):
         poet = model_cfg.get("poet", "gguf")
         edu_override = None if edu == "gguf" else edu
         poet_override = None if poet == "gguf" else poet
-        pipeline = PoetryPipeline(educator_model_override=edu_override, poet_model_override=poet_override)
+        pipeline = PoetryPipeline(
+            educator_model_override=edu_override, poet_model_override=poet_override,
+        )
         revs = model_cfg.get("revisions", [0])
         for category, prompts in CATEGORIES.items():
             for max_rev in revs[:2]:
-                run = run_single(pipeline, prompts[0], max_revisions=max_rev, category=category, prompt_idx=0, model_id=model_cfg["id"])
+                run = run_single(
+                    pipeline, prompts[0], max_revisions=max_rev, category=category,
+                    prompt_idx=0, model_id=model_cfg["id"],
+                )
                 assert "change_pcts" in run
                 for p in run.get("change_pcts", []):
                     assert 0 <= p <= 100

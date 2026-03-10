@@ -96,7 +96,10 @@ def llm_check_placeholder(
     except ImportError:
         raise ImportError("pip install llama-cpp-python")
 
-    system = "Reply with exactly YES or NO. Is the given poem title or author a placeholder, boilerplate, or generic (e.g. Unknown, Anonymous, Untitled)?"
+    system = (
+        "Reply with exactly YES or NO. Is the given poem title or author a placeholder, "
+        "boilerplate, or generic (e.g. Unknown, Anonymous, Untitled)?"
+    )
     user = f"Title: {title}\nAuthor: {author}"
     llm = Llama(
         model_path=str(model_path),

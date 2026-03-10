@@ -19,7 +19,7 @@ OLLAMA_MODELS = [
 ]
 
 # HuggingFace repo, local output name
-# Llama: bartowski converts from official meta-llama/Llama-3.1-8B-Instruct (Meta does not publish GGUF)
+# Llama: bartowski converts from meta-llama/Llama-3.1-8B-Instruct (Meta does not publish GGUF)
 GGUF_DOWNLOADS = [
     ("Qwen/Qwen2.5-7B-Instruct-GGUF", "qwen2.5-7b-instruct-Q4_K_M.gguf"),
     ("bartowski/Meta-Llama-3.1-8B-Instruct-GGUF", "llama3.1-8b-instruct-Q4_K_M.gguf"),
@@ -47,7 +47,7 @@ def pull_ollama():
 def download_gguf():
     """Download GGUF files from HuggingFace to models/."""
     try:
-        from huggingface_hub import list_repo_files, hf_hub_download
+        from huggingface_hub import hf_hub_download, list_repo_files
     except ImportError:
         print("pip install huggingface_hub")
         return False
@@ -76,14 +76,22 @@ def download_gguf():
                 continue
             filename = candidates[0]
             print(f"Downloading {repo} {filename} -> {local_name}...")
-            path = hf_hub_download(repo_id=repo, filename=filename, local_dir=str(MODELS_DIR), local_dir_use_symlinks=False)
+            path = hf_hub_download(
+                repo_id=repo,
+                filename=filename,
+                local_dir=str(MODELS_DIR),
+                local_dir_use_symlinks=False,
+            )
             if path:
                 src = Path(path)
                 if src.name != local_name and src.exists():
                     src.rename(out)
         except Exception as e:
             print(f"  Failed: {e}")
-            print(f"  Note: Llama may require HuggingFace login + Meta license: huggingface-cli login")
+            print(
+                "  Note: Llama may need HuggingFace login + Meta license: "
+                "huggingface-cli login",
+            )
             return False
     print("GGUF models ready.")
     return True

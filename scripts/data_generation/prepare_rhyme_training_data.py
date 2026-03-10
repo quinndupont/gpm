@@ -1,23 +1,22 @@
 #!/usr/bin/env python3
-"""Prepare rhyme-focused training data: Claude rhyme_pairs (or strong_rhyme_poems) + 20% general (anti-collapse).
+"""Prepare rhyme-focused training data: rhyme_pairs + 20% general (anti-collapse).
 
-Quality gate: poems are re-validated through the deterministic rhyme analyzer.
-Only poems with strict_rhyme_density >= 0.6 are included as positive examples.
+Quality gate: poems re-validated via rhyme analyzer.
+Only poems with strict_rhyme_density >= 0.6 are included.
 """
 import argparse
 import json
 import random
-import sys
 from pathlib import Path
+
+from models.prompts.loader import get_persona, get_prompt
+from scripts.eval.form_registry import get_scheme
+from scripts.eval.rhyme_analyzer import analyze as analyze_rhyme
 
 ROOT = Path(__file__).resolve().parents[2]
 ANNOTATED = ROOT / "data" / "annotated"
 POET_TRAINING = ROOT / "data" / "poet_training"
 RHYME_TRAINING = ROOT / "data" / "rhyme_training"
-
-from scripts.eval.rhyme_analyzer import analyze as analyze_rhyme
-from scripts.eval.form_registry import get_scheme
-from models.prompts.loader import get_persona, get_prompt
 
 MIN_STRICT_DENSITY = 0.6
 
@@ -42,7 +41,9 @@ def to_poet_example(user: str, assistant: str) -> dict:
     }
 
 
-def poem_to_rhyme_example(poem: str, form: str | None = None, brief: str | None = None) -> dict | None:
+def poem_to_rhyme_example(
+    poem: str, form: str | None = None, brief: str | None = None
+) -> dict | None:
     """Convert a poem to a rhyme training example if it passes the quality gate."""
     if not poem.strip():
         return None
@@ -64,18 +65,25 @@ def poem_to_rhyme_example(poem: str, form: str | None = None, brief: str | None 
             scheme_str = get_scheme(form) if form else ""
             if scheme_str:
                 parts.append(f"Form: {form}, scheme {scheme_str}.")
-        parts.append("Every end-word pair must be a true phonetic rhyme. Follow the form precisely.")
+        parts.append(
+            "Every end-word pair must be a true phonetic rhyme. Follow the form precisely."
+        )
         user = " ".join(parts) + get_prompt("tuning", "poet_generation", "rhyme_suffix")
     return to_poet_example(user, poem)
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Prepare rhyme training data (rhyme pairs + 20% general)")
+    parser = argparse.ArgumentParser(
+        description="Prepare rhyme training data (rhyme pairs + 20%% general)",
+    )
     parser.add_argument("--strong-rhyme", type=Path, default=ANNOTATED / "strong_rhyme_poems.jsonl")
     parser.add_argument("--rhyme-pairs", type=Path, default=POET_TRAINING / "rhyme_pairs.jsonl")
     parser.add_argument("--general", type=Path, default=POET_TRAINING / "train.jsonl")
     parser.add_argument("--output-dir", type=Path, default=RHYME_TRAINING)
-    parser.add_argument("--general-frac", type=float, default=0.2, help="Fraction of general poetry (anti-collapse)")
+    parser.add_argument(
+        "--general-frac", type=float, default=0.2,
+        help="Fraction of general poetry (anti-collapse)",
+    )
     parser.add_argument("--seed", type=int, default=42)
     args = parser.parse_args()
 
@@ -105,10 +113,16 @@ def main():
             if ex:
                 strong.append(ex)
         if strong:
-            print(f"Using rhyme_pairs: {len(strong)}/{raw_count} passed (strict_density >= {MIN_STRICT_DENSITY})")
+            print(
+                f"Using rhyme_pairs: {len(strong)}/{raw_count} passed "
+                f"(strict_density >= {MIN_STRICT_DENSITY})",
+            )
     else:
         filtered = raw_count - len(strong)
-        print(f"Quality gate: {len(strong)}/{raw_count} poems passed (strict_density >= {MIN_STRICT_DENSITY}), {filtered} filtered out")
+        print(
+            f"Quality gate: {len(strong)}/{raw_count} poems passed "
+            f"(strict_density >= {MIN_STRICT_DENSITY}), {filtered} filtered out",
+        )
 
     general_raw = load_jsonl(args.general)
     general = [e for e in general_raw if e.get("messages") and len(e["messages"]) >= 3]

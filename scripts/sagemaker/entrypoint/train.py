@@ -9,7 +9,10 @@ sys.path.insert(0, "/opt/ml/code")
 from qlora_train import run_qlora_training
 
 TASK_CONFIG = {
-    "educator": ("educator_training.yaml", "educator_train.jsonl", "educator_valid.jsonl", "educator"),
+    "educator": (
+        "educator_training.yaml", "educator_train.jsonl", "educator_valid.jsonl",
+        "educator",
+    ),
     "poet": ("poet_training.yaml", "poet_train.jsonl", "poet_valid.jsonl", "poet"),
     "rhyme": ("rhyme_training.yaml", "rhyme_train.jsonl", "rhyme_valid.jsonl", "poet_rhyme"),
 }

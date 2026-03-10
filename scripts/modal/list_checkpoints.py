@@ -52,7 +52,6 @@ def list_checkpoints() -> list[dict]:
 
 
 if __name__ == "__main__":
-    import sys
     with app.run():
         data = list_checkpoints.remote()
         print(json.dumps(data))

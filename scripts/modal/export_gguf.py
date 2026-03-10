@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Modal: Merge LoRA + convert to GGUF Q4_K_M. S3.4"""
 import subprocess
-import yaml
 from pathlib import Path
 
 import modal
+import yaml
 
 # Config path: works when run from project root (local or Modal workspace)
 _EXPORT_CONFIG = Path("config/export_pipeline.yaml")
@@ -142,10 +142,8 @@ def _export(model_name: str, checkpoint_path: str, out_name: str | None = None) 
     # Convert to GGUF
     convert_script = "/tmp/llama.cpp/convert_hf_to_gguf.py"
     if not Path(convert_script).exists():
-        subprocess.run(
-            ["curl", "-sL", "https://raw.githubusercontent.com/ggml-org/llama.cpp/master/convert_hf_to_gguf.py", "-o", convert_script],
-            check=True,
-        )
+        url = "https://raw.githubusercontent.com/ggml-org/llama.cpp/master/convert_hf_to_gguf.py"
+        subprocess.run(["curl", "-sL", url, "-o", convert_script], check=True)
     gguf_f32 = out_dir / f"{name}-f32.gguf"
     subprocess.run(
         ["python3", convert_script, str(merge_dir), "--outfile", str(gguf_f32), "--outtype", "f16"],

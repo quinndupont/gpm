@@ -4,15 +4,13 @@ Rhyme benchmark: run prompts that request rhyming forms, analyze outputs with rh
 """
 import argparse
 import json
-import sys
 from pathlib import Path
-
-ROOT = Path(__file__).resolve().parents[3]
-
-MODELS_CONFIG = ROOT / "config" / "rev_flux_models.yaml"
 
 from scripts.benchmarks.rhyme_bench.prompts import RHYME_PROMPTS
 from scripts.eval.rhyme_analyzer import analyze as analyze_rhyme
+
+ROOT = Path(__file__).resolve().parents[3]
+MODELS_CONFIG = ROOT / "config" / "rev_flux_models.yaml"
 
 
 def _load_models_config() -> list[dict]:
@@ -27,7 +25,16 @@ def _slug(s: str) -> str:
     return s.replace(":", "-").replace("/", "_")[:32]
 
 
-def run_single(pipeline, user_request: str, form: str, variant: str | None, max_revisions: int, prompt_idx: int, model_id: str, verbose: bool = False) -> dict:
+def run_single(
+    pipeline,
+    user_request: str,
+    form: str,
+    variant: str | None,
+    max_revisions: int,
+    prompt_idx: int,
+    model_id: str,
+    verbose: bool = False,
+) -> dict:
     result = pipeline.generate(
         user_request,
         max_revisions=max_revisions,
@@ -157,7 +164,12 @@ def main():
             out_file = args.output_dir / f"rhyme_{form}_{idx}_{slug}.json"
             with open(out_file, "w") as f:
                 json.dump(run, f, indent=2)
-            print(f"  strict_density={run['rhyme_analysis']['strict_rhyme_density']} matches={run['rhyme_analysis']['matches_form']} -> {out_file}", flush=True)
+            ra = run["rhyme_analysis"]
+            print(
+                f"  strict_density={ra['strict_rhyme_density']} matches={ra['matches_form']} "
+                f"-> {out_file}",
+                flush=True,
+            )
 
     # Summary
     matches = sum(1 for r in runs if r["rhyme_analysis"].get("matches_form") is True)
@@ -166,7 +178,9 @@ def main():
         "total_runs": len(runs),
         "matches_form_count": matches,
         "matches_form_rate": round(matches / len(runs), 2) if runs else 0,
-        "mean_strict_rhyme_density": round(sum(strict_densities) / len(strict_densities), 2) if strict_densities else 0,
+        "mean_strict_rhyme_density": (
+            round(sum(strict_densities) / len(strict_densities), 2) if strict_densities else 0
+        ),
         "models_tested": model_ids,
         "prompt_indices": prompt_indices,
         "max_revisions": args.max_revisions,
@@ -174,7 +188,10 @@ def main():
     summary_path = args.output_dir / "summary.json"
     with open(summary_path, "w") as f:
         json.dump(summary, f, indent=2)
-    print(f"\nSummary: matches_form {matches}/{len(runs)}, mean strict_density={summary['mean_strict_rhyme_density']}")
+    print(
+        f"\nSummary: matches_form {matches}/{len(runs)}, "
+        f"mean strict_density={summary['mean_strict_rhyme_density']}",
+    )
     print(f"  {summary_path}")
 
 

@@ -3,7 +3,8 @@
 # (form, variant, user_request). Form/variant match form_registry.
 RHYME_PROMPTS = [
     # Sonnet (Shakespearean: ABAB CDCD EFEF GG)
-    ("sonnet", "shakespearean", "Write a Shakespearean sonnet about a traveler at a fork in a yellow wood."),
+    ("sonnet", "shakespearean",
+     "Write a Shakespearean sonnet about a traveler at a fork in a yellow wood."),
     ("sonnet", "shakespearean", "Write a Shakespearean sonnet comparing a lover to a summer day."),
     ("sonnet", "shakespearean", "Write a Shakespearean sonnet about death not being proud."),
     # Villanelle (ABA ABA ABA ABA ABA ABAA)

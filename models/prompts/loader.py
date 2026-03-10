@@ -31,7 +31,8 @@ def get_prompt(category: str, prompt_id: str, template: str = "default") -> str:
     data = _prompt_cache[key]
     templates = data.get("templates", {})
     if template not in templates:
-        raise KeyError(f"Template '{template}' not in {category}/{prompt_id}. Available: {list(templates)}")
+        avail = list(templates)
+        raise KeyError(f"Template '{template}' not in {category}/{prompt_id}. Available: {avail}")
     return templates[template]
 
 

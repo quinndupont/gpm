@@ -1,13 +1,14 @@
 """Training pipeline tests — config loading, model registry."""
+from pathlib import Path
+
 import pytest
 import yaml
-from pathlib import Path
 
 from scripts.training.model_registry import (
     _load_registry,
+    all_short_names,
     short_to_hf,
     stop_tokens_for,
-    all_short_names,
 )
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -87,9 +88,12 @@ class TestModelRegistry:
 @pytest.mark.skip(reason="Requires GPU and modifies qlora_train; run manually")
 def test_qlora_dry_run():
     """QLoRA dry run with max_steps=1. Run manually with GPU: pytest -m slow -k qlora."""
-    from scripts.training.qlora_train import run_qlora_training
     import tempfile
-    train_data = [{"messages": [{"role": "user", "content": "x"}, {"role": "assistant", "content": "y"}]}]
+
+    from scripts.training.qlora_train import run_qlora_training
+    train_data = [
+        {"messages": [{"role": "user", "content": "x"}, {"role": "assistant", "content": "y"}]},
+    ]
     with tempfile.TemporaryDirectory() as tmp:
         train_path = Path(tmp) / "train.jsonl"
         train_path.write_text("\n".join(__import__("json").dumps(d) for d in train_data))

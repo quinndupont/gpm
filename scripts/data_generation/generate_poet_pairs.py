@@ -5,12 +5,12 @@ import json
 import sys
 from pathlib import Path
 
+from models.prompts.loader import get_persona, render_prompt
+from scripts.data_generation.claude_utils import CLAUDE_SONNET_4_5, call_claude
+
 ROOT = Path(__file__).resolve().parents[2]
 EDUCATOR_TRAINING = ROOT / "data" / "educator_training"
 POET_TRAINING = ROOT / "data" / "poet_training"
-
-from scripts.data_generation.claude_utils import call_claude, CLAUDE_SONNET_4_5
-from models.prompts.loader import get_persona, render_prompt
 
 # Cap brief at ~300 tokens (~1200 chars) for poet training
 BRIEF_CAP = 1200
@@ -25,10 +25,16 @@ def _truncate_brief(brief: str) -> str:
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--briefs", type=Path, default=EDUCATOR_TRAINING / "briefs.jsonl")
-    parser.add_argument("--revision-briefs", type=Path, default=EDUCATOR_TRAINING / "revision_briefs_seed.jsonl")
+    parser.add_argument(
+        "--revision-briefs",
+        type=Path,
+        default=EDUCATOR_TRAINING / "revision_briefs_seed.jsonl",
+    )
     parser.add_argument("--limit", type=int, default=0)
     parser.add_argument("--output", type=Path, default=POET_TRAINING / "pairs.jsonl")
-    parser.add_argument("--replace", action="store_true", help="Overwrite output file (default: append)")
+    parser.add_argument(
+        "--replace", action="store_true", help="Overwrite output file (default: append)"
+    )
     parser.add_argument("--model", type=str, default=CLAUDE_SONNET_4_5)
     args = parser.parse_args()
 
@@ -45,7 +51,10 @@ def main():
         entries = entries[: args.limit]
 
     if not entries:
-        print("No briefs found. Run generate_briefs.py and generate_revision_briefs.py first.", file=sys.stderr)
+        print(
+            "No briefs found. Run generate_briefs.py and generate_revision_briefs.py first.",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
     args.output.parent.mkdir(parents=True, exist_ok=True)

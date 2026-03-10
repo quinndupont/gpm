@@ -9,14 +9,13 @@ For neighbors, run index_corpus.py first (creates data/aem_index/).
 """
 import json
 import os
-import sys
 from pathlib import Path
-
-ROOT = Path(__file__).resolve().parents[2]
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+
+ROOT = Path(__file__).resolve().parents[2]
 
 app = FastAPI(title="GPM AEM")
 app.add_middleware(
@@ -33,7 +32,11 @@ _index_metadata = None
 
 def _chunk_poem(text: str, chunk_size: int = 4) -> list[str]:
     """Split poem into stanza-like chunks of ~chunk_size lines."""
-    lines = [l.strip() for l in text.split("\n") if l.strip() and not l.strip().startswith("#")]
+    lines = [
+        ln.strip()
+        for ln in text.split("\n")
+        if ln.strip() and not ln.strip().startswith("#")
+    ]
     chunks = []
     for i in range(0, len(lines), chunk_size):
         chunk = "\n".join(lines[i : i + chunk_size])

@@ -6,7 +6,8 @@ candidates is more aesthetically similar to an anchor. Outputs JSONL of
 (anchor, positive, negative) for training.
 
 Usage:
-  EDUCATOR_URL=http://localhost:8080/v1 python generate_triplets.py --output triplets.jsonl --count 1000
+  EDUCATOR_URL=http://localhost:8080/v1 python generate_triplets.py \\
+    --output triplets.jsonl --count 1000
 """
 import argparse
 import json
@@ -50,7 +51,7 @@ def get_poem_text(p: dict) -> str:
 
 
 def call_educator(anchor: str, candidate_b: str, candidate_c: str, url: str) -> str | None:
-    """Call Educator: which of B or C is more aesthetically similar to anchor? Returns 'B' or 'C'."""
+    """Ask Educator: which of B or C is more aesthetically similar to anchor? Returns 'B' or 'C'."""
     try:
         from openai import OpenAI
     except ImportError:
@@ -60,7 +61,8 @@ def call_educator(anchor: str, candidate_b: str, candidate_c: str, url: str) -> 
     client = OpenAI(base_url=url, api_key=os.environ.get("EDUCATOR_API_KEY", "not-needed"))
     model = os.environ.get("EDUCATOR_MODEL", "educator")
 
-    prompt = f"""You are a poetry educator. Consider aesthetic similarity: same relationship to image, degree of abstraction, trust in concrete detail, emotional restraint.
+    prompt = f"""You are a poetry educator. Consider aesthetic similarity: same relationship to \
+image, degree of abstraction, trust in concrete detail, emotional restraint.
 
 Anchor poem A:
 {anchor[:1500]}

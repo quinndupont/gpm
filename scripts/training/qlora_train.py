@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Shared QLoRA training logic for Modal and SageMaker backends."""
 import json
-import yaml
 from pathlib import Path
+
+import yaml
 
 
 def load_jsonl(p: Path) -> list:
