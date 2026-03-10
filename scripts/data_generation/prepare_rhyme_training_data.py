@@ -77,7 +77,7 @@ def main():
         description="Prepare rhyme training data (rhyme pairs + 20%% general)",
     )
     parser.add_argument("--strong-rhyme", type=Path, default=ANNOTATED / "strong_rhyme_poems.jsonl")
-    parser.add_argument("--rhyme-pairs", type=Path, default=POET_TRAINING / "rhyme_pairs.jsonl")
+    parser.add_argument("--rhyme-pairs", type=Path, default=RHYME_TRAINING / "rhyme_pairs.jsonl")
     parser.add_argument("--general", type=Path, default=POET_TRAINING / "train.jsonl")
     parser.add_argument("--output-dir", type=Path, default=RHYME_TRAINING)
     parser.add_argument(

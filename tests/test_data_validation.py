@@ -78,7 +78,7 @@ class TestQualityGateIntegration:
             "poem": "The cat sat on the mat.",
             "critique": (
                 "The moment in line 1 holds attention. The rhyme works. "
-                "This poem has found its shape.",
+                "This poem has found its shape."
             ),
         }
         ok, reasons = quality_gate_check(entry)
@@ -90,7 +90,7 @@ class TestQualityGateIntegration:
             "poem": "Roses are red",
             "critique": (
                 "This poem delves into the rich tapestry of emotion. "
-                "It's worth noting how it resonates deeply.",
+                "It's worth noting how it resonates deeply."
             ),
         }
         ok, reasons = quality_gate_check(entry)

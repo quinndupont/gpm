@@ -25,8 +25,10 @@ from scripts.data_generation.claude_utils import (
 from scripts.eval.form_registry import (
     RHYMING_FORMS,
     form_description,
+    get_line_count,
     get_scheme,
     is_metered_form,
+    parse_scheme,
 )
 from scripts.eval.meter_analyzer import analyze as analyze_meter
 from scripts.eval.meter_analyzer import (
@@ -34,9 +36,10 @@ from scripts.eval.meter_analyzer import (
 )
 from scripts.eval.rhyme_analyzer import analyze, format_analysis_for_prompt
 
+from scripts.data_generation.rhyme_words import format_endword_constraint, pick_endwords
+
 ROOT = Path(__file__).resolve().parents[2]
-POET_TRAINING = ROOT / "data" / "poet_training"
-EDUCATOR_TRAINING = ROOT / "data" / "educator_training"
+RHYME_TRAINING = ROOT / "data" / "rhyme_training"
 
 FALLBACK_TOPICS = [
     "a childhood kitchen",
@@ -65,9 +68,9 @@ def main():
     parser.add_argument("--topics-per-form", type=int, default=10,
                         help="Number of topics per form")
     parser.add_argument("--poet-output", type=Path,
-                        default=POET_TRAINING / "rhyme_pairs.jsonl")
+                        default=RHYME_TRAINING / "rhyme_pairs.jsonl")
     parser.add_argument("--educator-output", type=Path,
-                        default=EDUCATOR_TRAINING / "rhyme_critiques.jsonl")
+                        default=RHYME_TRAINING / "rhyme_critiques.jsonl")
     parser.add_argument("--brief-model", type=str, default=CLAUDE_SONNET_4_5,
                         help="Model for brief generation (cheap)")
     parser.add_argument("--poem-model", type=str, default=CLAUDE_OPUS_4_6,
@@ -80,6 +83,12 @@ def main():
     )
     parser.add_argument("--forms", type=str, nargs="*", default=TARGET_FORMS,
                         help="Which forms to generate for")
+    parser.add_argument("--constrained", dest="constrained", action="store_true",
+                        default=True, help="Use CMU-seeded end-words (default)")
+    parser.add_argument("--no-constrained", dest="constrained", action="store_false",
+                        help="Use unconstrained poem generation (for frontier models)")
+    parser.add_argument("--retries", type=int, default=2,
+                        help="Retries with fresh end-words on rhyme fail (constrained mode)")
     args = parser.parse_args()
 
     random.seed(args.seed)
@@ -127,19 +136,42 @@ def main():
             if not brief.strip():
                 continue
 
-            # Step B: Generate poem
-            poem_msg = render_prompt("tuning", "rhyme_pairs", template="poet", brief=brief)
-            try:
-                poem = call_claude(poem_msg, get_persona("poet"),
-                                   model=args.poem_model, max_tokens=1024)
-            except Exception as e:
-                print(f"  {label} Poem error: {e}", file=sys.stderr)
-                continue
+            # Step B: Generate poem (with optional retries in constrained mode)
+            poem = ""
+            rhyme_result = None
+            brief_for_poet = brief
+            if args.constrained and scheme:
+                brief_for_poet = brief.rstrip() + "\n\nEnd-words are fixed; write lines that conclude with the specified words."
+            for attempt in range(args.retries + 1):
+                if args.constrained and scheme:
+                    endwords = pick_endwords(scheme, seed=args.seed + i * 1000 + attempt)
+                    endword_block = format_endword_constraint(scheme, endwords)
+                    if not endword_block:
+                        print(f"  {label} No end-words for scheme, skipping", file=sys.stderr)
+                        break
+                    line_count = get_line_count(form_name) or len(parse_scheme(scheme))
+                    poem_msg = render_prompt(
+                        "tuning", "rhyme_pairs", template="poet_constrained",
+                        brief=brief_for_poet, endword_block=endword_block,
+                        line_count=line_count,
+                    )
+                else:
+                    poem_msg = render_prompt("tuning", "rhyme_pairs", template="poet", brief=brief)
+                try:
+                    poem = call_claude(poem_msg, get_persona("poet"),
+                                       model=args.poem_model, max_tokens=1024)
+                except Exception as e:
+                    print(f"  {label} Poem error: {e}", file=sys.stderr)
+                    break
+                if not poem.strip():
+                    break
+                rhyme_result = analyze(poem, expected_form=form_name)
+                if rhyme_result.get("matches_form") or not args.constrained or attempt >= args.retries:
+                    break
             if not poem.strip():
                 continue
 
             # Step C: Validate with rhyme and meter analyzers
-            rhyme_result = analyze(poem, expected_form=form_name)
             analysis_parts = [format_analysis_for_prompt(rhyme_result)]
 
             meter_result = None
