@@ -15,7 +15,6 @@ ANNOTATED = ROOT / "data" / "annotated"
 POET_TRAINING = ROOT / "data" / "poet_training"
 RHYME_TRAINING = ROOT / "data" / "rhyme_training"
 
-sys.path.insert(0, str(ROOT))
 from scripts.eval.rhyme_analyzer import analyze as analyze_rhyme
 from scripts.eval.form_registry import get_scheme
 from models.prompts.loader import get_persona, get_prompt

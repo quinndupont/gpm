@@ -16,7 +16,6 @@ POET_CONFIG = CONFIG_DIR / "poet_training.yaml"
 RHYME_CONFIG = CONFIG_DIR / "rhyme_training.yaml"
 EXPORT_CONFIG = CONFIG_DIR / "export_pipeline.yaml"
 
-sys.path.insert(0, str(ROOT))
 from scripts.training.model_discovery import (
     discover_all,
     discover_by_task,

@@ -6,7 +6,6 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[3]
 import sys
-sys.path.insert(0, str(ROOT))
 
 MODELS_CONFIG = ROOT / "config" / "rev_flux_models.yaml"
 

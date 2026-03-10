@@ -12,7 +12,6 @@ ROOT = Path(__file__).resolve().parents[2]
 CONFIG_PATH = ROOT / "config" / "inference_config.yaml"
 BRIEF_CAP = 1200  # ~300 tokens for poet input
 
-sys.path.insert(0, str(ROOT))
 from models.prompts.loader import get_persona, render_prompt
 from scripts.eval.form_registry import detect_form, get_scheme, is_rhyming_form, is_metered_form, form_description
 from scripts.eval.rhyme_analyzer import analyze as analyze_rhyme, format_analysis_for_prompt

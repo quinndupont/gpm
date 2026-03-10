@@ -105,18 +105,20 @@ def main():
         for r in data["revised_lines_per_round"]:
             revised.extend([(int(i), float(p)) for i, p in r])
     elif "per_round_changes" in data:
-        import sys
-        sys.path.insert(0, str(Path(__file__).resolve().parent))
-        from line_change import revised_lines_per_round, lines_changed_per_round as lcpr
+        from scripts.benchmarks.rev_flux.line_change import (
+            revised_lines_per_round,
+            lines_changed_per_round as lcpr,
+        )
         rounds = data["per_round_changes"]
         revised_per = revised_lines_per_round(rounds, args.threshold)
         lines_changed_per_round = lcpr(rounds, args.threshold)
         for r in revised_per:
             revised.extend([(i, p) for i, p in r])
     elif "change_pcts" in data:
-        import sys
-        sys.path.insert(0, str(Path(__file__).resolve().parent))
-        from line_change import revised_lines_per_round, lines_changed_per_round as lcpr
+        from scripts.benchmarks.rev_flux.line_change import (
+            revised_lines_per_round,
+            lines_changed_per_round as lcpr,
+        )
         # Flatten - treat as single round
         pcts = data["change_pcts"]
         revised = _revised_only(pcts, args.threshold)
@@ -126,9 +128,11 @@ def main():
         revised = _revised_only(pcts, args.threshold)
         lines_changed_per_round = [len(revised)]
     elif "revision_history" in data:
-        import sys
-        sys.path.insert(0, str(Path(__file__).resolve().parent))
-        from line_change import revision_round_changes, revised_lines_per_round, lines_changed_per_round as lcpr
+        from scripts.benchmarks.rev_flux.line_change import (
+            revision_round_changes,
+            revised_lines_per_round,
+            lines_changed_per_round as lcpr,
+        )
         rounds = revision_round_changes(data["revision_history"])
         revised_per = revised_lines_per_round(rounds, args.threshold)
         lines_changed_per_round = lcpr(rounds, args.threshold)

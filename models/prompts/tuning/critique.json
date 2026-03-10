@@ -1,5 +1,6 @@
 {
   "id": "critique",
+  "version": "1",
   "description": "Workshop critique of a poem — identifies what works and what fails",
   "persona": "educator_neutral",
   "templates": {

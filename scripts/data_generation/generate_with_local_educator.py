@@ -10,7 +10,6 @@ ANNOTATED = ROOT / "data" / "annotated"
 EDUCATOR_TRAINING = ROOT / "data" / "educator_training"
 MODELS = ROOT / "models"
 
-sys.path.insert(0, str(ROOT))
 from scripts.data_generation.claude_utils import (
     load_poems,
     load_requests,

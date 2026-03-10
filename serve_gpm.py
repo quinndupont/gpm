@@ -22,7 +22,6 @@ def _get_stop_tokens():
     stop = edu.get("generation_brief", {}).get("stop") or edu.get("critique", {}).get("stop")
     if stop:
         return stop
-    sys.path.insert(0, str(ROOT))
     from scripts.training.model_registry import DEFAULT_STOP_TOKENS, stop_tokens_for
     from scripts.inference.pipeline import _infer_short_from_gguf_path
     path = edu.get("model_path", "./models/qwen2.5-7b-educator-Q4_K_M.gguf")

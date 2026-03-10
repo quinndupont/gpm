@@ -10,6 +10,8 @@ ROOT = Path(__file__).resolve().parents[2]
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument("--backend", choices=["modal", "sagemaker"], default="modal", help="Fine-tuning backend")
+    parser.add_argument("--base-model", type=str, default=None, help="HuggingFace base model ID (e.g. meta-llama/Llama-3.1-8B-Instruct)")
     parser.add_argument("--interactive", "-i", action="store_true", help="Interactive mode: discover models, replace or train new")
     parser.add_argument("--educator-only", action="store_true")
     parser.add_argument("--poet-only", action="store_true")
@@ -37,14 +39,24 @@ def main():
 
     if args.train_rhyme:
         subprocess.run([sys.executable, str(ROOT / "scripts" / "data_generation" / "prepare_rhyme_training_data.py")], cwd=str(ROOT), check=True)
-        subprocess.run([sys.executable, str(ROOT / "scripts" / "modal" / "upload_data.py")], cwd=str(ROOT), check=True)
-        extra = ["--num-epochs-override", str(args.num_epochs)] if args.num_epochs else []
-        subprocess.run(
-            [sys.executable, "-m", "modal", "run", str(ROOT / "scripts" / "modal" / "train_rhyme_poet.py")] + extra,
-            cwd=str(ROOT),
-            check=True,
-        )
-        print("Rhyme training done. Download: modal volume get poetry-checkpoints poet_rhyme/final ./models/")
+        if args.backend == "sagemaker":
+            subprocess.run([sys.executable, str(ROOT / "scripts" / "sagemaker" / "upload_to_s3.py")], cwd=str(ROOT), check=True)
+            extra = ["--num-epochs-override", str(args.num_epochs)] if args.num_epochs else []
+            if args.base_model:
+                extra.extend(["--base-model", args.base_model])
+            subprocess.run([sys.executable, str(ROOT / "scripts" / "sagemaker" / "train_sagemaker.py"), "--task", "rhyme"] + extra, cwd=str(ROOT), check=True)
+            print("Rhyme training done. Download: python scripts/sagemaker/download_models.py")
+        else:
+            subprocess.run([sys.executable, str(ROOT / "scripts" / "modal" / "upload_data.py")], cwd=str(ROOT), check=True)
+            extra = ["--num-epochs-override", str(args.num_epochs)] if args.num_epochs else []
+            if args.base_model:
+                extra.extend(["--base-model", args.base_model])
+            subprocess.run(
+                [sys.executable, "-m", "modal", "run", str(ROOT / "scripts" / "modal" / "train_rhyme_poet.py")] + extra,
+                cwd=str(ROOT),
+                check=True,
+            )
+            print("Rhyme training done. Download: modal volume get poetry-checkpoints poet_rhyme/final ./models/")
         return
 
     run_edu = not args.poet_only
@@ -66,30 +78,51 @@ def main():
         with open(export_cfg, "w") as f:
             yaml.dump(cfg, f, default_flow_style=False, sort_keys=False, allow_unicode=True)
 
-    def run_script(script: str, extra: list[str] = None):
-        cmd = [sys.executable, "-m", "modal", "run", str(ROOT / "scripts" / "modal" / script)]
-        if extra:
-            cmd.extend(extra)
-        subprocess.run(cmd, check=True)
-
-    if run_edu:
+    if args.backend == "sagemaker":
+        subprocess.run([sys.executable, str(ROOT / "scripts" / "sagemaker" / "upload_to_s3.py")], cwd=str(ROOT), check=True)
         extra = ["--num-epochs-override", str(args.num_epochs)] if args.num_epochs else []
-        run_script("train_educator.py", extra)
-        if not args.train_only:
-            _prepare_export_for("educator")
-            subprocess.run([sys.executable, "-m", "modal", "run", str(ROOT / "scripts" / "modal" / "export_gguf.py") + "::export_educator"], check=True)
+        if args.base_model:
+            extra.extend(["--base-model", args.base_model])
+        if run_edu:
+            subprocess.run([sys.executable, str(ROOT / "scripts" / "sagemaker" / "train_sagemaker.py"), "--task", "educator"] + extra, cwd=str(ROOT), check=True)
+            if not args.train_only:
+                _prepare_export_for("educator")
+                subprocess.run([sys.executable, str(ROOT / "scripts" / "sagemaker" / "export_gguf_sagemaker.py"), "--task", "educator"], cwd=str(ROOT), check=True)
+        if run_poet:
+            subprocess.run([sys.executable, str(ROOT / "scripts" / "sagemaker" / "train_sagemaker.py"), "--task", "poet"] + extra, cwd=str(ROOT), check=True)
+            if not args.train_only:
+                _prepare_export_for("poet")
+                subprocess.run([sys.executable, str(ROOT / "scripts" / "sagemaker" / "export_gguf_sagemaker.py"), "--task", "poet"], cwd=str(ROOT), check=True)
+        print("Done. Download GGUF: python scripts/sagemaker/download_models.py")
+    else:
+        def run_script(script: str, extra: list[str] = None):
+            cmd = [sys.executable, "-m", "modal", "run", str(ROOT / "scripts" / "modal" / script)]
+            if extra:
+                cmd.extend(extra)
+            subprocess.run(cmd, check=True)
 
-    if run_poet:
-        extra = ["--num-epochs-override", str(args.num_epochs)] if args.num_epochs else []
-        run_script("train_poet.py", extra)
-        if not args.train_only:
-            _prepare_export_for("poet")
-            subprocess.run(
-                [sys.executable, "-m", "modal", "run", str(ROOT / "scripts" / "modal" / "export_gguf.py") + "::export_poet"],
-                check=True,
-            )
+        if run_edu:
+            extra = ["--num-epochs-override", str(args.num_epochs)] if args.num_epochs else []
+            if args.base_model:
+                extra.extend(["--base-model", args.base_model])
+            run_script("train_educator.py", extra)
+            if not args.train_only:
+                _prepare_export_for("educator")
+                subprocess.run([sys.executable, "-m", "modal", "run", str(ROOT / "scripts" / "modal" / "export_gguf.py") + "::export_educator"], check=True)
 
-    print("Done. Download GGUF: modal volume get --force poetry-gguf <filename> ./models/")
+        if run_poet:
+            extra = ["--num-epochs-override", str(args.num_epochs)] if args.num_epochs else []
+            if args.base_model:
+                extra.extend(["--base-model", args.base_model])
+            run_script("train_poet.py", extra)
+            if not args.train_only:
+                _prepare_export_for("poet")
+                subprocess.run(
+                    [sys.executable, "-m", "modal", "run", str(ROOT / "scripts" / "modal" / "export_gguf.py") + "::export_poet"],
+                    check=True,
+                )
+
+        print("Done. Download GGUF: modal volume get --force poetry-gguf <filename> ./models/")
 
 
 if __name__ == "__main__":

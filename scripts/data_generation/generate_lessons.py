@@ -8,7 +8,6 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 EDUCATOR_TRAINING = ROOT / "data" / "educator_training"
 
-sys.path.insert(0, str(ROOT))
 from scripts.data_generation.claude_utils import call_claude, get_educator_system_prompt, CLAUDE_SONNET_4_5
 from models.prompts.loader import render_prompt
 

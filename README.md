@@ -30,10 +30,17 @@ Full technical summary: [docs/DESIGN.md](docs/DESIGN.md) (§ GPM Training Method
 
 **Base options:** Qwen2.5-7B-Instruct, Llama 3.1/3.2 8B Instruct, and others in the registry. Two Q4_K_M models (educator + rhyme-trained poet) fit on 24GB Mac Mini.
 
+## Quick start
+
+```bash
+pip install -e ".[dev]"
+make test   # or: python -m pytest tests/ -m "not slow" -v
+```
+
 ## Setup
 
 ```bash
-pip install -r requirements.txt
+pip install -e ".[dev]"
 # .env: API key for frontier model (data generation), HF_TOKEN (Hugging Face)
 modal token set
 modal secret create huggingface-secret HF_TOKEN=your_token
@@ -95,11 +102,11 @@ python scripts/data_generation/generate_approval_examples.py --replace
 ### 2. Prepare training data
 
 ```bash
-python scripts/data_generation/prepare_training_data.py [--educator-only] [--poet-only] [--min-samples N] [--seed N]
+python scripts/data_generation/prepare_training_data.py [--educator-only] [--poet-only] [--quality-gate] [--min-samples N] [--seed N]
 python scripts/data_generation/prepare_rhyme_training_data.py [--general-frac 0.2]
 ```
 
-Combines outputs into chat format. Rhyme data: curated strong-rhyme poems + form-specific pairs (80% rhyme / 20% general by default). `--min-samples N`: requires ≥N examples; if set, caps train/valid (quick test).
+Combines outputs into chat format. `--quality-gate`: run quality gate on educator data; fail if pass rate < 90%. Rhyme data: curated strong-rhyme poems + form-specific pairs (80% rhyme / 20% general by default). `--min-samples N`: requires ≥N examples; if set, caps train/valid (quick test).
 
 ### 3. Upload to Modal
 
@@ -186,6 +193,26 @@ serve_gpm.py             # Reference HTTP chat server (POST /api/chat)
 ```
 
 **Alternative inference:** `scripts/inference/swapping_pipeline.py` loads one model at a time (e.g. 32B poet). **Vanilla comparison:** pipeline supports `educator_model_override` and `poet_model_override` (e.g. `ollama:llama3.1:8b`) for trained GGUF vs base.
+
+## Running tests
+
+```bash
+make test          # Fast tests (excludes slow/GPU)
+make test-all      # All tests
+make test-data     # Data validation only
+make test-prompts  # Prompt loader only
+make test-eval     # Rhyme/meter/form eval only
+make validate      # Lint + test
+```
+
+Markers: `data` (data validation), `prompts` (prompt loader), `eval` (rhyme/meter), `slow` (GPU, full benchmarks). See [tests/README.md](tests/README.md).
+
+## For contributors
+
+- Add tests for new data schemas in `tests/test_data_validation.py`
+- Add prompt regression snapshots in `tests/test_prompts.py`
+- Use fixtures in `tests/fixtures/` for schema tests
+- Run `make validate` before submitting
 
 ## Benchmarking / eval
 

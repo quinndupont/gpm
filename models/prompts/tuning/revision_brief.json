@@ -1,5 +1,6 @@
 {
   "id": "revision_brief",
+  "version": "1",
   "description": "Poem + critique → revised generation brief",
   "persona": "educator_neutral",
   "templates": {

@@ -1,5 +1,6 @@
 {
   "id": "poet_revision_instructions",
+  "version": "1",
   "description": "Educator produces compact revision instructions for poet (~100-150 words)",
   "persona": "educator_neutral",
   "templates": {

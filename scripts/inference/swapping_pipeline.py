@@ -8,7 +8,6 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 import sys
-sys.path.insert(0, str(ROOT))
 from models.prompts.loader import get_persona
 from scripts.training.model_registry import DEFAULT_STOP_TOKENS, stop_tokens_for
 from .pipeline import PoetryPipeline, Config, _infer_short_from_gguf_path

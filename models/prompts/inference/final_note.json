@@ -1,5 +1,6 @@
 {
   "id": "final_note",
+  "version": "1",
   "description": "Final poem → wrap-up note for poet",
   "persona": "educator_neutral",
   "templates": {

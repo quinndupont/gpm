@@ -1,5 +1,6 @@
 {
   "id": "critique",
+  "version": "1",
   "description": "Draft + brief → workshop critique (inference)",
   "persona": "educator_neutral",
   "templates": {

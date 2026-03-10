@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 """Modal: QLoRA fine-tune poet model. S3.3"""
-import json
-import yaml
 from pathlib import Path
 
 import modal
@@ -12,6 +10,7 @@ if not _CONFIG.exists():
     _p = Path(__file__).resolve()
     _CONFIG = _p.parents[1] / "config" / "poet_training.yaml" if len(_p.parents) > 1 else _CONFIG
 
+_ROOT = Path(__file__).resolve().parents[2]
 VOLUME_NAME = "poetry-data"
 CHECKPOINT_VOLUME = "poetry-checkpoints"
 
@@ -29,6 +28,8 @@ image = (
         "pyyaml>=6.0",
     )
     .add_local_file(str(_CONFIG), "/config/poet_training.yaml")
+    .add_local_dir(str(_ROOT / "scripts" / "training"), "/opt/gpm/scripts/training")
+    .env({"PYTHONPATH": "/opt/gpm"})
 )
 
 app = modal.App("poetry-poet-train")
@@ -43,116 +44,29 @@ checkpoint_vol = modal.Volume.from_name(CHECKPOINT_VOLUME, create_if_missing=Tru
     volumes={"/vol/data": data_vol, "/vol/checkpoints": checkpoint_vol},
     secrets=[modal.Secret.from_name("huggingface-secret")],
 )
-def train_poet(num_epochs_override: int | None = None):
-    import torch
-    from datasets import Dataset
-    from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
-    from transformers import (
-        AutoModelForCausalLM,
-        AutoTokenizer,
-        BitsAndBytesConfig,
-    )
-    from trl import SFTConfig, SFTTrainer
+def train_poet(num_epochs_override: int | None = None, base_model_override: str | None = None):
+    from scripts.training.qlora_train import run_qlora_training
 
-    cfg = yaml.safe_load(Path("/config/poet_training.yaml").read_text())
-    model_cfg = cfg.get("model_loading", {})
-    lora_cfg = cfg.get("lora", {})
-    train_cfg = cfg.get("training", {})
-    ckpt_cfg = cfg.get("checkpointing", {})
-
-    base_model = cfg.get("base_model", "Qwen/Qwen2.5-7B-Instruct")
-    num_epochs = num_epochs_override or train_cfg.get("num_epochs", 6)
-    max_seq_len = train_cfg.get("max_seq_length", 512)
-    save_path = Path(ckpt_cfg.get("save_path", "/vol/checkpoints/poet/"))
-
-    train_file = Path("/vol/data/poet_train.jsonl")
-    valid_file = Path("/vol/data/poet_valid.jsonl")
     data_vol.reload()
-    if not train_file.exists():
-        raise FileNotFoundError("Upload data first: python scripts/modal/upload_data.py")
-
-    def load_jsonl(p: Path) -> list:
-        out = []
-        for line in p.read_text().splitlines():
-            if line.strip():
-                out.append(json.loads(line))
-        return out
-
-    train_data = load_jsonl(train_file)
-    eval_data = load_jsonl(valid_file) if valid_file.exists() else None
-    if not train_data:
-        raise ValueError("No training data in poet_train.jsonl")
-
-    train_dataset = Dataset.from_list(train_data)
-    eval_dataset = Dataset.from_list(eval_data) if eval_data else None
-
-    bnb_config = BitsAndBytesConfig(
-        load_in_4bit=True,
-        bnb_4bit_quant_type=model_cfg.get("quantization", "nf4"),
-        bnb_4bit_compute_dtype=torch.bfloat16,
-        bnb_4bit_use_double_quant=model_cfg.get("double_quant", True),
+    path = run_qlora_training(
+        config_path=Path("/config/poet_training.yaml"),
+        data_dir=Path("/vol/data"),
+        train_filename="poet_train.jsonl",
+        valid_filename="poet_valid.jsonl",
+        checkpoint_dir=Path("/vol/checkpoints/poet"),
+        num_epochs_override=num_epochs_override,
+        base_model_override=base_model_override,
     )
-
-    model = AutoModelForCausalLM.from_pretrained(
-        base_model,
-        quantization_config=bnb_config,
-        device_map="auto",
-        trust_remote_code=True,
-    )
-    tokenizer = AutoTokenizer.from_pretrained(base_model, trust_remote_code=True)
-    tokenizer.pad_token = tokenizer.eos_token
-
-    model = prepare_model_for_kbit_training(model)
-    lora_config = LoraConfig(
-        r=lora_cfg.get("rank", 64),
-        lora_alpha=lora_cfg.get("alpha", 128),
-        target_modules=lora_cfg.get("target_modules", ["q_proj", "v_proj", "k_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]),
-        lora_dropout=lora_cfg.get("dropout", 0.05),
-        bias=lora_cfg.get("bias", "none"),
-        task_type="CAUSAL_LM",
-    )
-    model = get_peft_model(model, lora_config)
-
-    save_path.mkdir(parents=True, exist_ok=True)
-    sft_config = SFTConfig(
-        output_dir=str(save_path),
-        per_device_train_batch_size=train_cfg.get("per_device_batch_size", 4),
-        gradient_accumulation_steps=train_cfg.get("gradient_accumulation_steps", 4),
-        learning_rate=float(train_cfg.get("learning_rate", 2e-4)),
-        num_train_epochs=num_epochs,
-        max_steps=-1,
-        warmup_ratio=float(train_cfg.get("warmup_ratio", 0.03)),
-        weight_decay=float(train_cfg.get("weight_decay", 0.01)),
-        bf16=train_cfg.get("bf16", True),
-        fp16=train_cfg.get("fp16", False),
-        logging_steps=10,
-        save_strategy="epoch",
-        save_total_limit=ckpt_cfg.get("save_total_limit", 4),
-        eval_strategy="epoch" if eval_dataset else "no",
-        max_length=max_seq_len,
-        dataset_text_field="messages",
-        packing=False,
-    )
-
-    trainer = SFTTrainer(
-        model=model,
-        args=sft_config,
-        train_dataset=train_dataset,
-        eval_dataset=eval_dataset,
-        processing_class=tokenizer,
-    )
-    trainer.train()
-    trainer.save_model(str(save_path / "final"))
-    tokenizer.save_pretrained(str(save_path / "final"))
     checkpoint_vol.commit()
-    return str(save_path / "final")
+    return path
 
 
 if __name__ == "__main__":
     import argparse
     ap = argparse.ArgumentParser()
     ap.add_argument("--num-epochs-override", type=int, default=None)
+    ap.add_argument("--base-model", type=str, default=None, dest="base_model_override", help="HuggingFace base model ID")
     a = ap.parse_args()
     with app.run():
-        path = train_poet.remote(num_epochs_override=a.num_epochs_override)
+        path = train_poet.remote(num_epochs_override=a.num_epochs_override, base_model_override=a.base_model_override)
         print(f"Done: {path}")

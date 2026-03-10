@@ -9,8 +9,7 @@ ROOT = Path(__file__).resolve().parents[2]
 ANNOTATED = ROOT / "data" / "annotated"
 EDUCATOR_TRAINING = ROOT / "data" / "educator_training"
 POET_TRAINING = ROOT / "data" / "poet_training"
-import sys
-sys.path.insert(0, str(ROOT))
+
 from scripts.data_generation.claude_utils import poem_text, get_educator_system_prompt
 from models.prompts.loader import get_persona, get_prompt
 
@@ -193,6 +192,7 @@ def main():
     parser.add_argument("--poet-only", action="store_true")
     parser.add_argument("--interim-educator", action="store_true", help="Only seed data (critiques, comparisons, revision_briefs) for interim educator")
     parser.add_argument("--min-samples", type=int, default=0, help="Min samples per split (for quick test)")
+    parser.add_argument("--quality-gate", action="store_true", help="Run quality gate on educator data; fail if pass rate < 90%%")
     parser.add_argument("--seed", type=int, default=42)
     args = parser.parse_args()
 
@@ -214,6 +214,31 @@ def main():
         if args.min_samples:
             train_edu = train_edu[: args.min_samples]
             valid_edu = valid_edu[: max(1, min(len(valid_edu), args.min_samples // 5))]
+
+        if args.quality_gate:
+            from scripts.data_generation.quality_gate import check as quality_gate_check
+            REJECTED_DIR = ROOT / "data" / "rejected"
+            passed_edu, rejected_edu = [], []
+            for ex in train_edu:
+                assistant = next((m["content"] for m in ex.get("messages", []) if m["role"] == "assistant"), "")
+                gate_entry = {"critique": assistant}
+                ok, reasons = quality_gate_check(gate_entry)
+                if ok:
+                    passed_edu.append(ex)
+                else:
+                    ex["_reject_reasons"] = reasons
+                    rejected_edu.append(ex)
+            pass_rate = len(passed_edu) / len(train_edu) if train_edu else 1.0
+            if pass_rate < 0.9:
+                REJECTED_DIR.mkdir(parents=True, exist_ok=True)
+                with open(REJECTED_DIR / "rejected_educator.jsonl", "w") as f:
+                    for e in rejected_edu:
+                        f.write(json.dumps(e) + "\n")
+                raise SystemExit(
+                    f"Quality gate failed: {len(passed_edu)}/{len(train_edu)} passed ({pass_rate:.0%}). "
+                    f"Need >= 90%%. Rejected examples in data/rejected/rejected_educator.jsonl"
+                )
+            train_edu = passed_edu
 
         EDUCATOR_TRAINING.mkdir(parents=True, exist_ok=True)
         with open(EDUCATOR_TRAINING / "train.jsonl", "w") as f:

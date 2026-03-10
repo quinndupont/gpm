@@ -1,5 +1,6 @@
 {
   "id": "poet_revision",
+  "version": "1",
   "description": "Revision instructions → poet revises poem",
   "persona": "poet",
   "templates": {

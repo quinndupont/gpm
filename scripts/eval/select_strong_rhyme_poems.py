@@ -6,7 +6,6 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT))
 
 from scripts.data_generation.claude_utils import load_poems, poem_text, RAW_GOOD
 from scripts.eval.rhyme_analyzer import analyze

@@ -1,5 +1,6 @@
 {
   "id": "revision_brief",
+  "version": "1",
   "description": "Draft + critique → revised generation brief (inference)",
   "persona": "educator_neutral",
   "templates": {

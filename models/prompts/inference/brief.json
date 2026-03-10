@@ -1,5 +1,6 @@
 {
   "id": "brief",
+  "version": "1",
   "description": "User request → generation brief (inference)",
   "persona": "educator_neutral",
   "templates": {

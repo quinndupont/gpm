@@ -41,7 +41,7 @@ def fails_llm_ism(text: str) -> bool:
 
 def fails_specificity(text: str) -> bool:
     """No line-specific references?"""
-    return not re.search(r"(line \d+|stanza \d+|"\w[^"]{5,}")", text, re.I)
+    return not re.search(r'(line \d+|stanza \d+|"\w[^"]{5,}")', text, re.I)
 
 
 def check(entry: dict) -> tuple[bool, list[str]]:

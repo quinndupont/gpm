@@ -1,5 +1,6 @@
 {
   "id": "poet_generation",
+  "version": "1",
   "description": "Brief → poem for poet training pairs",
   "persona": "poet",
   "templates": {

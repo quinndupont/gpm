@@ -1,0 +1,8 @@
+# SageMaker fine-tuning backend
+# Uses admin-project-335815047035 bucket and execution role.
+
+s3_bucket: amazon-sagemaker-335815047035-us-west-2-4zkubeqeyt50uo
+iam_role: arn:aws:iam::335815047035:role/service-role/AmazonSageMakerAdminIAMExecutionRole
+region: us-west-2
+instance_type: ml.g5.xlarge
+hf_secret_name: huggingface-token

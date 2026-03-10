@@ -1,5 +1,6 @@
 {
   "id": "lesson",
+  "version": "1",
   "description": "Craft lesson — educator explains concepts",
   "persona": "educator_neutral",
   "templates": {

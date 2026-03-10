@@ -19,7 +19,6 @@ ROOT = Path(__file__).resolve().parents[2]
 ANNOTATED = ROOT / "data" / "annotated"
 EDUCATOR_TRAINING = ROOT / "data" / "educator_training"
 
-sys.path.insert(0, str(ROOT))
 from scripts.data_generation.claude_utils import (
     call_claude,
     get_educator_system_prompt,

@@ -1,5 +1,6 @@
 {
   "id": "comparison",
+  "version": "1",
   "description": "Good vs bad poem comparison for contrastive learning",
   "persona": "educator_neutral",
   "templates": {

@@ -1,5 +1,6 @@
 {
   "id": "autopsy",
+  "version": "1",
   "description": "Cliché dissection on bad poems",
   "persona": "educator_neutral",
   "templates": {

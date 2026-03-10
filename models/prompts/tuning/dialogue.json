@@ -1,5 +1,6 @@
 {
   "id": "dialogue",
+  "version": "1",
   "description": "Revision dialogue — student revision and educator follow-up",
   "persona": "educator_neutral",
   "templates": {

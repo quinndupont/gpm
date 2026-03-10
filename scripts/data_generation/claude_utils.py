@@ -25,7 +25,6 @@ def load_env():
 
 def get_educator_system_prompt() -> str:
     """System prompt for educator tasks. Neutral, issue-focused."""
-    sys.path.insert(0, str(ROOT))
     from models.prompts.loader import get_persona
     try:
         return get_persona("educator_neutral")

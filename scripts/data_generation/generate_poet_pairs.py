@@ -9,7 +9,6 @@ ROOT = Path(__file__).resolve().parents[2]
 EDUCATOR_TRAINING = ROOT / "data" / "educator_training"
 POET_TRAINING = ROOT / "data" / "poet_training"
 
-sys.path.insert(0, str(ROOT))
 from scripts.data_generation.claude_utils import call_claude, CLAUDE_SONNET_4_5
 from models.prompts.loader import get_persona, render_prompt
 

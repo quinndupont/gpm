@@ -12,8 +12,6 @@ from pathlib import Path
 
 import pronouncing
 
-ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT))
 from scripts.eval.form_registry import detect_form, get_scheme, parse_scheme
 
 

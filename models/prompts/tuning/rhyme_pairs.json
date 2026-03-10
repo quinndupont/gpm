@@ -1,5 +1,6 @@
 {
   "id": "rhyme_pairs",
+  "version": "1",
   "description": "Rhyme-form training data — briefs, poems, rhyme-aware critiques",
   "persona": "educator_neutral",
   "templates": {

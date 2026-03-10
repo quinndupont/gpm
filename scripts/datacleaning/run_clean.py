@@ -8,7 +8,6 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 sys_path = list(__import__("sys").path)
-__import__("sys").path.insert(0, str(ROOT))
 
 from scripts.datacleaning.corpus_loader import load_corpus
 from scripts.datacleaning.checks import check_corpus

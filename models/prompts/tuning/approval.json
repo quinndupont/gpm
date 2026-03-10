@@ -1,5 +1,6 @@
 {
   "id": "approval",
+  "version": "1",
   "description": "Approval/rejection examples for rhyme-gated educator behavior",
   "persona": "educator_neutral",
   "templates": {
