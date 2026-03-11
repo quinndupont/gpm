@@ -26,7 +26,7 @@ class TestConfigLoading:
     @pytest.mark.parametrize("config_name", [
         "educator_training.yaml",
         "poet_training.yaml",
-        "rhyme_training.yaml",
+        "reinforce_training.yaml",
         "export_pipeline.yaml",
         "model_registry.yaml",
         "inference_config.yaml",
@@ -51,6 +51,20 @@ class TestConfigLoading:
         assert "lora" in cfg
         assert "training" in cfg
         assert "rank" in cfg["lora"] or "alpha" in cfg["lora"]
+        assert "num_epochs" in cfg["training"]
+
+    def test_reinforce_config_has_required_keys(self):
+        path = CONFIG_DIR / "reinforce_training.yaml"
+        if not path.exists():
+            pytest.skip("reinforce_training.yaml not found")
+        cfg = yaml.safe_load(path.read_text())
+        assert "base_model" in cfg
+        assert "lora" in cfg
+        assert "training" in cfg
+        assert "reinforce" in cfg
+        rl = cfg["reinforce"]
+        assert "num_completions" in rl
+        assert "beta_kl" in rl
         assert "num_epochs" in cfg["training"]
 
 

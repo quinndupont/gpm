@@ -45,7 +45,12 @@ def main():
                     keys.append(obj["Key"])
 
     for key in keys:
-        local = MODELS_DIR / Path(key).name
+        name = Path(key).name
+        if "-trained" not in name:
+            stem = Path(key).stem
+            suffix = Path(key).suffix
+            name = f"{stem}-trained{suffix}"
+        local = MODELS_DIR / name
         s3.download_file(bucket, key, str(local))
         print(f"Downloaded {key} -> {local}")
 

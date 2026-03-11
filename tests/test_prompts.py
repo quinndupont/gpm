@@ -31,10 +31,6 @@ class TestPersonaLoading:
         text = get_persona("poet")
         assert isinstance(text, str)
         assert "poet" in text.lower()
-
-    def test_get_persona_poet_rhyme(self):
-        text = get_persona("poet_rhyme")
-        assert isinstance(text, str)
         assert "rhyme" in text.lower()
 
     def test_get_persona_missing_raises(self):

@@ -48,7 +48,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument(
         "--task",
-        choices=["educator", "poet", "poet_rhyme", "educator-interim"],
+        choices=["educator", "poet", "poet_reinforce", "educator-interim"],
         required=True,
     )
     ap.add_argument("--checkpoint-s3", help="s3://bucket/path/to/model.tar.gz (default: latest)")
@@ -85,10 +85,9 @@ def main():
         s3.download_file(ckpt_bucket, ckpt_key, str(model_tar))
         with tarfile.open(model_tar) as tf:
             tf.extractall(tmp)
-        # SageMaker tar has task/final/ (e.g. educator/final, poet/final, poet_rhyme/final)
         ckpt_subdir = (
             "educator" if "educator" in args.task
-            else ("poet_rhyme" if "rhyme" in args.task else "poet")
+            else ("poet_reinforce" if "reinforce" in args.task else "poet")
         )
         candidates = [tmp / ckpt_subdir / "final", tmp / "final", tmp / ckpt_subdir]
         ckpt_path = None
@@ -128,7 +127,7 @@ def main():
         model = AutoModelForCausalLM.from_pretrained(
             base_model,
             torch_dtype=torch.bfloat16,
-            device_map="auto",
+            device_map="cpu",  # Force CPU to avoid accelerate device map issues
             trust_remote_code=True,
         )
         model = PeftModel.from_pretrained(model, str(ckpt_path))

@@ -29,8 +29,7 @@ System prompts that define model behavior:
 |----|-------------|
 | `educator_neutral` | Craft-focused poetry educator; names failure types, gives concrete direction |
 | `educator_condensed` | Short persona for training |
-| `poet` | Receives briefs, outputs poems only |
-| `poet_rhyme` | Poet with rhyme-scheme guidance for rhyme training |
+| `poet` | Receives briefs, outputs poems only; rhyme-aware when scheme specified |
 
 ### Tuning (`prompts/tuning/`)
 

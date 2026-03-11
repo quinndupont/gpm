@@ -84,9 +84,9 @@ def export_poet():
     volumes={"/vol/checkpoints": checkpoint_vol, "/vol/gguf": gguf_vol},
     secrets=[modal.Secret.from_name("huggingface-secret")],
 )
-def export_poet_rhyme():
-    """Merge rhyme poet LoRA and export to GGUF Q4_K_M."""
-    return _export("poet_rhyme", "/vol/checkpoints/poet_rhyme/final", out_name="poet_rhyme")
+def export_poet_reinforce():
+    """Merge REINFORCE-trained poet LoRA and export to GGUF Q4_K_M."""
+    return _export("poet", "/vol/checkpoints/poet_reinforce/final", out_name="poet")
 
 
 def _hf_to_short(hf_id: str) -> str:
@@ -166,8 +166,8 @@ def _export(model_name: str, checkpoint_path: str, out_name: str | None = None) 
 if __name__ == "__main__":
     import sys
     with app.run():
-        if "poet_rhyme" in sys.argv or "rhyme" in sys.argv:
-            p = export_poet_rhyme.remote()
+        if "poet_reinforce" in sys.argv or "reinforce" in sys.argv:
+            p = export_poet_reinforce.remote()
         elif "poet" in sys.argv:
             p = export_poet.remote()
         elif "interim" in sys.argv:

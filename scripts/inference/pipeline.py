@@ -619,16 +619,16 @@ def main():
         help="Max revisions (0=poet only)",
     )
     parser.add_argument(
-        "--train-rhyme", action="store_true",
-        help="Local MLX rhyme fine-tune (strong_rhyme_poems + 20%% general)",
+        "--reinforce", action="store_true",
+        help="Run REINFORCE training stage on poet (optional)",
     )
     args = parser.parse_args()
 
-    if args.train_rhyme:
+    if args.reinforce:
         import subprocess
         modal_script = str(ROOT / "scripts" / "modal" / "modal_app.py")
         subprocess.run(
-            [sys.executable, modal_script, "--train-rhyme"],
+            [sys.executable, modal_script, "--reinforce"],
             cwd=str(ROOT), check=True,
         )
         return

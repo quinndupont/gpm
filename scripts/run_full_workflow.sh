@@ -17,6 +17,7 @@ SKIP_GEN=true
 GEN_ONLY=false
 WITH_GEN=false
 QUALITY_GATE=false
+REINFORCE=false
 BACKEND=modal
 BASE_MODEL=
 while [[ $# -gt 0 ]]; do
@@ -25,6 +26,7 @@ while [[ $# -gt 0 ]]; do
     --skip-generation) SKIP_GEN=true; shift ;;
     --generation-only) GEN_ONLY=true; SKIP_GEN=false; shift ;;
     --quality-gate) QUALITY_GATE=true; shift ;;
+    --reinforce) REINFORCE=true; shift ;;
     --backend) BACKEND="$2"; shift 2 ;;
     --base-model) BASE_MODEL="$2"; shift 2 ;;
     *) echo "Unknown option: $1"; exit 1 ;;
@@ -58,7 +60,6 @@ if [[ "$GEN_ONLY" == true ]]; then
   run python3 scripts/data_generation/generate_rhyme_pairs.py --replace
   run python3 scripts/data_generation/generate_approval_examples.py --replace
   run python3 scripts/data_generation/prepare_training_data.py $([[ "$QUALITY_GATE" == true ]] && echo --quality-gate)
-  run python3 scripts/data_generation/prepare_rhyme_training_data.py
   if [[ "$BACKEND" == "sagemaker" ]]; then
     run python3 scripts/sagemaker/upload_to_s3.py
   else
@@ -79,9 +80,17 @@ if [[ "$SKIP_GEN" == true ]]; then
     log "=== Train final educator + poet ==="
     run python3 scripts/sagemaker/train_sagemaker.py --task educator "${BASE_MODEL_ARGS[@]}"
     run python3 scripts/sagemaker/train_sagemaker.py --task poet "${BASE_MODEL_ARGS[@]}"
+    if [[ "$REINFORCE" == true ]]; then
+      log "=== REINFORCE (Stage 2) ==="
+      run python3 scripts/sagemaker/train_sagemaker.py --task reinforce "${BASE_MODEL_ARGS[@]}"
+    fi
     log "=== Export + download final models ==="
     run python3 scripts/sagemaker/export_gguf_sagemaker.py --task educator
-    run python3 scripts/sagemaker/export_gguf_sagemaker.py --task poet
+    if [[ "$REINFORCE" == true ]]; then
+      run python3 scripts/sagemaker/export_gguf_sagemaker.py --task poet_reinforce
+    else
+      run python3 scripts/sagemaker/export_gguf_sagemaker.py --task poet
+    fi
     mkdir -p models
     run python3 scripts/sagemaker/download_models.py
   else
@@ -89,9 +98,17 @@ if [[ "$SKIP_GEN" == true ]]; then
     log "=== Train final educator + poet ==="
     run modal run scripts/modal/train_educator.py "${BASE_MODEL_ARGS[@]}"
     run modal run scripts/modal/train_poet.py "${BASE_MODEL_ARGS[@]}"
+    if [[ "$REINFORCE" == true ]]; then
+      log "=== REINFORCE (Stage 2) ==="
+      run modal run scripts/modal/train_poet_reinforce.py "${BASE_MODEL_ARGS[@]}"
+    fi
     log "=== Export + download final models ==="
     run modal run scripts/modal/export_gguf.py::export_educator
-    run modal run scripts/modal/export_gguf.py::export_poet
+    if [[ "$REINFORCE" == true ]]; then
+      run modal run scripts/modal/export_gguf.py::export_poet_reinforce
+    else
+      run modal run scripts/modal/export_gguf.py::export_poet
+    fi
     mkdir -p models
     modal volume get --force poetry-gguf qwen2.5-7b-educator-Q4_K_M.gguf models/ || modal volume get --force poetry-gguf llama3.1-8b-educator-Q4_K_M.gguf models/ || true
     modal volume get --force poetry-gguf qwen2.5-7b-poet-Q4_K_M.gguf models/ || modal volume get --force poetry-gguf llama3.1-8b-poet-Q4_K_M.gguf models/ || true
@@ -150,9 +167,8 @@ log "=== Step 10: Rhyme pairs (Opus for poems) + approval examples ==="
 run python3 scripts/data_generation/generate_rhyme_pairs.py --replace
 run python3 scripts/data_generation/generate_approval_examples.py --replace
 
-log "=== Step 11: Prepare full training data ==="
+log "=== Step 11: Prepare full training data (includes rhyme) ==="
 run python3 scripts/data_generation/prepare_training_data.py $([[ "$QUALITY_GATE" == true ]] && echo --quality-gate)
-run python3 scripts/data_generation/prepare_rhyme_training_data.py
 
 log "=== Step 12: Upload full data ==="
 if [[ "$BACKEND" == "sagemaker" ]]; then
@@ -161,26 +177,38 @@ else
   run python3 scripts/modal/upload_data.py
 fi
 
-log "=== Step 13: Train final educator + poet + poet_rhyme ==="
+log "=== Step 13: Train final educator + poet ==="
 if [[ "$BACKEND" == "sagemaker" ]]; then
   run python3 scripts/sagemaker/train_sagemaker.py --task educator "${BASE_MODEL_ARGS[@]}"
   run python3 scripts/sagemaker/train_sagemaker.py --task poet "${BASE_MODEL_ARGS[@]}"
-  run python3 scripts/sagemaker/train_sagemaker.py --task rhyme "${BASE_MODEL_ARGS[@]}"
+  if [[ "$REINFORCE" == true ]]; then
+    log "=== REINFORCE (Stage 2) ==="
+    run python3 scripts/sagemaker/train_sagemaker.py --task reinforce "${BASE_MODEL_ARGS[@]}"
+  fi
 else
   run modal run scripts/modal/train_educator.py "${BASE_MODEL_ARGS[@]}"
   run modal run scripts/modal/train_poet.py "${BASE_MODEL_ARGS[@]}"
-  run modal run scripts/modal/train_rhyme_poet.py "${BASE_MODEL_ARGS[@]}"
+  if [[ "$REINFORCE" == true ]]; then
+    log "=== REINFORCE (Stage 2) ==="
+    run modal run scripts/modal/train_poet_reinforce.py "${BASE_MODEL_ARGS[@]}"
+  fi
 fi
 
 log "=== Step 14: Export final models ==="
 if [[ "$BACKEND" == "sagemaker" ]]; then
   run python3 scripts/sagemaker/export_gguf_sagemaker.py --task educator
-  run python3 scripts/sagemaker/export_gguf_sagemaker.py --task poet
-  run python3 scripts/sagemaker/export_gguf_sagemaker.py --task poet_rhyme
+  if [[ "$REINFORCE" == true ]]; then
+    run python3 scripts/sagemaker/export_gguf_sagemaker.py --task poet_reinforce
+  else
+    run python3 scripts/sagemaker/export_gguf_sagemaker.py --task poet
+  fi
 else
   run modal run scripts/modal/export_gguf.py::export_educator
-  run modal run scripts/modal/export_gguf.py::export_poet
-  run modal run scripts/modal/export_gguf.py::export_poet_rhyme
+  if [[ "$REINFORCE" == true ]]; then
+    run modal run scripts/modal/export_gguf.py::export_poet_reinforce
+  else
+    run modal run scripts/modal/export_gguf.py::export_poet
+  fi
 fi
 
 log "=== Step 15: Download final models ==="
@@ -189,7 +217,6 @@ if [[ "$BACKEND" == "sagemaker" ]]; then
 else
   modal volume get --force poetry-gguf llama3.1-8b-educator-Q4_K_M.gguf models/ || { log "Educator GGUF not found."; exit 1; }
   modal volume get --force poetry-gguf llama3.1-8b-poet-Q4_K_M.gguf models/ || { log "Poet GGUF not found."; exit 1; }
-  modal volume get --force poetry-gguf llama3.1-8b-poet_rhyme-Q4_K_M.gguf models/ || { log "Poet rhyme GGUF not found."; exit 1; }
 fi
 
 log "Done. Test: python scripts/inference/pipeline.py \"Write a poem about winter light\""

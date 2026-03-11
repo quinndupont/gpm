@@ -1,5 +1,6 @@
-# Rhyme-focused poet training — Modal QLoRA
-# Claude rhyme_pairs + general (anti-collapse)
+# DEPRECATED — Use config/reinforce_training.yaml (REINFORCE Stage 2) instead.
+# Rhyme data is now included in the unified poet SFT (poet_training.yaml).
+# This file is kept for reference only.
 
 base_model: "meta-llama/Llama-3.1-8B-Instruct"
 model_loading:

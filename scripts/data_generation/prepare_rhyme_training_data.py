@@ -1,159 +1,20 @@
 #!/usr/bin/env python3
-"""Prepare rhyme-focused training data: rhyme_pairs + 20% general (anti-collapse).
+"""DEPRECATED: Rhyme data is now part of the unified poet pipeline.
 
-Quality gate: poems re-validated via rhyme analyzer.
-Only poems with strict_rhyme_density >= 0.6 are included.
+Run prepare_training_data.py instead — it includes strong-rhyme poems
+and rhyme pairs in the poet training data automatically.
 """
-import argparse
-import json
-import random
-from pathlib import Path
-
-from models.prompts.loader import get_persona, get_prompt
-from scripts.eval.form_registry import get_scheme
-from scripts.eval.rhyme_analyzer import analyze as analyze_rhyme
-
-ROOT = Path(__file__).resolve().parents[2]
-ANNOTATED = ROOT / "data" / "annotated"
-POET_TRAINING = ROOT / "data" / "poet_training"
-RHYME_TRAINING = ROOT / "data" / "rhyme_training"
-
-MIN_STRICT_DENSITY = 0.6
-
-
-def load_jsonl(path: Path) -> list[dict]:
-    if not path.exists():
-        return []
-    out = []
-    for line in path.read_text().splitlines():
-        if line.strip():
-            out.append(json.loads(line))
-    return out
-
-
-def to_poet_example(user: str, assistant: str) -> dict:
-    return {
-        "messages": [
-            {"role": "system", "content": get_persona("poet_rhyme")},
-            {"role": "user", "content": user},
-            {"role": "assistant", "content": assistant},
-        ]
-    }
-
-
-def poem_to_rhyme_example(
-    poem: str, form: str | None = None, brief: str | None = None
-) -> dict | None:
-    """Convert a poem to a rhyme training example if it passes the quality gate."""
-    if not poem.strip():
-        return None
-    analysis = analyze_rhyme(poem, expected_form=form)
-    strict_density = analysis.get("strict_rhyme_density", 0)
-    if strict_density < MIN_STRICT_DENSITY:
-        return None
-    scheme = analysis.get("strict_detected_scheme") or analysis.get("detected_scheme", "")
-    if brief and brief.strip():
-        user = brief.strip()
-        rhyme_suffix = get_prompt("tuning", "poet_generation", "rhyme_suffix").strip()
-        if not user.endswith(rhyme_suffix):
-            user = user + "\n\n" + rhyme_suffix
-    else:
-        parts = ["Write a poem with strong end rhyme."]
-        if scheme:
-            parts.append(f"Rhyme scheme: {scheme}.")
-        if form:
-            scheme_str = get_scheme(form) if form else ""
-            if scheme_str:
-                parts.append(f"Form: {form}, scheme {scheme_str}.")
-        parts.append(
-            "Every end-word pair must be a true phonetic rhyme. Follow the form precisely."
-        )
-        user = " ".join(parts) + get_prompt("tuning", "poet_generation", "rhyme_suffix")
-    return to_poet_example(user, poem)
+import sys
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Prepare rhyme training data (rhyme pairs + 20%% general)",
+    print(
+        "DEPRECATED: prepare_rhyme_training_data.py is no longer needed.\n"
+        "Rhyme data (strong-rhyme poems + rhyme pairs) is now included in\n"
+        "prepare_training_data.py. Run that script instead.",
+        file=sys.stderr,
     )
-    parser.add_argument("--strong-rhyme", type=Path, default=ANNOTATED / "strong_rhyme_poems.jsonl")
-    parser.add_argument("--rhyme-pairs", type=Path, default=RHYME_TRAINING / "rhyme_pairs.jsonl")
-    parser.add_argument("--general", type=Path, default=POET_TRAINING / "train.jsonl")
-    parser.add_argument("--output-dir", type=Path, default=RHYME_TRAINING)
-    parser.add_argument(
-        "--general-frac", type=float, default=0.2,
-        help="Fraction of general poetry (anti-collapse)",
-    )
-    parser.add_argument("--seed", type=int, default=42)
-    args = parser.parse_args()
-
-    random.seed(args.seed)
-
-    strong = []
-    raw_count = 0
-
-    # Source 1: strong_rhyme_poems (curated)
-    for rec in load_jsonl(args.strong_rhyme):
-        if not rec.get("strong_rhyme", True):
-            continue
-        raw_count += 1
-        ex = poem_to_rhyme_example(rec.get("poem", ""), brief=None)
-        if ex:
-            strong.append(ex)
-
-    # Source 2: rhyme_pairs (Claude-generated) when strong_rhyme is empty
-    if not strong:
-        for rec in load_jsonl(args.rhyme_pairs):
-            raw_count += 1
-            ex = poem_to_rhyme_example(
-                rec.get("poem", ""),
-                form=rec.get("form"),
-                brief=rec.get("brief"),
-            )
-            if ex:
-                strong.append(ex)
-        if strong:
-            print(
-                f"Using rhyme_pairs: {len(strong)}/{raw_count} passed "
-                f"(strict_density >= {MIN_STRICT_DENSITY})",
-            )
-    else:
-        filtered = raw_count - len(strong)
-        print(
-            f"Quality gate: {len(strong)}/{raw_count} poems passed "
-            f"(strict_density >= {MIN_STRICT_DENSITY}), {filtered} filtered out",
-        )
-
-    general_raw = load_jsonl(args.general)
-    general = [e for e in general_raw if e.get("messages") and len(e["messages"]) >= 3]
-
-    if not strong:
-        raise SystemExit(
-            f"No rhyme examples. Run generate_rhyme_pairs.py to create {args.rhyme_pairs}, "
-            f"or provide {args.strong_rhyme}."
-        )
-
-    n_general = max(1, int(len(strong) * args.general_frac / (1 - args.general_frac)))
-    n_general = min(n_general, len(general)) if general else 0
-    general_sample = random.sample(general, n_general) if general else []
-
-    combined = strong + general_sample
-    random.shuffle(combined)
-
-    n_val = max(1, len(combined) // 10)
-    train_data = combined[:-n_val]
-    valid_data = combined[-n_val:]
-
-    args.output_dir.mkdir(parents=True, exist_ok=True)
-    with open(args.output_dir / "train.jsonl", "w") as f:
-        for ex in train_data:
-            f.write(json.dumps(ex, ensure_ascii=False) + "\n")
-    with open(args.output_dir / "valid.jsonl", "w") as f:
-        for ex in valid_data:
-            f.write(json.dumps(ex, ensure_ascii=False) + "\n")
-
-    print(f"Rhyme training: {len(train_data)} train, {len(valid_data)} valid")
-    print(f"  Rhyme: {len(strong)}, General (anti-collapse): {n_general}")
+    raise SystemExit(1)
 
 
 if __name__ == "__main__":

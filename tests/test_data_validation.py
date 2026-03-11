@@ -148,25 +148,23 @@ class TestNoEmptyFields:
 
 @pytest.mark.data
 class TestRhymeDensityGate:
-    """Rhyme training data density gate (strict_rhyme_density >= 0.6)."""
+    """Strong-rhyme poems in annotated data pass density gate (strict_rhyme_density >= 0.6)."""
 
     @pytest.fixture
-    def rhyme_train_path(self):
-        return DATA_DIR / "rhyme_training" / "train.jsonl"
+    def strong_rhyme_path(self):
+        return DATA_DIR / "annotated" / "strong_rhyme_poems.jsonl"
 
-    def test_rhyme_train_density_if_exists(self, rhyme_train_path):
-        if not rhyme_train_path.exists():
-            pytest.skip("data/rhyme_training/train.jsonl not present")
+    def test_strong_rhyme_density_if_exists(self, strong_rhyme_path):
+        if not strong_rhyme_path.exists():
+            pytest.skip("data/annotated/strong_rhyme_poems.jsonl not present")
         from scripts.eval.rhyme_analyzer import analyze as analyze_rhyme
-        data = _load_jsonl(rhyme_train_path)
+        data = _load_jsonl(strong_rhyme_path)
         for entry in data:
-            msgs = entry.get("messages", [])
-            user = next((m["content"] for m in msgs if m["role"] == "user"), "")
-            assistant = next((m["content"] for m in msgs if m["role"] == "assistant"), "")
-            if not assistant.strip():
+            if not entry.get("strong_rhyme", True):
                 continue
-            if "rhyme" not in user.lower() and "scheme" not in user.lower():
+            poem = entry.get("poem", "")
+            if not poem.strip():
                 continue
-            result = analyze_rhyme(assistant)
+            result = analyze_rhyme(poem)
             density = result.get("strict_rhyme_density", 0)
-            assert density >= 0.6, f"Rhyme poem has strict_rhyme_density={density}, need >= 0.6"
+            assert density >= 0.6, f"Strong-rhyme poem has strict_rhyme_density={density}, need >= 0.6"

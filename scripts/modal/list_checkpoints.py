@@ -35,8 +35,8 @@ def list_checkpoints() -> list[dict]:
         name = subdir.name
         if name.startswith("educator"):
             task = "educator"
-        elif name.startswith("poet_rhyme"):
-            task = "poet_rhyme"
+        elif name.startswith("poet_reinforce"):
+            task = "poet_reinforce"
         elif name.startswith("poet"):
             task = "poet"
         else:

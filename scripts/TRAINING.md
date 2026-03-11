@@ -1,6 +1,6 @@
 # Fine-tuning guide
 
-QLoRA fine-tuning for **educator**, **poet**, and **rhyme** models. You can run on **Modal** or **Amazon SageMaker** and choose the **base model** from the registry.
+QLoRA fine-tuning for **educator** and **poet**, plus optional **REINFORCE** stage on poet. You can run on **Modal** or **Amazon SageMaker** and choose the **base model** from the registry.
 
 ## Quick start
 
@@ -34,9 +34,9 @@ python scripts/modal/modal_app.py --backend modal --base-model "meta-llama/Llama
 
 - **educator** – Critique, briefs, lessons (config: `config/educator_training.yaml`).
 - **poet** – Brief → poem (config: `config/poet_training.yaml`).
-- **rhyme** – Rhyme-focused poet, 80% rhyme + 20% general (config: `config/rhyme_training.yaml`).
+- **reinforce** – Optional REINFORCE stage on poet (config: `config/reinforce_training.yaml`).
 
-Use `--educator-only`, `--poet-only`, or neither to run educator + poet. Use `--train-rhyme` to run only the rhyme task.
+Use `--educator-only`, `--poet-only`, or neither to run educator + poet. Use `--reinforce` to run only the REINFORCE stage.
 
 ## Choosing the base model
 
@@ -50,7 +50,7 @@ python scripts/modal/modal_app.py --base-model "meta-llama/Llama-3.1-8B-Instruct
 python scripts/sagemaker/train_sagemaker.py --task poet --base-model "Qwen/Qwen2.5-7B-Instruct"
 ```
 
-**Override via config:** Edit `base_model` in `config/educator_training.yaml`, `config/poet_training.yaml`, or `config/rhyme_training.yaml`.
+**Override via config:** Edit `base_model` in `config/educator_training.yaml`, `config/poet_training.yaml`, or `config/reinforce_training.yaml`.
 
 **Registered models:** See `config/model_registry.yaml` for supported HuggingFace IDs and short names (e.g. `llama3.1-8b`, `qwen2.5-7b`). Gated models (e.g. Llama) require a HuggingFace token (Modal: `huggingface-secret`; SageMaker: Secrets Manager or `HF_TOKEN` in env).
 
@@ -66,7 +66,7 @@ python scripts/modal/modal_app.py [OPTIONS]
 | `--base-model HF_ID` | Base model to fine-tune (e.g. `meta-llama/Llama-3.1-8B-Instruct`) |
 | `--educator-only` | Train only educator |
 | `--poet-only` | Train only poet |
-| `--train-rhyme` | Train only rhyme poet |
+| `--reinforce` | Train only REINFORCE stage on poet |
 | `--train-only` | Skip GGUF export after training |
 | `--num-epochs N` | Override epoch count |
 | `--interactive`, `-i` | Interactive model discovery/training |
@@ -109,7 +109,7 @@ python scripts/sagemaker/download_models.py
 
 ## Data layout
 
-- **Educator/poet:** `data/educator_training/train.jsonl`, `valid.jsonl`; `data/poet_training/`; `data/rhyme_training/` (from `prepare_training_data.py`, `prepare_rhyme_training_data.py`).
+- **Educator/poet:** `data/educator_training/train.jsonl`, `valid.jsonl`; `data/poet_training/`; `data/rhyme_training/` (from `prepare_training_data.py`, `prepare_rhyme_training_data.py`). REINFORCE uses rhyme data.
 - Upload: Modal → `upload_data.py` (volumes); SageMaker → `upload_to_s3.py` (S3 prefix `data/`).
 
 ## Validating training data
@@ -123,7 +123,7 @@ python scripts/sagemaker/download_models.py
 |------|---------|
 | `config/educator_training.yaml` | Educator QLoRA (base_model, LoRA, training) |
 | `config/poet_training.yaml` | Poet QLoRA |
-| `config/rhyme_training.yaml` | Rhyme poet QLoRA |
+| `config/reinforce_training.yaml` | REINFORCE stage on poet |
 | `config/export_pipeline.yaml` | GGUF merge/quantization (base_model, Q4_K_M) |
 | `config/model_registry.yaml` | HuggingFace ID ↔ short name |
 | `config/sagemaker.yaml` | SageMaker bucket, role, region, instance (SageMaker only) |

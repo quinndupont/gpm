@@ -8,15 +8,12 @@ import yaml
 ROOT = Path(__file__).resolve().parents[2]
 EDUCATOR_TRAINING = ROOT / "data" / "educator_training"
 POET_TRAINING = ROOT / "data" / "poet_training"
-RHYME_TRAINING = ROOT / "data" / "rhyme_training"
 
 FILES = [
     (EDUCATOR_TRAINING / "train.jsonl", "data/educator_train.jsonl"),
     (EDUCATOR_TRAINING / "valid.jsonl", "data/educator_valid.jsonl"),
     (POET_TRAINING / "train.jsonl", "data/poet_train.jsonl"),
     (POET_TRAINING / "valid.jsonl", "data/poet_valid.jsonl"),
-    (RHYME_TRAINING / "train.jsonl", "data/rhyme_train.jsonl"),
-    (RHYME_TRAINING / "valid.jsonl", "data/rhyme_valid.jsonl"),
 ]
 
 

@@ -345,6 +345,82 @@ def format_analysis_for_prompt(analysis: dict) -> str:
 
 
 # ---------------------------------------------------------------------------
+# Reward scoring (for REINFORCE training)
+# ---------------------------------------------------------------------------
+
+RHYME_SCORE = {"identical": 0.8, "perfect": 1.0, "slant": 0.6, "assonance": 0.3, "none": 0.0}
+
+
+def _rhyme_score(word_a: str, word_b: str) -> float:
+    """Tiered rhyme score between two words (partial credit).
+
+    perfect 1.0 > identical 0.8 > slant 0.6 > assonance 0.3 > none 0.0
+    Identical (same word) scores below perfect — repeating end-words is weak craft.
+    """
+    rt = _rhyme_type(word_a, word_b)
+    if rt != "none":
+        return RHYME_SCORE[rt]
+    suffix_a = _get_rhyme_suffix(word_a)
+    suffix_b = _get_rhyme_suffix(word_b)
+    if suffix_a is not None and suffix_b is not None:
+        vowel_a = re.sub(r"\d", "", suffix_a.split()[0]) if suffix_a.split()[0][-1].isdigit() else None
+        vowel_b = re.sub(r"\d", "", suffix_b.split()[0]) if suffix_b.split()[0][-1].isdigit() else None
+        if vowel_a and vowel_b and vowel_a == vowel_b:
+            return RHYME_SCORE["assonance"]
+    return RHYME_SCORE["none"]
+
+
+def compute_reward(
+    poem: str,
+    expected_form: str | None = None,
+    expected_variant: str | None = None,
+) -> float:
+    """Compute a [0, 1] rhyme reward for REINFORCE training.
+
+    Scores each position-pair that should rhyme (per detected or expected scheme)
+    using tiered partial credit, then combines with overall strict rhyme density.
+
+    Returns:
+        Float in [0, 1]. Higher = better rhyme compliance.
+    """
+    analysis = analyze(poem, expected_form=expected_form, expected_variant=expected_variant)
+    end_words = analysis.get("end_words", [])
+    if len(end_words) < 2:
+        return 0.0
+
+    scheme = analysis.get("expected_scheme")
+    if scheme:
+        flat = parse_scheme(scheme)
+    else:
+        detected_raw = analysis.get("strict_detected_scheme") or analysis.get("detected_scheme", "")
+        flat = list(detected_raw.replace(" ", ""))
+
+    if not flat or len(flat) < 2:
+        return analysis.get("strict_rhyme_density", 0.0)
+
+    compare_len = min(len(flat), len(end_words))
+    groups: dict[str, list[int]] = {}
+    for idx, lbl in enumerate(flat[:compare_len]):
+        groups.setdefault(lbl, []).append(idx)
+
+    pair_scores: list[float] = []
+    for positions in groups.values():
+        if len(positions) < 2:
+            continue
+        anchor = positions[0]
+        for pos in positions[1:]:
+            if anchor < len(end_words) and pos < len(end_words):
+                pair_scores.append(_rhyme_score(end_words[anchor], end_words[pos]))
+
+    if not pair_scores:
+        return analysis.get("strict_rhyme_density", 0.0)
+
+    pair_mean = sum(pair_scores) / len(pair_scores)
+    density = analysis.get("strict_rhyme_density", 0.0)
+    return 0.7 * pair_mean + 0.3 * density
+
+
+# ---------------------------------------------------------------------------
 # CLI
 # ---------------------------------------------------------------------------
 

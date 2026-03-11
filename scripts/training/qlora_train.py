@@ -106,8 +106,8 @@ def run_qlora_training(
         save_strategy="epoch",
         save_total_limit=ckpt_cfg.get("save_total_limit", 3),
         eval_strategy="epoch" if eval_dataset else "no",
-        max_length=max_seq_len,
-        dataset_text_field="messages",
+        max_seq_length=max_seq_len,
+        # dataset_text_field="messages",
         packing=False,
     )
 
@@ -116,7 +116,7 @@ def run_qlora_training(
         args=sft_config,
         train_dataset=train_dataset,
         eval_dataset=eval_dataset,
-        processing_class=tokenizer,
+        tokenizer=tokenizer,
     )
     trainer.train()
     trainer.save_model(str(save_path / "final"))

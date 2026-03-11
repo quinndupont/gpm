@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Launch SageMaker HuggingFace training job for educator, poet, or rhyme."""
+"""Launch SageMaker HuggingFace training job for educator, poet, or REINFORCE."""
 import argparse
 import shutil
 import sys
@@ -85,14 +85,23 @@ def _build_source_dir() -> Path:
     shutil.copy(entry / "train.py", d / "train.py")
     shutil.copy(entry / "requirements.txt", d / "requirements.txt")
     shutil.copy(ROOT / "scripts" / "training" / "qlora_train.py", d / "qlora_train.py")
-    for name in ["educator_training.yaml", "poet_training.yaml", "rhyme_training.yaml"]:
-        shutil.copy(ROOT / "config" / name, d / "config" / name)
+    for name in ["educator_training.yaml", "poet_training.yaml", "reinforce_training.yaml"]:
+        cfg_file = ROOT / "config" / name
+        if cfg_file.exists():
+            shutil.copy(cfg_file, d / "config" / name)
+    shutil.copy(ROOT / "scripts" / "training" / "reinforce_train.py", d / "reinforce_train.py")
+    (d / "scripts").mkdir(exist_ok=True)
+    (d / "scripts" / "eval").mkdir(parents=True, exist_ok=True)
+    for eval_file in ["rhyme_analyzer.py", "form_registry.py", "meter_analyzer.py"]:
+        src = ROOT / "scripts" / "eval" / eval_file
+        if src.exists():
+            shutil.copy(src, d / "scripts" / "eval" / eval_file)
     return d
 
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--task", choices=["educator", "poet", "rhyme"], required=True)
+    ap.add_argument("--task", choices=["educator", "poet", "reinforce"], required=True)
     ap.add_argument("--num-epochs-override", type=int, default=None)
     ap.add_argument(
         "--base-model", type=str, default=None,
@@ -138,9 +147,9 @@ def main():
             role=role,
             instance_type=instance_type,
             instance_count=1,
-            transformers_version="4.36",
-            pytorch_version="2.1",
-            py_version="py310",
+            transformers_version="4.46",
+            pytorch_version="2.3",
+            py_version="py311",
             output_path=output_path,
             hyperparameters={
                 "task": args.task,

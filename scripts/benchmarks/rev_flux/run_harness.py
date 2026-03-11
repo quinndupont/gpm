@@ -191,7 +191,7 @@ def main():
         models_config = []
         for short, tasks in by_base.items():
             edu = tasks.get("educator") or tasks.get("educator-interim")
-            poet = tasks.get("poet_rhyme") or tasks.get("poet")
+            poet = tasks.get("poet_reinforce") or tasks.get("poet")
             if edu and poet:
                 models_config.append({
                     "id": f"trained-{short}",

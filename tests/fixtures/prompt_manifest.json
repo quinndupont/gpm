@@ -8,8 +8,7 @@
   "inference/revision_brief.json": "68a1c432cbcd2926",
   "personas/educator_condensed.json": "72b5df21445ef04d",
   "personas/educator_neutral.json": "06a161d47f2139f3",
-  "personas/poet.json": "47ac0d1b9f5c9b30",
-  "personas/poet_rhyme.json": "bc137bdcb6efe1dd",
+  "personas/poet.json": "b53836c6db313faa",
   "tuning/approval.json": "02a1424e9d0dd9fa",
   "tuning/autopsy.json": "d2a3b0b8751969fd",
   "tuning/brief.json": "f1ca2ba459054914",
@@ -19,5 +18,5 @@
   "tuning/lesson.json": "f43cd44626ef5663",
   "tuning/poet_generation.json": "d81bc7b1ca7d1c7d",
   "tuning/revision_brief.json": "34dbf49ef3303b37",
-  "tuning/rhyme_pairs.json": "154a7dd7a417b683"
+  "tuning/rhyme_pairs.json": "0be582988602dc8a"
 }

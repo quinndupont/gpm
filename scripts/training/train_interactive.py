@@ -23,7 +23,7 @@ CONFIG_DIR = ROOT / "config"
 REGISTRY_PATH = CONFIG_DIR / "model_registry.yaml"
 EDUCATOR_CONFIG = CONFIG_DIR / "educator_training.yaml"
 POET_CONFIG = CONFIG_DIR / "poet_training.yaml"
-RHYME_CONFIG = CONFIG_DIR / "rhyme_training.yaml"
+REINFORCE_CONFIG = CONFIG_DIR / "reinforce_training.yaml"
 EXPORT_CONFIG = CONFIG_DIR / "export_pipeline.yaml"
 
 
@@ -111,24 +111,22 @@ def run_training(
     num_epochs: int | None,
     train_only: bool,
 ):
-    if task == "poet_rhyme":
-        update_training_config(RHYME_CONFIG, base_model, save_path)
-        prep_rhyme = str(ROOT / "scripts" / "data_generation" / "prepare_rhyme_training_data.py")
-        subprocess.run([sys.executable, prep_rhyme], cwd=str(ROOT), check=True)
+    if task == "poet_reinforce":
+        update_training_config(REINFORCE_CONFIG, base_model, save_path)
         subprocess.run(
             [sys.executable, str(ROOT / "scripts" / "modal" / "upload_data.py")],
             cwd=str(ROOT),
             check=True,
         )
         extra = ["--num-epochs-override", str(num_epochs)] if num_epochs else []
-        train_rhyme_script = str(ROOT / "scripts" / "modal" / "train_rhyme_poet.py")
+        train_reinforce_script = str(ROOT / "scripts" / "modal" / "train_poet_reinforce.py")
         subprocess.run(
-            [sys.executable, "-m", "modal", "run", train_rhyme_script] + extra,
+            [sys.executable, "-m", "modal", "run", train_reinforce_script] + extra,
             cwd=str(ROOT), check=True,
         )
         print(
-            "Rhyme training done. Download: "
-            "modal volume get poetry-checkpoints poet_rhyme/final ./models/"
+            "Reinforce training done. Download: "
+            "modal volume get poetry-checkpoints poet_reinforce/final ./models/"
         )
         return
 
@@ -177,7 +175,7 @@ def main():
     parser = argparse.ArgumentParser(description="Interactive training with model discovery")
     parser.add_argument("--educator-only", action="store_true")
     parser.add_argument("--poet-only", action="store_true")
-    parser.add_argument("--train-rhyme", action="store_true", help="Train rhyme-focused poet")
+    parser.add_argument("--reinforce", action="store_true", help="Train poet with REINFORCE (Stage 2)")
     parser.add_argument("--train-only", action="store_true", help="Skip export")
     parser.add_argument("--num-epochs", type=int, default=None)
     parser.add_argument(
@@ -205,20 +203,19 @@ def main():
     # Verify required data exists for selected tasks
     educator_data = ROOT / "data" / "educator_training" / "train.jsonl"
     poet_data = ROOT / "data" / "poet_training" / "train.jsonl"
-    rhyme_data = ROOT / "data" / "rhyme_training" / "train.jsonl"
-    needs_edu = not args.poet_only and not args.train_rhyme
-    needs_poet = not args.educator_only and not args.train_rhyme
-    needs_rhyme = args.train_rhyme
+    needs_edu = not args.poet_only and not args.reinforce
+    needs_poet = not args.educator_only and not args.reinforce
+    needs_reinforce = args.reinforce
     if needs_edu and not educator_data.exists():
         print(f"ERROR: Educator data not found. Run generation or create {educator_data}")
         return
     if needs_poet and not poet_data.exists():
         print(f"ERROR: Poet data not found. Run generation or create {poet_data}")
         return
-    if needs_rhyme and not rhyme_data.exists():
+    if needs_reinforce and not poet_data.exists():
         print(
-            f"ERROR: Rhyme data not found. Run prepare_rhyme_training_data or "
-            f"create {rhyme_data}",
+            f"ERROR: Poet data not found. REINFORCE needs poet_train.jsonl. "
+            f"Run generation or create {poet_data}",
         )
         return
 
@@ -226,8 +223,8 @@ def main():
     _ = discover_all(include_modal=args.include_modal)  # validate configs
 
     tasks_to_run: list[str] = []
-    if args.train_rhyme:
-        tasks_to_run.append("poet_rhyme")
+    if args.reinforce:
+        tasks_to_run.append("poet_reinforce")
     else:
         if not args.poet_only:
             tasks_to_run.append("educator")
@@ -235,7 +232,7 @@ def main():
             tasks_to_run.append("poet")
 
     if not tasks_to_run:
-        print("No tasks selected. Use --educator-only, --poet-only, or --train-rhyme.")
+        print("No tasks selected. Use --educator-only, --poet-only, or --reinforce.")
         return
 
     for task in tasks_to_run:
@@ -259,8 +256,8 @@ def main():
                     if task == "educator"
                     else "/vol/checkpoints/poet/"
                 )
-                if task == "poet_rhyme":
-                    save_path = "/vol/checkpoints/poet_rhyme/"
+                if task == "poet_reinforce":
+                    save_path = "/vol/checkpoints/poet_reinforce/"
             else:
                 entry = select_model_from_registry(registry, task)
                 base_model = entry["hf_id"]

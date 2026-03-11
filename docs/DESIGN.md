@@ -8,7 +8,7 @@
 Prompts and personas live in `models/prompts/` as JSON. This keeps the system **transparent and flexible** for experimenting with different models and prompt variants.
 
 **Structure:**
-- `models/prompts/personas/` — System prompts (educator_neutral, educator_condensed, poet, poet_rhyme)
+- `models/prompts/personas/` — System prompts (educator_neutral, educator_condensed, poet)
 - `models/prompts/tuning/` — Prompts for data generation → `data/`
 - `models/prompts/inference/` — Prompts for the runtime pipeline
 
@@ -701,13 +701,14 @@ def download_artifacts():
 - Teaches name/pattern/poem association before RL
 - Weaker than RL alone (binary inclusion, no gradient proportional to score quality)
 
-#### Stage 2 — REINFORCE / Reward-Weighted Regression (Planned)
+#### Stage 2 — REINFORCE / Reward-Weighted Regression ✓ Implemented
 
-- Generate N poems per prompt, score each with deterministic algo
+- Generate N poems per prompt, score each with deterministic algo (`compute_reward()` in `rhyme_analyzer.py`)
 - Normalize scores to advantages: Â = (score − mean) / std
 - Loss: L = −Σ Â_i · log P_θ(poem_i | prompt)
 - KL penalty to prevent drift from SFT baseline: R_total = R_rhyme − β·KL[π_θ ‖ π_SFT]
 - **Key advantage:** deterministic rhyme scorer replaces the need for a trained neural reward model — cleaner gradients, faster iteration
+- Implementation: `scripts/training/reinforce_train.py`, config: `config/reinforce_training.yaml`
 
 ### Rhyme Scheme as Conditioning Variable
 
@@ -715,12 +716,13 @@ def download_artifacts():
 - Scheme registry maps patterns → named forms (Shakespearean sonnet, limerick, ballad stanza, etc.)
 - Train with both name and pattern in prompt so model responds to either at inference
 
-### Partial Credit Reward (Critical Detail — Planned)
+### Partial Credit Reward ✓ Implemented
 
 - Binary rhyme compliance produces weak gradients; partial credit is essential
 - Score by position match: ABAB vs ABAC = 3/4 = 0.75
-- **Tiered rhyme scoring:** perfect rhyme (1.0) → slant rhyme (0.6) → assonance (0.3) → none (0.0)
+- **Tiered rhyme scoring:** perfect rhyme (1.0) → identical (0.8) → slant rhyme (0.6) → assonance (0.3) → none (0.0)
 - Prevents model from learning forced perfect rhymes at expense of meaning
+- Implementation: `_rhyme_score()` and `compute_reward()` in `scripts/eval/rhyme_analyzer.py`
 
 ---
 

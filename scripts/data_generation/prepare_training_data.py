@@ -7,11 +7,16 @@ from pathlib import Path
 
 from models.prompts.loader import get_persona, get_prompt
 from scripts.data_generation.claude_utils import get_educator_system_prompt, poem_text
+from scripts.eval.form_registry import get_scheme
+from scripts.eval.rhyme_analyzer import analyze as analyze_rhyme
 
 ROOT = Path(__file__).resolve().parents[2]
 ANNOTATED = ROOT / "data" / "annotated"
 EDUCATOR_TRAINING = ROOT / "data" / "educator_training"
 POET_TRAINING = ROOT / "data" / "poet_training"
+RHYME_TRAINING = ROOT / "data" / "rhyme_training"
+
+MIN_STRICT_DENSITY = 0.6
 
 
 def _educator_system() -> str:
@@ -175,8 +180,46 @@ def collect_educator_examples(system: str) -> list[dict]:
     return examples
 
 
-def collect_poet_examples() -> list[dict]:
+def _poem_to_rhyme_example(
+    poem: str, form: str | None = None, brief: str | None = None,
+) -> dict | None:
+    """Convert a poem to a rhyme training example if it passes the quality gate."""
+    if not poem.strip():
+        return None
+    analysis = analyze_rhyme(poem, expected_form=form)
+    strict_density = analysis.get("strict_rhyme_density", 0)
+    if strict_density < MIN_STRICT_DENSITY:
+        return None
+    scheme = analysis.get("strict_detected_scheme") or analysis.get("detected_scheme", "")
+    if brief and brief.strip():
+        user = brief.strip()
+        rhyme_suffix = get_prompt("tuning", "poet_generation", "rhyme_suffix").strip()
+        if not user.endswith(rhyme_suffix):
+            user = user + "\n\n" + rhyme_suffix
+    else:
+        parts = ["Write a poem with strong end rhyme."]
+        if scheme:
+            parts.append(f"Rhyme scheme: {scheme}.")
+        if form:
+            scheme_str = get_scheme(form) if form else ""
+            if scheme_str:
+                parts.append(f"Form: {form}, scheme {scheme_str}.")
+        parts.append(
+            "Every end-word pair must be a true phonetic rhyme. Follow the form precisely."
+        )
+        user = " ".join(parts) + get_prompt("tuning", "poet_generation", "rhyme_suffix")
+    return to_poet_example(user, poem)
+
+
+def collect_poet_examples() -> tuple[list[dict], int]:
+    """Collect all poet training examples (general + rhyme).
+
+    Returns (examples, n_rhyme) where n_rhyme is the count of rhyme-specific examples.
+    """
     examples = []
+    n_rhyme = 0
+
+    # Source 1: general pairs (brief -> poem)
     for e in load_jsonl(POET_TRAINING / "pairs.jsonl"):
         brief = e.get("brief", e.get("user_request", ""))
         poem = e.get("poem", "")
@@ -184,15 +227,45 @@ def collect_poet_examples() -> list[dict]:
             user = brief + get_prompt("tuning", "poet_generation", "user_suffix")
             examples.append(to_poet_example(user, poem))
 
-    # rhyme pairs: brief with form constraint -> poem in that form
-    for e in load_jsonl(POET_TRAINING / "rhyme_pairs.jsonl"):
-        brief = e.get("brief", "")
-        poem = e.get("poem", "")
-        if brief.strip() and poem.strip():
-            user = brief + get_prompt("tuning", "poet_generation", "rhyme_suffix")
-            examples.append(to_poet_example(user, poem))
+    # Source 2: rhyme pairs (brief with form constraint -> poem)
+    rhyme_pairs_paths = [
+        POET_TRAINING / "rhyme_pairs.jsonl",
+        RHYME_TRAINING / "rhyme_pairs.jsonl",
+    ]
+    seen_poems: set[str] = set()
+    for rp_path in rhyme_pairs_paths:
+        for e in load_jsonl(rp_path):
+            brief = e.get("brief", "")
+            poem = e.get("poem", "")
+            if brief.strip() and poem.strip() and poem not in seen_poems:
+                seen_poems.add(poem)
+                user = brief + get_prompt("tuning", "poet_generation", "rhyme_suffix")
+                examples.append(to_poet_example(user, poem))
+                n_rhyme += 1
 
-    return examples
+    # Source 3: strong-rhyme poems (curated, quality-gated)
+    strong_path = ANNOTATED / "strong_rhyme_poems.jsonl"
+    raw_strong, passed_strong = 0, 0
+    for rec in load_jsonl(strong_path):
+        if not rec.get("strong_rhyme", True):
+            continue
+        poem = rec.get("poem", "")
+        if poem in seen_poems:
+            continue
+        raw_strong += 1
+        ex = _poem_to_rhyme_example(poem)
+        if ex:
+            seen_poems.add(poem)
+            examples.append(ex)
+            n_rhyme += 1
+            passed_strong += 1
+    if raw_strong:
+        print(
+            f"  Strong-rhyme poems: {passed_strong}/{raw_strong} passed "
+            f"(strict_density >= {MIN_STRICT_DENSITY})"
+        )
+
+    return examples, n_rhyme
 
 
 def main():
@@ -285,7 +358,7 @@ def main():
 
     if not args.educator_only and not args.interim_educator:
         print("Loading poet examples...", flush=True)
-        poet = collect_poet_examples()
+        poet, n_rhyme = collect_poet_examples()
         if args.min_samples and len(poet) < args.min_samples:
             raise SystemExit(
                 f"Need at least {args.min_samples} poet examples (got {len(poet)}). "
@@ -307,7 +380,9 @@ def main():
         with open(POET_TRAINING / "valid.jsonl", "w") as f:
             for ex in valid_poet:
                 f.write(json.dumps(ex) + "\n")
-        print(f"Poet: {len(train_poet)} train, {len(valid_poet)} valid")
+        n_general = len(poet) - n_rhyme
+        print(f"Poet: {len(train_poet)} train, {len(valid_poet)} valid "
+              f"(general: {n_general}, rhyme: {n_rhyme})")
 
 
 if __name__ == "__main__":

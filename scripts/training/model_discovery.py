@@ -39,7 +39,7 @@ def _parse_gguf_filename(name: str) -> tuple[str | None, str | None, str | None]
     parts = stem.split("-")
     if len(parts) < 2:
         return None, None, None
-    # Task: educator, poet, poet_rhyme, or educator-interim
+    # Task: educator, poet, poet_reinforce, or educator-interim
     if len(parts) >= 3 and parts[-2] == "educator" and parts[-1] == "interim":
         task = "educator-interim"
         base = "-".join(parts[:-2])
@@ -174,12 +174,12 @@ def discover_modal_checkpoints() -> list[DiscoveredModel]:
 
 
 def discover_by_task(task: str, include_modal: bool = False) -> list[DiscoveredModel]:
-    """Return discovered models for a given task (educator, poet, poet_rhyme)."""
+    """Return discovered models for a given task (educator, poet, poet_reinforce)."""
     all_ = discover_all(include_modal=include_modal)
     if task == "educator":
         return [m for m in all_ if m.task in ("educator", "educator-interim")]
     if task == "poet":
-        return [m for m in all_ if m.task in ("poet", "poet_rhyme")]
+        return [m for m in all_ if m.task in ("poet", "poet_reinforce")]
     return [m for m in all_ if m.task == task]
 
 
