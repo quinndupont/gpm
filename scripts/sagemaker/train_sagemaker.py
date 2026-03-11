@@ -13,6 +13,11 @@ from sagemaker.inputs import TrainingInput
 
 ROOT = Path(__file__).resolve().parents[2]
 
+# AWS account ID for HuggingFace DLCs (us-east-1, us-west-2, etc.)
+HUGGINGFACE_DLC_ACCOUNT = "763104351884"
+# DLC with transformers 4.56.2 (supports cohere2 and other newer architectures)
+TRANSFORMERS_4_56_2_IMAGE = "huggingface-pytorch-training:2.8.0-transformers4.56.2-gpu-py312-cu129-ubuntu22.04"
+
 # Fallback when model_registry.yaml is missing
 DEFAULT_MODELS = [
     ("meta-llama/Llama-3.1-8B-Instruct", "Llama 3.1 8B Instruct"),
@@ -63,6 +68,11 @@ def _load_config() -> dict:
     if not cfg_path.exists():
         raise FileNotFoundError(f"Config not found: {cfg_path}")
     return yaml.safe_load(cfg_path.read_text()) or {}
+
+
+def _get_training_image_uri(region: str) -> str:
+    """Return the DLC image URI for transformers 4.56.2 (supports cohere2, etc.)."""
+    return f"{HUGGINGFACE_DLC_ACCOUNT}.dkr.ecr.{region}.amazonaws.com/{TRANSFORMERS_4_56_2_IMAGE}"
 
 
 def _get_hf_token(cfg: dict, region: str) -> str | None:
@@ -117,6 +127,13 @@ def main():
     if base_model is None and not args.no_prompt and sys.stdin.isatty():
         base_model = _prompt_model_choice(args.task)
 
+    need_newer_dlc = False
+    if base_model:
+        from scripts.training.model_registry import get_model_entry
+        entry = get_model_entry(hf_id=base_model)
+        if entry and entry.get("requires_transformers_git"):
+            need_newer_dlc = True  # use DLC with transformers 4.56.2 (has cohere2, etc.)
+
     cfg = _load_config()
     bucket = cfg.get("s3_bucket")
     role = cfg.get("iam_role")
@@ -130,6 +147,18 @@ def main():
         print("Warning: No HuggingFace token. Gated models (e.g. Llama) may fail.")
 
     source_dir = _build_source_dir()
+    if need_newer_dlc:
+        # DLC image already has transformers 4.56.2 (cohere2). Don't let requirements.txt
+        # pin transformers<4.48 or pip will downgrade and break cohere2.
+        req_path = Path(source_dir) / "requirements.txt"
+        req_path.write_text(
+            "peft>=0.10\n"
+            "trl>=0.8\n"
+            "bitsandbytes>=0.43\n"
+            "datasets>=2.18\n"
+            "accelerate>=0.28\n"
+            "transformers>=4.48\n"
+        )
     try:
         env = {"HF_TOKEN": hf_token} if hf_token else {}
         if "ACCOUNT_ID" in role:
@@ -141,15 +170,12 @@ def main():
         job_name = f"gpm-{args.task}-{_t.strftime('%Y%m%d-%H%M%S', _t.gmtime())}"
         output_path = f"s3://{bucket}/checkpoints/{args.task}/"
 
-        huggingface_estimator = HuggingFace(
+        estimator_kw = dict(
             entry_point="train.py",
             source_dir=str(source_dir),
             role=role,
             instance_type=instance_type,
             instance_count=1,
-            transformers_version="4.46",
-            pytorch_version="2.3",
-            py_version="py311",
             output_path=output_path,
             hyperparameters={
                 "task": args.task,
@@ -164,6 +190,15 @@ def main():
                 boto_session=boto3.Session(region_name=region),
             ),
         )
+        if need_newer_dlc:
+            estimator_kw["image_uri"] = _get_training_image_uri(region)
+            estimator_kw["py_version"] = "py312"  # required by HuggingFace(); 4.56.2 DLC uses py312
+            print(f"Using DLC with transformers 4.56.2 for model (cohere2 etc.): {estimator_kw['image_uri']}")
+        else:
+            estimator_kw["transformers_version"] = "4.46"
+            estimator_kw["pytorch_version"] = "2.3"
+            estimator_kw["py_version"] = "py311"
+        huggingface_estimator = HuggingFace(**estimator_kw)
 
         training_data = TrainingInput(s3_data=f"s3://{bucket}/data/", input_mode="File")
 

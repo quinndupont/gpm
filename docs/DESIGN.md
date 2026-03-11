@@ -686,11 +686,52 @@ def download_artifacts():
 
 ### Educator Model: Supervised Fine-Tuning
 
-- **Method:** QLoRA SFT on (prompt → opinionated critique) pairs
-- **Prompt diversity** is critical — vary instruction phrasings so the model generalizes beyond exact training phrasing
-- **System prompt** anchors persona; model learns the conditional distribution over educator responses given that prefix
-- **Reverse prompts / soft prompts** (prefix tuning — learned continuous embedding vectors) are a different technique. QLoRA uses hard discrete prompts; learning happens in adapter weights, not the prompt itself
-- **Data quality >> hyperparameter tuning** — each example should demonstrate cliché autopsy voice explicitly
+- **Method:** QLoRA SFT via TRL's `SFTTrainer` on chat-format JSONL. Base model: `meta-llama/Llama-3.1-8B-Instruct` (configurable). Config: `config/educator_training.yaml`.
+
+#### Training Backends
+
+Two backends share the same core logic (`scripts/training/qlora_train.py`):
+
+- **Modal** (`scripts/modal/train_educator.py`): runs on an A10G GPU (~2–3 hrs, ~$3). Data from the `poetry-data` volume, checkpoints to `poetry-checkpoints`. Invoke: `modal run scripts/modal/train_educator.py [--num-epochs-override N] [--base-model HF_ID]`
+- **SageMaker** (`scripts/sagemaker/train_sagemaker.py --task educator`): packages code + configs into a temp dir, uploads to S3, launches a HuggingFace DLC job on `ml.g5.xlarge`. Prompts interactively for base model unless `--no-prompt`. Configure bucket/role in `config/sagemaker.yaml`.
+
+#### Data Format
+
+Each training example is a three-turn chat message list:
+
+```json
+{"messages": [
+  {"role": "system",    "content": "<educator_neutral persona>"},
+  {"role": "user",      "content": "<poem or input>"},
+  {"role": "assistant", "content": "<educator response>"}
+]}
+```
+
+Loss is computed only on assistant tokens. Prepared by `scripts/data_generation/prepare_training_data.py`, written to `data/educator_training/train.jsonl` / `valid.jsonl`.
+
+#### Prompt Types (Task Diversity)
+
+The training set spans multiple educator task types so the model generalizes across them all at inference:
+
+| Task | User turn | Assistant turn |
+|---|---|---|
+| Critique | poem text | workshop critique (what's alive, what fails) |
+| Cliché autopsy | poem text | structured autopsy (what, why, alternative) |
+| Comparison | poem A + poem B | comparative analysis |
+| Revision brief | poem + critique | actionable generation brief |
+| Brief | user request | generation brief |
+| Lesson | craft question | focused craft explanation |
+| Dialogue | poem + critique + revision | follow-up (what improved, what remains) |
+| Rhyme critique | `[Form: X, scheme: Y]\n\npoem` | rhyme-aware critique naming exact failures |
+| Approval/rejection | `[strict_rhyme_density: X] ...\n\npoem` | critique ending in approval phrase or not |
+
+#### System Prompt Mechanics
+
+The system message (`models/prompts/personas/educator_neutral.json`) is literal text prepended to every training example. It establishes the educator voice: name failure types, no rubrics, no "Great job!", include rhyme data when present, use `"This poem has found its shape."` only when the poem is genuinely done.
+
+This is a **hard discrete prompt** — just text tokens. At inference, the same system message is passed unchanged. However, after SFT the adapter weights have absorbed the educator voice directly: they push outputs toward educator-style responses regardless of the system prompt content. Swapping the system prompt at inference will not cleanly change the persona — the adapters override it. To change persona you would need to retrain with different training data.
+
+- **Data quality >> hyperparameter tuning** — a generic-sounding critique with no failure names and no concrete direction will train in the wrong direction regardless of lr/epochs
 
 ### Poet Model: Two-Stage Training
 
@@ -703,12 +744,17 @@ def download_artifacts():
 
 #### Stage 2 — REINFORCE / Reward-Weighted Regression ✓ Implemented
 
-- Generate N poems per prompt, score each with deterministic algo (`compute_reward()` in `rhyme_analyzer.py`)
+- Generate N completions per prompt from the current policy (`num_completions=4`, `temperature=0.8`)
+- Score each with `compute_reward()` in `rhyme_analyzer.py` (partial-credit rhyme scoring)
 - Normalize scores to advantages: Â = (score − mean) / std
-- Loss: L = −Σ Â_i · log P_θ(poem_i | prompt)
-- KL penalty to prevent drift from SFT baseline: R_total = R_rhyme − β·KL[π_θ ‖ π_SFT]
+- Loss: L = −mean(Â · log P_θ(poem | prompt)) + β · KL[π_θ ‖ π_SFT]  (β=0.1)
+- KL is computed per completion as `mean(log π_θ − log π_ref)` over tokens — approximate importance-sampling estimate, not exact KL, but stable in practice
 - **Key advantage:** deterministic rhyme scorer replaces the need for a trained neural reward model — cleaner gradients, faster iteration
 - Implementation: `scripts/training/reinforce_train.py`, config: `config/reinforce_training.yaml`
+
+**Running Stage 2:**
+- **Modal** (recommended): `modal run scripts/modal/train_poet_reinforce.py [--sft-checkpoint /vol/checkpoints/poet/final]` — uses an A100 (generation is slow; A10G is not enough), reads Stage 1 checkpoint from the shared `poetry-checkpoints` volume
+- **SageMaker**: `python scripts/sagemaker/train_sagemaker.py --task reinforce` — ⚠️ **broken for separate jobs**: the entrypoint expects the Stage 1 checkpoint at `SM_MODEL_DIR/poet/final`, but SageMaker gives each job a fresh empty model dir. Stage 1 output is in S3 as a tarball artifact and is not injected here. To use SageMaker for Stage 2, you would need to pass the Stage 1 checkpoint via an additional input channel or download it in the entrypoint script.
 
 ### Rhyme Scheme as Conditioning Variable
 

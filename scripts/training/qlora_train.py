@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Shared QLoRA training logic for Modal and SageMaker backends."""
+import inspect
 import json
 from pathlib import Path
 
@@ -89,6 +90,8 @@ def run_qlora_training(
     model = get_peft_model(model, lora_config)
 
     save_path.mkdir(parents=True, exist_ok=True)
+    sft_params = inspect.signature(SFTConfig).parameters
+    max_len_kw = "max_length" if "max_length" in sft_params else "max_seq_length"
     sft_config = SFTConfig(
         output_dir=str(save_path),
         per_device_train_batch_size=train_cfg.get("per_device_batch_size", 4),
@@ -106,17 +109,18 @@ def run_qlora_training(
         save_strategy="epoch",
         save_total_limit=ckpt_cfg.get("save_total_limit", 3),
         eval_strategy="epoch" if eval_dataset else "no",
-        max_seq_length=max_seq_len,
-        # dataset_text_field="messages",
         packing=False,
+        **{max_len_kw: max_seq_len},
     )
 
+    sft_trainer_params = inspect.signature(SFTTrainer).parameters
+    tokenizer_kw = "processing_class" if "processing_class" in sft_trainer_params else "tokenizer"
     trainer = SFTTrainer(
         model=model,
         args=sft_config,
         train_dataset=train_dataset,
         eval_dataset=eval_dataset,
-        tokenizer=tokenizer,
+        **{tokenizer_kw: tokenizer},
     )
     trainer.train()
     trainer.save_model(str(save_path / "final"))
