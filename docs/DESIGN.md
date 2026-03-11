@@ -754,7 +754,7 @@ This is a **hard discrete prompt** — just text tokens. At inference, the same 
 
 **Running Stage 2:**
 - **Modal** (recommended): `modal run scripts/modal/train_poet_reinforce.py [--sft-checkpoint /vol/checkpoints/poet/final]` — uses an A100 (generation is slow; A10G is not enough), reads Stage 1 checkpoint from the shared `poetry-checkpoints` volume
-- **SageMaker**: `python scripts/sagemaker/train_sagemaker.py --task reinforce` — ⚠️ **broken for separate jobs**: the entrypoint expects the Stage 1 checkpoint at `SM_MODEL_DIR/poet/final`, but SageMaker gives each job a fresh empty model dir. Stage 1 output is in S3 as a tarball artifact and is not injected here. To use SageMaker for Stage 2, you would need to pass the Stage 1 checkpoint via an additional input channel or download it in the entrypoint script.
+- **SageMaker**: `python scripts/sagemaker/train_sagemaker.py --task reinforce --sft-s3 s3://BUCKET/checkpoints/poet/JOB_NAME/output/model.tar.gz` — pass the Stage 1 artifact URI via `--sft-s3`. It is injected as a second input channel (`sft_checkpoint`); SageMaker automatically extracts the tarball, and the entrypoint finds the adapter at `SM_CHANNEL_SFT_CHECKPOINT/poet/final/`.
 
 ### Rhyme Scheme as Conditioning Variable
 

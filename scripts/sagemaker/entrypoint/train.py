@@ -26,10 +26,15 @@ def main():
 
     if task == "reinforce":
         from reinforce_train import run_reinforce_training
-        sft_checkpoint = model_dir / "poet" / "final"
+        # Stage 1 model.tar.gz is passed as the "sft_checkpoint" input channel and
+        # automatically extracted by SageMaker. The tarball was created from SM_MODEL_DIR
+        # which contained poet/final/..., so the adapter lives at {channel}/poet/final/.
+        sft_channel = Path(os.environ.get("SM_CHANNEL_SFT_CHECKPOINT", ""))
+        sft_checkpoint = sft_channel / "poet" / "final"
         if not sft_checkpoint.exists():
             raise FileNotFoundError(
-                f"SFT checkpoint not found: {sft_checkpoint}. Run --task poet first."
+                f"SFT checkpoint not found at {sft_checkpoint}. "
+                "Pass --sft-s3 <s3-uri-of-stage1-model.tar.gz> to train_sagemaker.py."
             )
         checkpoint_dir = model_dir / "poet_reinforce"
         checkpoint_dir.mkdir(parents=True, exist_ok=True)

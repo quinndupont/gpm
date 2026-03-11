@@ -121,7 +121,22 @@ def main():
         "--no-prompt", action="store_true",
         help="Skip interactive model selection; use task default from config",
     )
+    ap.add_argument(
+        "--sft-s3", type=str, default=None,
+        help=(
+            "S3 URI of the Stage 1 poet model artifact for REINFORCE "
+            "(e.g. s3://bucket/checkpoints/poet/gpm-poet-TIMESTAMP/output/model.tar.gz). "
+            "Required when --task reinforce."
+        ),
+    )
     args = ap.parse_args()
+
+    if args.task == "reinforce" and not args.sft_s3:
+        ap.error(
+            "--sft-s3 is required for --task reinforce. "
+            "Pass the S3 URI of the Stage 1 poet model artifact "
+            "(s3://bucket/checkpoints/poet/<job-name>/output/model.tar.gz)."
+        )
 
     base_model = args.base_model
     if base_model is None and not args.no_prompt and sys.stdin.isatty():
@@ -202,10 +217,13 @@ def main():
 
         training_data = TrainingInput(s3_data=f"s3://{bucket}/data/", input_mode="File")
 
-        huggingface_estimator.fit(
-            inputs={"training": training_data},
-            job_name=job_name,
-        )
+        inputs = {"training": training_data}
+        if args.task == "reinforce":
+            inputs["sft_checkpoint"] = TrainingInput(
+                s3_data=args.sft_s3, input_mode="File",
+            )
+
+        huggingface_estimator.fit(inputs=inputs, job_name=job_name)
         print(f"Training complete. Checkpoints: {output_path}")
     finally:
         shutil.rmtree(source_dir, ignore_errors=True)
