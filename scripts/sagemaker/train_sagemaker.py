@@ -2,6 +2,7 @@
 """Launch SageMaker HuggingFace training job for educator, poet, or rhyme."""
 import argparse
 import shutil
+import sys
 import tempfile
 from pathlib import Path
 
@@ -11,6 +12,50 @@ from sagemaker.huggingface import HuggingFace
 from sagemaker.inputs import TrainingInput
 
 ROOT = Path(__file__).resolve().parents[2]
+
+# Fallback when model_registry.yaml is missing
+DEFAULT_MODELS = [
+    ("meta-llama/Llama-3.1-8B-Instruct", "Llama 3.1 8B Instruct"),
+    ("meta-llama/Llama-3.2-8B-Instruct", "Llama 3.2 8B Instruct"),
+    ("Qwen/Qwen2.5-7B-Instruct", "Qwen2.5 7B Instruct"),
+    ("Qwen/Qwen2.5-14B-Instruct", "Qwen2.5 14B Instruct"),
+    ("deepseek-ai/DeepSeek-V2-Lite-7B-Instruct", "DeepSeek V2 Lite 7B"),
+]
+
+
+def _load_model_choices() -> list[tuple[str, str]]:
+    """Return [(hf_id, display_label), ...] from registry or default list."""
+    registry = ROOT / "config" / "model_registry.yaml"
+    if not registry.exists():
+        return DEFAULT_MODELS
+    data = yaml.safe_load(registry.read_text()) or {}
+    models = data.get("models") or []
+    out = []
+    for m in models:
+        if isinstance(m, dict) and m.get("hf_id"):
+            label = m.get("short_name") or m["hf_id"].split("/")[-1]
+            out.append((m["hf_id"], label))
+    return out if out else DEFAULT_MODELS
+
+
+def _prompt_model_choice(task: str) -> str:
+    """Prompt user to select base model from list; return hf_id."""
+    choices = _load_model_choices()
+    print(f"\nBase model for task '{task}' (leave empty to use task default from config):\n")
+    for i, (hf_id, label) in enumerate(choices, 1):
+        print(f"  {i}. {label}  ({hf_id})")
+    print(f"  {len(choices) + 1}. Use task default from config")
+    while True:
+        try:
+            raw = input("\nChoice [1-%d]: " % (len(choices) + 1)).strip()
+            if not raw:
+                return None
+            idx = int(raw)
+            if 1 <= idx <= len(choices) + 1:
+                return None if idx == len(choices) + 1 else choices[idx - 1][0]
+        except ValueError:
+            pass
+        print("Invalid choice. Enter a number or leave empty for task default.")
 
 
 def _load_config() -> dict:
@@ -53,7 +98,15 @@ def main():
         "--base-model", type=str, default=None,
         help="HuggingFace base model ID (e.g. meta-llama/Llama-3.1-8B-Instruct)",
     )
+    ap.add_argument(
+        "--no-prompt", action="store_true",
+        help="Skip interactive model selection; use task default from config",
+    )
     args = ap.parse_args()
+
+    base_model = args.base_model
+    if base_model is None and not args.no_prompt and sys.stdin.isatty():
+        base_model = _prompt_model_choice(args.task)
 
     cfg = _load_config()
     bucket = cfg.get("s3_bucket")
@@ -95,7 +148,7 @@ def main():
                     {"num_epochs_override": str(args.num_epochs_override)}
                     if args.num_epochs_override is not None else {}
                 ),
-                **({"base_model": args.base_model} if args.base_model else {}),
+                **({"base_model": base_model} if base_model else {}),
             },
             environment=env,
             sagemaker_session=__import__("sagemaker").Session(
