@@ -363,8 +363,10 @@ def _rhyme_score(word_a: str, word_b: str) -> float:
     suffix_a = _get_rhyme_suffix(word_a)
     suffix_b = _get_rhyme_suffix(word_b)
     if suffix_a is not None and suffix_b is not None:
-        vowel_a = re.sub(r"\d", "", suffix_a.split()[0]) if suffix_a.split()[0][-1].isdigit() else None
-        vowel_b = re.sub(r"\d", "", suffix_b.split()[0]) if suffix_b.split()[0][-1].isdigit() else None
+        tok_a = suffix_a.split()[0]
+        tok_b = suffix_b.split()[0]
+        vowel_a = re.sub(r"\d", "", tok_a) if tok_a[-1].isdigit() else None
+        vowel_b = re.sub(r"\d", "", tok_b) if tok_b[-1].isdigit() else None
         if vowel_a and vowel_b and vowel_a == vowel_b:
             return RHYME_SCORE["assonance"]
     return RHYME_SCORE["none"]

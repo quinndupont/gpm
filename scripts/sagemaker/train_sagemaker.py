@@ -16,7 +16,9 @@ ROOT = Path(__file__).resolve().parents[2]
 # AWS account ID for HuggingFace DLCs (us-east-1, us-west-2, etc.)
 HUGGINGFACE_DLC_ACCOUNT = "763104351884"
 # DLC with transformers 4.56.2 (supports cohere2 and other newer architectures)
-TRANSFORMERS_4_56_2_IMAGE = "huggingface-pytorch-training:2.8.0-transformers4.56.2-gpu-py312-cu129-ubuntu22.04"
+TRANSFORMERS_4_56_2_IMAGE = (
+    "huggingface-pytorch-training:2.8.0-transformers4.56.2-gpu-py312-cu129-ubuntu22.04"
+)
 
 # Fallback when model_registry.yaml is missing
 DEFAULT_MODELS = [
@@ -208,7 +210,8 @@ def main():
         if need_newer_dlc:
             estimator_kw["image_uri"] = _get_training_image_uri(region)
             estimator_kw["py_version"] = "py312"  # required by HuggingFace(); 4.56.2 DLC uses py312
-            print(f"Using DLC with transformers 4.56.2 for model (cohere2 etc.): {estimator_kw['image_uri']}")
+            img = estimator_kw["image_uri"]
+            print(f"Using DLC with transformers 4.56.2 for model (cohere2 etc.): {img}")
         else:
             estimator_kw["transformers_version"] = "4.46"
             estimator_kw["pytorch_version"] = "2.3"

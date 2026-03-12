@@ -73,11 +73,8 @@ def main():
         raise ValueError("checkpoint-s3 must be s3:// URI")
 
     export_cfg = yaml.safe_load((ROOT / "config" / "export_pipeline.yaml").read_text()) or {}
-    base_model = export_cfg.get("base_model", "meta-llama/Llama-3.1-8B-Instruct")
     quant = export_cfg.get("quantization", {}).get("primary_quant", "Q4_K_M")
-    short = _hf_to_short(base_model)
     out_name = "educator-interim" if args.task == "educator-interim" else args.task
-    gguf_name = f"{short}-{out_name}-{quant}.gguf"
 
     with tempfile.TemporaryDirectory() as tmp:
         tmp = Path(tmp)
@@ -100,6 +97,19 @@ def main():
                 f"Checkpoint not found in tar. Tried {candidates}. "
                 f"Contents: {list(tmp.iterdir())}",
             )
+
+        # Read base model from adapter_config.json so the name and load always match
+        # what was actually trained, regardless of what export_pipeline.yaml says.
+        import json as _json
+        adapter_meta = _json.loads((ckpt_path / "adapter_config.json").read_text())
+        base_model = adapter_meta.get(
+            "base_model_name_or_path",
+            export_cfg.get("base_model", "meta-llama/Llama-3.1-8B-Instruct"),
+        )
+        print(f"Base model from checkpoint: {base_model}")
+
+        short = _hf_to_short(base_model)
+        gguf_name = f"{short}-{out_name}-{quant}.gguf"
 
         # Build llama.cpp
         llama_dir = tmp / "llama.cpp"

@@ -167,4 +167,6 @@ class TestRhymeDensityGate:
                 continue
             result = analyze_rhyme(poem)
             density = result.get("strict_rhyme_density", 0)
-            assert density >= 0.6, f"Strong-rhyme poem has strict_rhyme_density={density}, need >= 0.6"
+            assert density >= 0.6, (
+                f"Strong-rhyme poem has strict_rhyme_density={density}, need >= 0.6"
+            )

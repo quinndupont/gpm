@@ -72,10 +72,8 @@ def run_reinforce_training(
 
     cfg = yaml.safe_load(config_path.read_text())
     model_cfg = cfg.get("model_loading", {})
-    lora_cfg = cfg.get("lora", {})
     train_cfg = cfg.get("training", {})
     rl_cfg = cfg.get("reinforce", {})
-    ckpt_cfg = cfg.get("checkpointing", {})
 
     base_model = base_model_override or cfg.get("base_model", "Qwen/Qwen2.5-7B-Instruct")
     num_epochs = num_epochs_override or train_cfg.get("num_epochs", 2)
@@ -173,8 +171,10 @@ def run_reinforce_training(
     def _compute_log_probs(model: torch.nn.Module, prompt_ids: torch.Tensor,
                            completion_text: str) -> torch.Tensor:
         """Compute per-token log probs of completion under model, summed."""
-        comp_ids = tokenizer(completion_text, return_tensors="pt", truncation=True,
-                             max_length=max_gen_tokens, add_special_tokens=False).input_ids.to(device)
+        comp_ids = tokenizer(
+            completion_text, return_tensors="pt", truncation=True,
+            max_length=max_gen_tokens, add_special_tokens=False,
+        ).input_ids.to(device)
         full_ids = torch.cat([prompt_ids, comp_ids], dim=1)
         with torch.set_grad_enabled(model.training):
             logits = model(full_ids).logits

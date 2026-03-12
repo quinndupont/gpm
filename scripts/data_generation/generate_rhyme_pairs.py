@@ -22,6 +22,7 @@ from scripts.data_generation.claude_utils import (
     get_educator_system_prompt,
     load_requests,
 )
+from scripts.data_generation.rhyme_words import format_endword_constraint, pick_endwords
 from scripts.eval.form_registry import (
     RHYMING_FORMS,
     form_description,
@@ -35,8 +36,6 @@ from scripts.eval.meter_analyzer import (
     format_analysis_for_prompt as format_meter_for_prompt,
 )
 from scripts.eval.rhyme_analyzer import analyze, format_analysis_for_prompt
-
-from scripts.data_generation.rhyme_words import format_endword_constraint, pick_endwords
 
 ROOT = Path(__file__).resolve().parents[2]
 RHYME_TRAINING = ROOT / "data" / "rhyme_training"
@@ -86,7 +85,7 @@ def main():
     parser.add_argument("--constrained", dest="constrained", action="store_true",
                         default=True, help="Use CMU-seeded end-words (default)")
     parser.add_argument("--no-constrained", dest="constrained", action="store_false",
-                        help="Unconstrained poem generation; use Anthropic (Sonnet/Opus), no local fallback")
+                        help="Unconstrained generation; use Anthropic (Sonnet/Opus), no fallback")
     parser.add_argument("--retries", type=int, default=2,
                         help="Retries with fresh end-words on rhyme fail (constrained mode)")
     args = parser.parse_args()
@@ -144,7 +143,10 @@ def main():
             rhyme_result = None
             brief_for_poet = brief
             if args.constrained and scheme:
-                brief_for_poet = brief.rstrip() + "\n\nEnd-words are fixed; write lines that conclude with the specified words."
+                brief_for_poet = (
+                    brief.rstrip()
+                    + "\n\nEnd-words are fixed; write lines that conclude with the specified words."
+                )
             for attempt in range(args.retries + 1):
                 if args.constrained and scheme:
                     endwords = pick_endwords(scheme, seed=args.seed + i * 1000 + attempt)
@@ -172,7 +174,8 @@ def main():
                 if not poem.strip():
                     break
                 rhyme_result = analyze(poem, expected_form=form_name)
-                if rhyme_result.get("matches_form") or not args.constrained or attempt >= args.retries:
+                if (rhyme_result.get("matches_form")
+                        or not args.constrained or attempt >= args.retries):
                     break
             if not poem.strip():
                 continue

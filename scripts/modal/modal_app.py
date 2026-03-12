@@ -145,7 +145,10 @@ def main():
             if not args.train_only:
                 _prepare_export_for("poet")
                 if args.reinforce:
-                    exp = str(ROOT / "scripts" / "modal" / "export_gguf.py") + "::export_poet_reinforce"
+                    exp = (
+                        str(ROOT / "scripts" / "modal" / "export_gguf.py")
+                        + "::export_poet_reinforce"
+                    )
                 else:
                     exp = str(ROOT / "scripts" / "modal" / "export_gguf.py") + "::export_poet"
                 subprocess.run([sys.executable, "-m", "modal", "run", exp], check=True)

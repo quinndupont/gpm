@@ -175,7 +175,9 @@ def main():
     parser = argparse.ArgumentParser(description="Interactive training with model discovery")
     parser.add_argument("--educator-only", action="store_true")
     parser.add_argument("--poet-only", action="store_true")
-    parser.add_argument("--reinforce", action="store_true", help="Train poet with REINFORCE (Stage 2)")
+    parser.add_argument(
+        "--reinforce", action="store_true", help="Train poet with REINFORCE (Stage 2)"
+    )
     parser.add_argument("--train-only", action="store_true", help="Skip export")
     parser.add_argument("--num-epochs", type=int, default=None)
     parser.add_argument(
