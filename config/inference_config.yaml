@@ -48,3 +48,6 @@ performance:
   model_load_time: "<30s per model"
 
 max_revisions: 2
+
+# Revision mode: "srpo" (poet self-revises) or "educator" (educator generates instructions)
+revision_mode: "srpo"

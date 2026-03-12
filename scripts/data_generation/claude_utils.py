@@ -8,8 +8,21 @@ RAW_GOOD = ROOT / "data" / "raw" / "good"
 RAW_BAD = ROOT / "data" / "raw" / "bad"
 
 # Model choice: Opus 4.6 for hardest tasks, Sonnet 4.5 for easier
+# Direct Anthropic API model names
 CLAUDE_OPUS_4_6 = "claude-opus-4-6"
 CLAUDE_SONNET_4_5 = "claude-sonnet-4-5"
+
+# Bedrock model IDs (cross-region inference with us. prefix)
+BEDROCK_MODEL_MAP = {
+    "claude-opus-4-6": "us.anthropic.claude-opus-4-6-v1",
+    "claude-sonnet-4-6": "us.anthropic.claude-sonnet-4-6",
+    "claude-sonnet-4-5": "us.anthropic.claude-sonnet-4-5-20250929-v1:0",
+    "claude-sonnet-4-20250514": "us.anthropic.claude-sonnet-4-20250514-v1:0",
+    "claude-opus-4-5": "us.anthropic.claude-opus-4-5-20251101-v1:0",
+}
+
+# Default AWS region for Bedrock
+BEDROCK_REGION = "us-east-1"
 
 QUOTA_FILE = ROOT / "data" / ".llm_quota.json"
 
@@ -229,15 +242,42 @@ def call_claude(
         print(f"  [local/{local_cfg.get('model', 'ollama')}]", file=sys.stderr, flush=True)
         return _call_local(user_message, system_message, max_tokens, local_cfg)
 
-    from anthropic import Anthropic, APIStatusError
+    # Determine backend: Bedrock or direct Anthropic API
+    use_bedrock = os.environ.get("USE_BEDROCK", "").lower() in ("1", "true", "yes")
 
-    api_key = os.environ.get("ANTHROPIC_API_KEY")
-    if not api_key:
-        raise RuntimeError("Set ANTHROPIC_API_KEY in .env or environment")
+    if use_bedrock:
+        return _call_bedrock(
+            user_message, system_message, actual_model, max_tokens,
+            fallback_model, state
+        )
+    else:
+        return _call_anthropic(
+            user_message, system_message, actual_model, max_tokens,
+            fallback_model, state
+        )
 
-    client = Anthropic(api_key=api_key)
+
+def _call_bedrock(
+    user_message: str,
+    system_message: str | None,
+    model: str,
+    max_tokens: int,
+    fallback_model: str | None,
+    state: dict,
+) -> str:
+    """Call Claude via Amazon Bedrock."""
+    import os
+    from anthropic import AnthropicBedrock, APIStatusError
+
+    region = os.environ.get("AWS_REGION", BEDROCK_REGION)
+    client = AnthropicBedrock(aws_region=region)
+
+    # Map model name to Bedrock model ID
+    bedrock_model = BEDROCK_MODEL_MAP.get(model, model)
+    bedrock_fallback = BEDROCK_MODEL_MAP.get(fallback_model, fallback_model) if fallback_model else None
+
     kwargs = {
-        "model": actual_model,
+        "model": bedrock_model,
         "max_tokens": max_tokens,
         "messages": [{"role": "user", "content": user_message}],
     }
@@ -247,14 +287,64 @@ def call_claude(
     try:
         response = client.messages.create(**kwargs)
         text = response.content[0].text
-        if actual_model == CLAUDE_OPUS_4_6:
+        if model == CLAUDE_OPUS_4_6:
             state["opus_used"] = state.get("opus_used", 0) + 1
         else:
             state["sonnet_used"] = state.get("sonnet_used", 0) + 1
         _save_quota_state(state)
         return text
     except APIStatusError as e:
-        if e.status_code == 529 and fallback_model and fallback_model != actual_model:
+        if e.status_code in (529, 429) and bedrock_fallback and bedrock_fallback != bedrock_model:
+            print(
+                f"  [Bedrock throttled, falling back to {fallback_model}]",
+                file=sys.stderr,
+                flush=True,
+            )
+            kwargs["model"] = bedrock_fallback
+            response = client.messages.create(**kwargs)
+            text = response.content[0].text
+            state["sonnet_used"] = state.get("sonnet_used", 0) + 1
+            _save_quota_state(state)
+            return text
+        raise
+
+
+def _call_anthropic(
+    user_message: str,
+    system_message: str | None,
+    model: str,
+    max_tokens: int,
+    fallback_model: str | None,
+    state: dict,
+) -> str:
+    """Call Claude via direct Anthropic API."""
+    import os
+    from anthropic import Anthropic, APIStatusError
+
+    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    if not api_key:
+        raise RuntimeError("Set ANTHROPIC_API_KEY in .env or environment")
+
+    client = Anthropic(api_key=api_key)
+    kwargs = {
+        "model": model,
+        "max_tokens": max_tokens,
+        "messages": [{"role": "user", "content": user_message}],
+    }
+    if system_message:
+        kwargs["system"] = system_message
+
+    try:
+        response = client.messages.create(**kwargs)
+        text = response.content[0].text
+        if model == CLAUDE_OPUS_4_6:
+            state["opus_used"] = state.get("opus_used", 0) + 1
+        else:
+            state["sonnet_used"] = state.get("sonnet_used", 0) + 1
+        _save_quota_state(state)
+        return text
+    except APIStatusError as e:
+        if e.status_code == 529 and fallback_model and fallback_model != model:
             print(
                 f"  [529 over capacity, falling back to {fallback_model}]",
                 file=sys.stderr,

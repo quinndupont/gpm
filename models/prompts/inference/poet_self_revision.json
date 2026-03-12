@@ -1,0 +1,10 @@
+{
+  "id": "poet_self_revision",
+  "version": "1",
+  "description": "Poet self-revision at inference time (SRPO capability)",
+  "persona": "poet",
+  "templates": {
+    "default": "## Original Brief\n{brief}\n\n## Your Draft\n{draft}\n\n## Feedback\n{critique}\n\n{rhyme_ctx}---\n\nRevise this poem. Address the feedback. Keep what works. Output ONLY the revised poem."
+  },
+  "variables": ["brief", "draft", "critique", "rhyme_ctx"]
+}

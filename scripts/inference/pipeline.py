@@ -59,6 +59,7 @@ class Config:
         self.poet_model_path = poet.get("model_path", "./models/qwen2.5-7b-poet-Q4_K_M.gguf")
         self.poet_ctx = poet.get("n_ctx", 2048)
         self.max_revisions = yaml_config.get("max_revisions", 3)
+        self.revision_mode = yaml_config.get("revision_mode", "srpo")  # "srpo" or "educator"
         self.educator_stop = (
             edu.get("generation_brief", {}).get("stop")
             or edu.get("critique", {}).get("stop")
@@ -97,6 +98,7 @@ class PoetryPipeline:
         self.poet = None
         self.educator_system = self.config.educator_persona_condensed
         self.max_revisions = self.config.max_revisions
+        self.revision_mode = self.config.revision_mode
         self.user_profile = self.config.user_style_profile
         self.educator_model_override = educator_model_override
         self.poet_model_override = poet_model_override
@@ -303,10 +305,55 @@ class PoetryPipeline:
             rhyme_ctx=rhyme_ctx, user_ctx=user_ctx,
         )
 
-    def _poet_generate(self, prompt: str, is_revision: bool = False) -> str:
+    def _format_rhyme_deviations(self, draft: str, brief: str) -> str:
+        """Format rhyme deviations for poet self-revision prompt."""
+        rhyme = self._rhyme_gate(draft, brief)
+        if not rhyme or not rhyme.get("deviations"):
+            return ""
+        dev_lines = []
+        for d in rhyme["deviations"]:
+            dev_lines.append(
+                f'- Line {d["line"]}: "{d["word"]}" does not rhyme with '
+                f'"{d["expected_rhyme_with"]}" (needs {d["expected_label"]} rhyme)'
+            )
+        return "\n\nRhyme errors to fix:\n" + "\n".join(dev_lines) + "\n"
+
+    def _poet_generate(
+        self,
+        prompt: str,
+        is_revision: bool = False,
+        revision_context: dict | None = None,
+    ) -> str:
+        """Generate or revise a poem.
+
+        For SRPO mode, revision_context contains:
+          - brief: the original generation brief
+          - draft: the previous draft
+          - critique: the educator's critique
+        """
         temp = 0.75 if is_revision else 0.8
-        poet_prompt = prompt if is_revision else self._build_poet_prompt(prompt)
         system = get_persona("poet")
+
+        if is_revision and revision_context:
+            # SRPO path: poet self-revises using learned capability
+            rhyme_ctx = self._format_rhyme_deviations(
+                revision_context["draft"],
+                revision_context.get("brief", ""),
+            )
+            poet_prompt = render_prompt(
+                "inference", "poet_self_revision",
+                brief=revision_context.get("brief", ""),
+                draft=revision_context["draft"],
+                critique=revision_context["critique"],
+                rhyme_ctx=rhyme_ctx,
+            )
+        elif is_revision:
+            # Legacy path: prompt is already built (educator-driven revision)
+            poet_prompt = prompt
+        else:
+            # Generation path
+            poet_prompt = self._build_poet_prompt(prompt)
+
         if self.poet_model_override and self.poet_model_override.startswith("ollama:"):
             model = self.poet_model_override[7:]
             return self._ollama_chat(
@@ -559,29 +606,45 @@ class PoetryPipeline:
                 raw = input("\nYour direction for revision (Enter to skip): ").strip()
                 user_input = raw
 
-            prev_history = revision_history[:-1]
-            if prev_history and verbose:
-                print("→ Educator: summarizing past advice...", flush=True)
-            past_summary = self._summarize_critique_history(prev_history) if prev_history else ""
+            # SRPO mode: Poet self-revises using (draft + critique) directly
+            if self.revision_mode == "srpo":
+                if verbose:
+                    print(f"→ Poet: self-revising (revision {i + 1})...", flush=True)
+                draft = self._poet_generate(
+                    prompt=None,
+                    is_revision=True,
+                    revision_context={
+                        "brief": brief,
+                        "draft": draft,
+                        "critique": critique,
+                    },
+                )
+                out("POET", f"Self-revision {i + 1} → Educator", draft)
+            else:
+                # Educator mode: Educator generates revision brief + instructions
+                prev_history = revision_history[:-1]
+                if prev_history and verbose:
+                    print("→ Educator: summarizing past advice...", flush=True)
+                past_summary = self._summarize_critique_history(prev_history) if prev_history else ""
 
-            if verbose:
-                print("→ Educator: building revision brief...", flush=True)
-            revision_brief = self._educator_generate(
-                self._build_revision_brief_prompt(
-                    draft, critique, brief, prev_history, user_input, verbose, past_summary
-                ),
-                task="revision_brief",
-            )
-            out("EDUCATOR", "Revision brief → Poet", revision_brief)
+                if verbose:
+                    print("→ Educator: building revision brief...", flush=True)
+                revision_brief = self._educator_generate(
+                    self._build_revision_brief_prompt(
+                        draft, critique, brief, prev_history, user_input, verbose, past_summary
+                    ),
+                    task="revision_brief",
+                )
+                out("EDUCATOR", "Revision brief → Poet", revision_brief)
 
-            if verbose:
-                print(f"→ Poet: generating revision {i + 1}...", flush=True)
-            revision_prompt = self._build_poet_revision_prompt(
-                draft, critique, revision_brief, prev_history,
-                user_input, verbose, past_summary, brief=brief,
-            )
-            draft = self._poet_generate(revision_prompt, is_revision=True)
-            out("POET", f"Revision {i + 1} draft → Educator", draft)
+                if verbose:
+                    print(f"→ Poet: generating revision {i + 1}...", flush=True)
+                revision_prompt = self._build_poet_revision_prompt(
+                    draft, critique, revision_brief, prev_history,
+                    user_input, verbose, past_summary, brief=brief,
+                )
+                draft = self._poet_generate(revision_prompt, is_revision=True)
+                out("POET", f"Revision {i + 1} draft → Educator", draft)
 
         # Append final draft so revision_round_changes has full sequence
         if revision_history and revision_history[-1]["draft"] != draft:

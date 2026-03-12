@@ -1,0 +1,52 @@
+# Poet SRPO (Stage 2) — Self-Refinement Policy Optimization
+# Trains poet to both generate AND self-revise based on critique.
+# Replaces REINFORCE with trajectory-based learning: (prompt, draft_0, critique, draft_1)
+
+base_model: "meta-llama/Llama-3.1-8B-Instruct"
+model_loading:
+  quantization: "nf4"
+  compute_dtype: "bfloat16"
+  double_quant: true
+
+lora:
+  rank: 64
+  alpha: 128
+  dropout: 0.05
+  target_modules:
+    - q_proj
+    - k_proj
+    - v_proj
+    - o_proj
+    - gate_proj
+    - up_proj
+    - down_proj
+  bias: "none"
+  task_type: "CAUSAL_LM"
+
+srpo:
+  # Balance between generation and revision objectives
+  # alpha=0.4 means 40% weight on generation, 60% on revision
+  alpha: 0.4
+  # KL penalty coefficient (prevents drift from SFT reference)
+  beta_kl: 0.08
+  # Reward weight normalization: w(r) = clip((r1 - r0) / norm, 0, max)
+  reward_normalization: 0.2
+  max_reward_weight: 2.0
+  # Generation settings (used only if re-generating drafts during training)
+  max_gen_tokens: 512
+
+training:
+  learning_rate: 5e-6  # Lower than REINFORCE for stability
+  warmup_ratio: 0.05
+  num_epochs: 3
+  per_device_batch_size: 1
+  gradient_accumulation_steps: 8
+  max_seq_length: 1536  # Longer to accommodate (prompt + draft + critique + revision)
+  weight_decay: 0.01
+  bf16: true
+  max_grad_norm: 0.5
+
+checkpointing:
+  save_strategy: "epoch"
+  save_path: "/vol/checkpoints/poet_srpo/"
+  save_total_limit: 2

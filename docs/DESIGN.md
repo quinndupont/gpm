@@ -742,18 +742,46 @@ This is a **hard discrete prompt** — just text tokens. At inference, the same 
 - Teaches name/pattern/poem association before RL
 - Weaker than RL alone (binary inclusion, no gradient proportional to score quality)
 
-#### Stage 2 — REINFORCE / Reward-Weighted Regression ✓ Implemented
+#### Stage 2 — SRPO (Self-Refinement Policy Optimization) ✓ Implemented (Recommended)
+
+SRPO trains the Poet to both **generate** AND **self-revise** in a single training run:
+
+- **Training data:** Trajectories of `(prompt, draft_0, critique, draft_1)` where:
+  - `draft_0` = initial generation from SFT poet
+  - `critique` = Educator (or Claude) critique of the draft
+  - `draft_1` = gold-standard revision (Claude-generated)
+- **Loss function:**
+  ```
+  L = α · L_gen + (1-α) · L_rev + β · KL(π_policy || π_ref)
+
+  Where:
+    L_gen = -log P(draft_0 | prompt)           # Generation objective
+    L_rev = -w(r) · log P(draft_1 | prompt, draft_0, critique)  # Revision objective
+    w(r) = clip((reward_1 - reward_0) / 0.2, 0, 2)  # Improvement weight
+    α = 0.4, β = 0.08
+  ```
+- **Key advantage:** Poet learns two skills (π for generation, π† for self-revision) — at inference, the Poet can revise its own work based on Educator feedback, eliminating 4 Educator calls per revision round
+- **Implementation:** `scripts/training/srpo_train.py`, config: `config/srpo_training.yaml`
+- **Data generation:** `scripts/data/generate_srpo_data.py`, config: `config/srpo_data_generation.yaml`
+
+**Running Stage 2 (SRPO):**
+- **Modal** (recommended):
+  1. Generate data: `modal run scripts/modal/generate_srpo_data.py --max-trajectories 5000`
+  2. Train: `modal run scripts/modal/train_poet_srpo.py [--sft-checkpoint /vol/checkpoints/poet/final]`
+- **SageMaker**: `python scripts/sagemaker/train_sagemaker.py --task srpo --sft-s3 s3://BUCKET/checkpoints/poet/JOB_NAME/output/model.tar.gz` — SRPO trajectories should be uploaded to `s3://BUCKET/data/srpo_training/trajectories.jsonl`
+
+#### Stage 2 — REINFORCE (Legacy Alternative)
 
 - Generate N completions per prompt from the current policy (`num_completions=4`, `temperature=0.8`)
 - Score each with `compute_reward()` in `rhyme_analyzer.py` (partial-credit rhyme scoring)
 - Normalize scores to advantages: Â = (score − mean) / std
 - Loss: L = −mean(Â · log P_θ(poem | prompt)) + β · KL[π_θ ‖ π_SFT]  (β=0.1)
 - KL is computed per completion as `mean(log π_θ − log π_ref)` over tokens — approximate importance-sampling estimate, not exact KL, but stable in practice
-- **Key advantage:** deterministic rhyme scorer replaces the need for a trained neural reward model — cleaner gradients, faster iteration
+- **Note:** REINFORCE only teaches generation (π), not self-revision. Use SRPO for models that self-revise.
 - Implementation: `scripts/training/reinforce_train.py`, config: `config/reinforce_training.yaml`
 
-**Running Stage 2:**
-- **Modal** (recommended): `modal run scripts/modal/train_poet_reinforce.py [--sft-checkpoint /vol/checkpoints/poet/final]` — uses an A100 (generation is slow; A10G is not enough), reads Stage 1 checkpoint from the shared `poetry-checkpoints` volume
+**Running Stage 2 (REINFORCE):**
+- **Modal**: `modal run scripts/modal/train_poet_reinforce.py [--sft-checkpoint /vol/checkpoints/poet/final]` — uses an A100 (generation is slow; A10G is not enough), reads Stage 1 checkpoint from the shared `poetry-checkpoints` volume
 - **SageMaker**: `python scripts/sagemaker/train_sagemaker.py --task reinforce --sft-s3 s3://BUCKET/checkpoints/poet/JOB_NAME/output/model.tar.gz` — pass the Stage 1 artifact URI via `--sft-s3`. It is injected as a second input channel (`sft_checkpoint`); SageMaker automatically extracts the tarball, and the entrypoint finds the adapter at `SM_CHANNEL_SFT_CHECKPOINT/poet/final/`.
 
 ### Rhyme Scheme as Conditioning Variable
@@ -877,6 +905,11 @@ performance:
   first_token_latency: "<100ms"
   sustained_throughput: ">=20 tokens/sec"
   model_load_time: "<30s per model"
+
+# ── Revision Mode ──
+# "srpo" = Poet self-revises using learned capability (recommended for SRPO-trained models)
+# "educator" = Educator generates revision brief + instructions (legacy)
+revision_mode: "srpo"
 ```
 
 #### S4.3 Multi-Agent Orchestration (Updated for llama.cpp)
@@ -1437,9 +1470,11 @@ gpm/
 │   ├── educator_training/            # Quality-gated training data
 │   │   ├── train.jsonl
 │   │   └── valid.jsonl
-│   └── poet_training/
-│       ├── train.jsonl
-│       └── valid.jsonl
+│   ├── poet_training/
+│   │   ├── train.jsonl
+│   │   └── valid.jsonl
+│   └── srpo_training/               # SRPO trajectories
+│       └── trajectories.jsonl       # (prompt, draft_0, critique, draft_1)
 ├── models/
 │   ├── prompts/                      # Prompt architecture (JSON + loader)
 │   │   ├── loader.py                 # get_persona, get_prompt, render_prompt
@@ -1459,11 +1494,20 @@ gpm/
 │   │   ├── generate_lessons.py       # T6: Craft lessons
 │   │   ├── generate_poet_pairs.py    # Reverse briefs for poet
 │   │   └── quality_gate.py           # S2.2 quality filter
+│   ├── data/
+│   │   └── generate_srpo_data.py     # Generate SRPO trajectories
 │   ├── modal/
 │   │   ├── train_educator.py         # Modal function: educator QLoRA
 │   │   ├── train_poet.py             # Modal function: poet QLoRA
+│   │   ├── train_poet_srpo.py        # Modal function: SRPO Stage 2
+│   │   ├── train_poet_reinforce.py   # Modal function: REINFORCE Stage 2
+│   │   ├── generate_srpo_data.py     # Modal function: SRPO data generation
 │   │   ├── export_gguf.py            # Modal function: merge + quantize
 │   │   └── modal_app.py              # Modal app orchestration
+│   ├── training/
+│   │   ├── qlora_train.py            # QLoRA SFT trainer
+│   │   ├── reinforce_train.py        # REINFORCE Stage 2
+│   │   └── srpo_train.py             # SRPO Stage 2 (recommended)
 │   ├── eval/
 │   │   └── voice_consistency.py      # S6.1 tests
 │   └── inference/
@@ -1476,7 +1520,10 @@ gpm/
 │   ├── model_registry.yaml           # Base model options (Qwen, Llama, etc.)
 │   ├── educator_training.yaml
 │   ├── poet_training.yaml
+│   ├── reinforce_training.yaml       # REINFORCE Stage 2 config
+│   ├── srpo_training.yaml            # SRPO Stage 2 config (recommended)
+│   ├── srpo_data_generation.yaml     # SRPO trajectory generation config
 │   ├── export_pipeline.yaml
-│   └── inference_config.yaml         # Educator/poet paths, overrides
+│   └── inference_config.yaml         # Educator/poet paths, revision_mode
 └── README.md
 ```

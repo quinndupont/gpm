@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""SageMaker HuggingFace training entry point. Reads SM_* env vars and runs QLoRA or REINFORCE."""
+"""SageMaker HuggingFace training entry point. Reads SM_* env vars and runs QLoRA, REINFORCE, or SRPO."""
 import os
 import sys
 from pathlib import Path
@@ -50,8 +50,36 @@ def main():
         print(f"REINFORCE complete. Model saved to {checkpoint_dir}/final")
         return
 
+    if task == "srpo":
+        from srpo_train import run_srpo_training
+        # Stage 1 model.tar.gz is passed as the "sft_checkpoint" input channel
+        sft_channel = Path(os.environ.get("SM_CHANNEL_SFT_CHECKPOINT", ""))
+        sft_checkpoint = sft_channel / "poet" / "final"
+        if not sft_checkpoint.exists():
+            raise FileNotFoundError(
+                f"SFT checkpoint not found at {sft_checkpoint}. "
+                "Pass --sft-s3 <s3-uri-of-stage1-model.tar.gz> to train_sagemaker.py."
+            )
+        # SRPO trajectories should be in train_dir/srpo_training/ or directly in train_dir
+        srpo_data_dir = train_dir / "srpo_training"
+        if not srpo_data_dir.exists():
+            srpo_data_dir = train_dir  # fall back to train_dir root
+        checkpoint_dir = model_dir / "poet_srpo"
+        checkpoint_dir.mkdir(parents=True, exist_ok=True)
+        run_srpo_training(
+            config_path=Path("/opt/ml/code/config/srpo_training.yaml"),
+            sft_checkpoint=sft_checkpoint,
+            data_dir=srpo_data_dir,
+            train_filename="trajectories.jsonl",
+            checkpoint_dir=checkpoint_dir,
+            num_epochs_override=num_epochs,
+            base_model_override=base_model_override,
+        )
+        print(f"SRPO complete. Model saved to {checkpoint_dir}/final")
+        return
+
     if task not in TASK_CONFIG:
-        raise ValueError(f"Unknown task: {task}. Must be educator|poet|reinforce")
+        raise ValueError(f"Unknown task: {task}. Must be educator|poet|reinforce|srpo")
     config_name, train_file, valid_file, subdir = TASK_CONFIG[task]
     config_path = Path("/opt/ml/code/config") / config_name
     checkpoint_dir = model_dir / subdir

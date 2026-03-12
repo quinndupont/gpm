@@ -1,0 +1,11 @@
+{
+  "id": "poet_revision_srpo",
+  "version": "1",
+  "description": "Self-revision prompt for SRPO training: (brief, draft, critique) → improved poem",
+  "persona": "poet",
+  "templates": {
+    "default": "## Original Brief\n{brief}\n\n## Your Previous Draft\n{draft}\n\n## Critique Received\n{critique}\n\n---\n\nRevise the poem based on the critique. Address each point specifically. Preserve what works. Output ONLY the revised poem.",
+    "with_rhyme_ctx": "## Original Brief\n{brief}\n\n## Your Previous Draft\n{draft}\n\n## Critique Received\n{critique}\n\n{rhyme_ctx}\n---\n\nRevise the poem based on the critique. Address each point specifically. Preserve what works. Output ONLY the revised poem."
+  },
+  "variables": ["brief", "draft", "critique", "rhyme_ctx"]
+}
