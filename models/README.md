@@ -23,7 +23,7 @@ Prompts are stored as JSON in `prompts/` and loaded via `models.prompts.loader`.
 
 ### Personas (`prompts/personas/`)
 
-System prompts that define model behavior:
+System prompts that define model behavior:  
 
 | ID | Description |
 |----|-------------|

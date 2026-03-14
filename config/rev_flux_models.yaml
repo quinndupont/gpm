@@ -1,12 +1,20 @@
 # RevFlux model configs for comparison.
-# educator/poet: "gguf" = use inference_config.yaml; "gguf:path" = explicit GGUF; "ollama:tag" = Ollama
+# educator/poet: "gguf" = use inference_config.yaml; "gguf:path" = explicit GGUF; "ollama:tag" = Ollama; "bedrock:model-id" = AWS Bedrock
 # revisions: per-model sweep (vanilla: rev0+rev1 for change_pcts; fine-tuned: full sweep)
 # test_models: model IDs to run when --test (default when no --models given)
+#
+# Bedrock inference profiles (required for on-demand throughput):
+#   Anthropic: us.anthropic.claude-opus-4-6-v1:0, us.anthropic.claude-sonnet-4-6-v1:0
+#   Meta: us.meta.llama4-maverick-17b-instruct-v1:0
+#   Qwen: us.qwen.qwen3-32b-v1:0
+# Requires AWS credentials configured (aws configure) and boto3 installed (pip install boto3)
 test_models:
-  - trained-qwen2.5-7b
+  - trained-llama3.1-8b
   - qwen2.5-7b-vanilla
   - llama3.1-8b-vanilla
   - command-r7b-vanilla
+  - qwen3.5-9b-claude-opus-vanilla
+  - claude-sonnet-4  # Frontier model for comparison
 
 models:
   # --- Vanilla baselines (rev0+rev1: same model as educator+poet for change_pcts) ---
@@ -28,37 +36,77 @@ models:
     poet: ollama:command-r7b:7b
     revisions: [0, 1, 3]
 
-  # Vanilla GGUF (no Ollama needed; uses downloaded base models)
-  - id: llama3.1-8b-vanilla-gguf
-    label: "Vanilla Llama 3.1 8B (GGUF)"
-    educator: gguf:./models/llama3.1-8b-instruct-Q4_K_M.gguf
-    poet: gguf:./models/llama3.1-8b-instruct-Q4_K_M.gguf
+  - id: qwen3.5-9b-claude-opus-vanilla
+    label: "Vanilla Qwen 3.5 9B (Claude Opus Distilled)"
+    educator: ollama:qwen3.5-9b-claude-opus:9b-q4
+    poet: ollama:qwen3.5-9b-claude-opus:9b-q4
     revisions: [0, 1, 3]
+
+  # Vanilla GGUF (no Ollama needed; uses downloaded base models)
+  # NOTE: Commented out - GGUF file not present. Use llama3.1-8b-vanilla (Ollama) instead.
+  # - id: llama3.1-8b-vanilla-gguf
+  #   label: "Vanilla Llama 3.1 8B (GGUF)"
+  #   educator: gguf:./models/llama3.1-8b-instruct-Q4_K_M.gguf
+  #   poet: gguf:./models/llama3.1-8b-instruct-Q4_K_M.gguf
+  #   revisions: [0, 1, 3]
 
   # Cohere GGUF has Jinja2 template incompatibility with llama.cpp; use command-r7b-vanilla (Ollama) instead
 
   # --- Fine-tuned variants (full revision sweep) ---
   - id: trained-llama3.1-8b
     label: "Fine-tuned Llama 3.1 8B"
-    educator: gguf:./models/llama3.1-8b-educator-Q4_K_M.gguf
-    poet: gguf:./models/llama3.1-8b-poet-Q4_K_M.gguf
+    educator: gguf:./models/llama3.1-8b-educator-Q4_K_M-trained.gguf
+    poet: gguf:./models/llama3.1-8b-poet-Q4_K_M-trained.gguf
     revisions: [0, 1, 3, 5]
 
-  - id: trained-qwen2.5-7b
-    label: "Fine-tuned Qwen 2.5 7B"
-    educator: gguf:./models/qwen2.5-7b-educator-Q4_K_M.gguf
-    poet: gguf:./models/qwen2.5-7b-poet-Q4_K_M.gguf
-    revisions: [0, 1, 3, 5]
+  # NOTE: Commented out - GGUF files not present. Train qwen models or use Ollama variant.
+  # - id: trained-qwen2.5-7b
+  #   label: "Fine-tuned Qwen 2.5 7B"
+  #   educator: gguf:./models/qwen2.5-7b-educator-Q4_K_M-trained.gguf
+  #   poet: gguf:./models/qwen2.5-7b-poet-Q4_K_M-trained.gguf
+  #   revisions: [0, 1, 3, 5]
 
   - id: trained-command-r7b
     label: "Fine-tuned Command R7B"
-    educator: gguf:./models/command-r7b-educator-Q4_K_M.gguf
-    poet: gguf:./models/command-r7b-poet-Q4_K_M.gguf
+    educator: gguf:./models/command-r7b-educator-Q4_K_M-trained.gguf
+    poet: gguf:./models/command-r7b-poet-Q4_K_M-trained.gguf
     revisions: [0, 1, 3, 5]
 
   # Legacy: explicit Qwen paths (matches inference_config; avoids missing Llama GGUF)
-  - id: trained
-    label: "Trained (GGUF)"
-    educator: gguf:./models/qwen2.5-7b-educator-Q4_K_M.gguf
-    poet: gguf:./models/qwen2.5-7b-poet-Q4_K_M.gguf
-    revisions: [0, 1, 3, 5]
+  # NOTE: Commented out - Qwen GGUF files not present. Use trained-llama3.1-8b or trained-command-r7b instead.
+  # - id: trained
+  #   label: "Trained (GGUF)"
+  #   educator: gguf:./models/qwen2.5-7b-educator-Q4_K_M.gguf
+  #   poet: gguf:./models/qwen2.5-7b-poet-Q4_K_M.gguf
+  #   revisions: [0, 1, 3, 5]
+
+  # --- Frontier models via AWS Bedrock ---
+  # NOTE: These models require active access in AWS Bedrock Console
+  # Go to Bedrock Console > Model access > Modify model access to enable
+
+  # Anthropic Claude models
+  - id: claude-opus-4
+    label: "Claude Opus 4.6 (Bedrock)"
+    educator: bedrock:us.anthropic.claude-opus-4-6-v1
+    poet: bedrock:us.anthropic.claude-opus-4-6-v1
+    revisions: [0, 1, 3]
+
+  - id: claude-sonnet-4
+    label: "Claude Sonnet 4.6 (Bedrock)"
+    educator: bedrock:us.anthropic.claude-sonnet-4-6
+    poet: bedrock:us.anthropic.claude-sonnet-4-6
+    revisions: [0, 1, 3]
+
+  # Meta Llama models
+  - id: llama4-maverick
+    label: "Llama 4 Maverick 17B (Bedrock)"
+    educator: bedrock:us.meta.llama4-maverick-17b-instruct-v1:0
+    poet: bedrock:us.meta.llama4-maverick-17b-instruct-v1:0
+    revisions: [0, 1, 3]
+
+  # Qwen models
+  - id: qwen3-32b
+    label: "Qwen 3 32B (Bedrock)"
+    educator: bedrock:qwen.qwen3-32b-v1:0
+    poet: bedrock:qwen.qwen3-32b-v1:0
+    revisions: [0, 1, 3]

@@ -4,6 +4,7 @@ Rhyme benchmark: run prompts that request rhyming forms, analyze outputs with rh
 """
 import argparse
 import json
+from datetime import datetime
 from pathlib import Path
 
 from scripts.benchmarks.rhyme_bench.prompts import RHYME_PROMPTS
@@ -23,6 +24,30 @@ def _load_models_config() -> list[dict]:
 
 def _slug(s: str) -> str:
     return s.replace(":", "-").replace("/", "_")[:32]
+
+
+def _is_educator_finetuned(model_config: dict) -> bool:
+    """Check if a model has a fine-tuned educator.
+
+    Args:
+        model_config: Model config dict with 'educator' field
+
+    Returns:
+        True if educator is fine-tuned (uses gguf or a path), False otherwise
+    """
+    educator = model_config.get("educator", "gguf")
+
+    # "gguf" or paths starting with "gguf:" or "./" indicate fine-tuned local models
+    # Ollama models (ollama:) and Bedrock models (bedrock:) are not fine-tuned
+    if educator == "gguf":
+        return True
+    if educator.startswith("gguf:"):
+        return True
+    if educator.startswith("./"):
+        return True
+
+    # Ollama and Bedrock models are vanilla/frontier
+    return False
 
 
 def run_single(
@@ -107,9 +132,33 @@ def main():
         action="store_true",
         help="Verbose pipeline output",
     )
+    parser.add_argument(
+        "--diagnostic",
+        action="store_true",
+        help="Run diagnostic analysis with failure categorization",
+    )
+    parser.add_argument(
+        "--forms",
+        nargs="+",
+        default=None,
+        help="Specific forms to test (default: all)",
+    )
+    parser.add_argument(
+        "--exclude-educator-finetuned",
+        action="store_true",
+        help="Exclude models with fine-tuned educators (only vanilla or poet-only fine-tuned)",
+    )
     args = parser.parse_args()
 
     models_config = _load_models_config()
+
+    # Filter out educator fine-tuned models if requested
+    if args.exclude_educator_finetuned:
+        models_config = [m for m in models_config if not _is_educator_finetuned(m)]
+        if not models_config:
+            print("No models available after filtering educator fine-tuned models.")
+            return
+
     model_ids = args.models or [m["id"] for m in models_config]
     models_to_run = [m for m in models_config if m["id"] in model_ids]
     if not models_to_run:
@@ -119,7 +168,11 @@ def main():
     if args.list_models:
         for m in models_config:
             mark = " *" if m["id"] in model_ids else ""
-            print(f"  {m['id']}: {m.get('label', m['id'])}{mark}")
+            educator_tag = " [educator-finetuned]" if _is_educator_finetuned(m) else ""
+            print(f"  {m['id']}: {m.get('label', m['id'])}{mark}{educator_tag}")
+        if args.exclude_educator_finetuned:
+            filtered_count = sum(1 for m in _load_models_config() if _is_educator_finetuned(m))
+            print(f"\n  ({filtered_count} educator fine-tuned models excluded)")
         return
 
     prompt_indices = args.prompts
@@ -129,9 +182,22 @@ def main():
     if prompt_indices is None:
         prompt_indices = list(range(len(RHYME_PROMPTS)))
 
+    # Filter prompts by form if requested
+    if args.forms:
+        forms_to_test = set(args.forms)
+        filtered_indices = [
+            idx for idx in prompt_indices
+            if idx < len(RHYME_PROMPTS) and RHYME_PROMPTS[idx][0] in forms_to_test
+        ]
+        prompt_indices = filtered_indices
+        if not prompt_indices:
+            print(f"No prompts found for forms: {args.forms}")
+            return
+
     from scripts.inference.pipeline import PoetryPipeline
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
+    run_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     runs = []
 
     for model_cfg in models_to_run:
@@ -161,7 +227,7 @@ def main():
             )
             runs.append(run)
             slug = _slug(mid)
-            out_file = args.output_dir / f"rhyme_{form}_{idx}_{slug}.json"
+            out_file = args.output_dir / f"rhyme_{form}_{idx}_{slug}_{run_timestamp}.json"
             with open(out_file, "w") as f:
                 json.dump(run, f, indent=2)
             ra = run["rhyme_analysis"]
@@ -171,10 +237,36 @@ def main():
                 flush=True,
             )
 
+    # Diagnostic analysis if requested
+    if args.diagnostic:
+        from scripts.benchmarks.rhyme_bench.diagnostic import (
+            DiagnosticAnalyzer,
+            DiagnosticReport,
+        )
+
+        print("\nRunning diagnostic analysis...", flush=True)
+        analyzer = DiagnosticAnalyzer()
+        report = DiagnosticReport(runs, analyzer)
+
+        # Save JSON report
+        diag_path = args.output_dir / "diagnostic_report.json"
+        with open(diag_path, "w") as f:
+            json.dump(report.to_dict(), f, indent=2)
+
+        # Save markdown summary
+        md_path = args.output_dir / "diagnostic_summary.md"
+        with open(md_path, "w") as f:
+            f.write(report.to_markdown())
+
+        print(f"\nDiagnostic report saved:")
+        print(f"  JSON: {diag_path}")
+        print(f"  Markdown: {md_path}")
+
     # Summary
     matches = sum(1 for r in runs if r["rhyme_analysis"].get("matches_form") is True)
     strict_densities = [r["rhyme_analysis"]["strict_rhyme_density"] for r in runs]
     summary = {
+        "run_timestamp": run_timestamp,
         "total_runs": len(runs),
         "matches_form_count": matches,
         "matches_form_rate": round(matches / len(runs), 2) if runs else 0,
@@ -185,6 +277,11 @@ def main():
         "prompt_indices": prompt_indices,
         "max_revisions": args.max_revisions,
     }
+    # Save timestamped summary
+    summary_timestamped_path = args.output_dir / f"summary_{run_timestamp}.json"
+    with open(summary_timestamped_path, "w") as f:
+        json.dump(summary, f, indent=2)
+    # Save latest summary for backward compatibility
     summary_path = args.output_dir / "summary.json"
     with open(summary_path, "w") as f:
         json.dump(summary, f, indent=2)
@@ -192,7 +289,8 @@ def main():
         f"\nSummary: matches_form {matches}/{len(runs)}, "
         f"mean strict_density={summary['mean_strict_rhyme_density']}",
     )
-    print(f"  {summary_path}")
+    print(f"  Latest: {summary_path}")
+    print(f"  Timestamped: {summary_timestamped_path}")
 
 
 if __name__ == "__main__":

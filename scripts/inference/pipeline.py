@@ -8,6 +8,55 @@ import re
 import sys
 from pathlib import Path
 
+# Patch Jinja2 to support break tag in GGUF chat templates
+# Many GGUF models use {% break %} which is not valid Jinja2 syntax
+# This patch MUST be applied before llama_cpp is used anywhere
+try:
+    from jinja2 import nodes
+    from jinja2.ext import Extension
+    from jinja2.sandbox import ImmutableSandboxedEnvironment
+    import jinja2 as jinja2_module
+
+    class BreakExtension(Extension):
+        """Custom Jinja2 extension to handle {% break %} tags."""
+        tags = {"break"}
+
+        def parse(self, parser):
+            lineno = next(parser.stream).lineno
+            # Create a Break node that acts like loop control
+            return nodes.Break().set_lineno(lineno)
+
+    # Patch ImmutableSandboxedEnvironment to always include BreakExtension
+    _original_sandboxed_env_init = ImmutableSandboxedEnvironment.__init__
+
+    def _patched_sandboxed_env_init(self, *args, **kwargs):
+        """Patched ImmutableSandboxedEnvironment that always includes BreakExtension."""
+        extensions = kwargs.get('extensions', [])
+        if extensions is None:
+            extensions = []
+        elif not isinstance(extensions, list):
+            extensions = list(extensions)
+        else:
+            extensions = extensions.copy()
+
+        # Add BreakExtension if not present
+        if BreakExtension not in extensions:
+            extensions.append(BreakExtension)
+
+        kwargs['extensions'] = extensions
+        _original_sandboxed_env_init(self, *args, **kwargs)
+
+    # Apply the patch to ImmutableSandboxedEnvironment
+    ImmutableSandboxedEnvironment.__init__ = _patched_sandboxed_env_init
+    jinja2_module.sandbox.ImmutableSandboxedEnvironment.__init__ = _patched_sandboxed_env_init
+
+    print("Successfully patched Jinja2 for break tag support", file=sys.stderr)
+
+except Exception as e:
+    print(f"Warning: Failed to patch Jinja2 for break tag support: {e}", file=sys.stderr)
+    import traceback
+    traceback.print_exc(file=sys.stderr)
+
 from models.prompts.loader import get_persona, render_prompt
 from scripts.eval.form_registry import (
     detect_form,
@@ -114,6 +163,9 @@ class PoetryPipeline:
             path = override[5:]
             short = _infer_short_from_gguf_path(path)
             return stop_tokens_for(short_name=short) if short else DEFAULT_STOP_TOKENS
+        if override and override.startswith("bedrock:"):
+            # Bedrock/Claude models handle stop sequences internally
+            return []
         path = (
             self.config.educator_model_path
             if role == "educator"
@@ -149,6 +201,89 @@ class PoetryPipeline:
             return getattr(r.message, "content", "") or ""
         return r.get("message", {}).get("content", "") or ""
 
+    def _bedrock_chat(
+        self,
+        model_id: str,
+        system: str,
+        user: str,
+        temperature: float = 0.4,
+        max_tokens: int = 800,
+        top_p: float = 0.9,
+    ) -> str:
+        """Call AWS Bedrock. model_id is the Bedrock inference profile ID (e.g. us.anthropic.claude-3-5-sonnet-20241022-v2:0)."""
+        try:
+            import boto3
+        except ImportError:
+            raise ImportError("pip install boto3")
+
+        bedrock = boto3.client("bedrock-runtime", region_name="us-east-1")
+
+        # Build Bedrock request based on model type
+        import json
+
+        if "anthropic" in model_id:
+            # Claude models use Messages API format
+            body = {
+                "anthropic_version": "bedrock-2023-05-31",
+                "max_tokens": max_tokens,
+                "temperature": temperature,
+                "messages": [{"role": "user", "content": user}],
+                "system": system,
+            }
+            # Claude 4+ models don't support both temperature and top_p
+            # Only add top_p for Claude 3.x models
+            if "claude-3" in model_id or "claude-sonnet-3" in model_id or "claude-opus-3" in model_id:
+                body["top_p"] = top_p
+            response = bedrock.invoke_model(
+                modelId=model_id,
+                body=json.dumps(body),
+            )
+            result = json.loads(response["body"].read())
+            return result["content"][0]["text"]
+
+        elif "meta" in model_id or "llama" in model_id:
+            # Meta Llama models use text generation format
+            prompt = f"{system}\n\n{user}"
+            body = {
+                "prompt": prompt,
+                "max_gen_len": max_tokens,
+                "temperature": temperature,
+                "top_p": top_p,
+            }
+            response = bedrock.invoke_model(
+                modelId=model_id,
+                body=json.dumps(body),
+            )
+            result = json.loads(response["body"].read())
+            return result.get("generation", result.get("text", ""))
+
+        elif "qwen" in model_id:
+            # Qwen models use Messages API format similar to Claude
+            body = {
+                "max_tokens": max_tokens,
+                "temperature": temperature,
+                "top_p": top_p,
+                "messages": [
+                    {"role": "system", "content": system},
+                    {"role": "user", "content": user}
+                ],
+            }
+            response = bedrock.invoke_model(
+                modelId=model_id,
+                body=json.dumps(body),
+            )
+            result = json.loads(response["body"].read())
+            # Try different response formats
+            if "choices" in result:
+                return result["choices"][0]["message"]["content"]
+            elif "content" in result:
+                return result["content"][0]["text"] if isinstance(result["content"], list) else result["content"]
+            else:
+                return result.get("text", result.get("generation", ""))
+
+        else:
+            raise ValueError(f"Unsupported Bedrock model: {model_id}")
+
     def _load_models(self):
         try:
             from llama_cpp import Llama
@@ -156,11 +291,11 @@ class PoetryPipeline:
             raise ImportError("pip install llama-cpp-python")
         use_edu_gguf = not (
             self.educator_model_override
-            and self.educator_model_override.startswith("ollama:")
+            and (self.educator_model_override.startswith("ollama:") or self.educator_model_override.startswith("bedrock:"))
         )
         use_poet_gguf = not (
             self.poet_model_override
-            and self.poet_model_override.startswith("ollama:")
+            and (self.poet_model_override.startswith("ollama:") or self.poet_model_override.startswith("bedrock:"))
         )
         edu_path = self.config.educator_model_path
         poet_path = self.config.poet_model_path
@@ -202,6 +337,12 @@ class PoetryPipeline:
             model = self.educator_model_override[7:]  # strip "ollama:"
             return self._ollama_chat(
                 model, self.educator_system, prompt,
+                temperature=params["temperature"], max_tokens=params["max_tokens"],
+            )
+        if self.educator_model_override and self.educator_model_override.startswith("bedrock:"):
+            model_id = self.educator_model_override[8:]  # strip "bedrock:"
+            return self._bedrock_chat(
+                model_id, self.educator_system, prompt,
                 temperature=params["temperature"], max_tokens=params["max_tokens"],
             )
         self._load_models()
@@ -359,6 +500,12 @@ class PoetryPipeline:
             return self._ollama_chat(
                 model, system, poet_prompt,
                 temperature=temp, max_tokens=4096, top_p=0.95, repeat_penalty=1.15,
+            )
+        if self.poet_model_override and self.poet_model_override.startswith("bedrock:"):
+            model_id = self.poet_model_override[8:]
+            return self._bedrock_chat(
+                model_id, system, poet_prompt,
+                temperature=temp, max_tokens=4096, top_p=0.95,
             )
         self._load_models()
         messages = [
