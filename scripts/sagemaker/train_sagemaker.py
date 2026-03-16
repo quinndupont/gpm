@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Launch SageMaker HuggingFace training job for educator, poet, REINFORCE, or SRPO."""
+"""Launch SageMaker HuggingFace training job for educator, poet, or SRPO."""
 import argparse
 import shutil
 import sys
@@ -97,11 +97,10 @@ def _build_source_dir() -> Path:
     shutil.copy(entry / "train.py", d / "train.py")
     shutil.copy(entry / "requirements.txt", d / "requirements.txt")
     shutil.copy(ROOT / "scripts" / "training" / "qlora_train.py", d / "qlora_train.py")
-    for name in ["educator_training.yaml", "poet_training.yaml", "reinforce_training.yaml", "srpo_training.yaml"]:
+    for name in ["educator_training.yaml", "poet_training.yaml", "srpo_training.yaml"]:
         cfg_file = ROOT / "config" / name
         if cfg_file.exists():
             shutil.copy(cfg_file, d / "config" / name)
-    shutil.copy(ROOT / "scripts" / "training" / "reinforce_train.py", d / "reinforce_train.py")
     srpo_train = ROOT / "scripts" / "training" / "srpo_train.py"
     if srpo_train.exists():
         shutil.copy(srpo_train, d / "srpo_train.py")
@@ -121,7 +120,7 @@ def _build_source_dir() -> Path:
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--task", choices=["educator", "poet", "reinforce", "srpo"], required=True)
+    ap.add_argument("--task", choices=["educator", "poet", "srpo"], required=True)
     ap.add_argument("--num-epochs-override", type=int, default=None)
     ap.add_argument(
         "--base-model", type=str, default=None,
@@ -134,14 +133,14 @@ def main():
     ap.add_argument(
         "--sft-s3", type=str, default=None,
         help=(
-            "S3 URI of the Stage 1 poet model artifact for REINFORCE/SRPO "
+            "S3 URI of the Stage 1 poet model artifact for SRPO "
             "(e.g. s3://bucket/checkpoints/poet/gpm-poet-TIMESTAMP/output/model.tar.gz). "
-            "Required when --task reinforce or --task srpo."
+            "Required when --task srpo."
         ),
     )
     args = ap.parse_args()
 
-    if args.task in ("reinforce", "srpo") and not args.sft_s3:
+    if args.task == "srpo" and not args.sft_s3:
         ap.error(
             f"--sft-s3 is required for --task {args.task}. "
             "Pass the S3 URI of the Stage 1 poet model artifact "
@@ -229,7 +228,7 @@ def main():
         training_data = TrainingInput(s3_data=f"s3://{bucket}/data/", input_mode="File")
 
         inputs = {"training": training_data}
-        if args.task in ("reinforce", "srpo"):
+        if args.task == "srpo":
             inputs["sft_checkpoint"] = TrainingInput(
                 s3_data=args.sft_s3, input_mode="File",
             )
