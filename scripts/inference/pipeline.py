@@ -358,6 +358,37 @@ class PoetryPipeline:
         )
         return r["choices"][0]["message"]["content"]
 
+    def _clean_poet_output(self, text: str) -> str:
+        """Remove thinking tags and extract only the poem content.
+
+        Some models (like Qwen with Claude Opus) output thinking process in <think> tags.
+        This method removes those tags and any content within them.
+        """
+        if not text:
+            return text
+
+        import re
+
+        # Handle properly closed <think>...</think> blocks
+        cleaned = re.sub(r'<think>.*?</think>', '', text, flags=re.DOTALL)
+
+        # Handle unclosed <think> tags - remove everything from <think> onwards
+        # This is common with some models that start thinking but never close the tag
+        cleaned = re.sub(r'<think>.*', '', cleaned, flags=re.DOTALL)
+
+        # Also handle thinking: prefix patterns (some models use this)
+        cleaned = re.sub(r'(?i)^thinking:.*?(?=\n\n|\Z)', '', cleaned, flags=re.DOTALL | re.MULTILINE)
+
+        # Strip leading/trailing whitespace
+        cleaned = cleaned.strip()
+
+        # If nothing remains after cleaning, return a placeholder
+        # This indicates the model only output thinking with no actual poem
+        if not cleaned:
+            cleaned = "[Model output only thinking text, no poem generated]"
+
+        return cleaned
+
     def _build_poet_prompt(self, brief: str) -> str:
         if len(brief) > BRIEF_CAP:
             brief = brief[:BRIEF_CAP].rsplit("\n", 1)[0] + "\n\n[truncated]"
@@ -495,32 +526,37 @@ class PoetryPipeline:
             # Generation path
             poet_prompt = self._build_poet_prompt(prompt)
 
+        output = ""
         if self.poet_model_override and self.poet_model_override.startswith("ollama:"):
             model = self.poet_model_override[7:]
-            return self._ollama_chat(
+            output = self._ollama_chat(
                 model, system, poet_prompt,
                 temperature=temp, max_tokens=4096, top_p=0.95, repeat_penalty=1.15,
             )
-        if self.poet_model_override and self.poet_model_override.startswith("bedrock:"):
+        elif self.poet_model_override and self.poet_model_override.startswith("bedrock:"):
             model_id = self.poet_model_override[8:]
-            return self._bedrock_chat(
+            output = self._bedrock_chat(
                 model_id, system, poet_prompt,
                 temperature=temp, max_tokens=4096, top_p=0.95,
             )
-        self._load_models()
-        messages = [
-            {"role": "system", "content": system},
-            {"role": "user", "content": poet_prompt},
-        ]
-        r = self.poet.create_chat_completion(
-            messages=messages,
-            temperature=temp,
-            top_p=0.95,
-            repeat_penalty=1.15,
-            max_tokens=4096,
-            stop=self._get_stop_tokens("poet"),
-        )
-        return r["choices"][0]["message"]["content"]
+        else:
+            self._load_models()
+            messages = [
+                {"role": "system", "content": system},
+                {"role": "user", "content": poet_prompt},
+            ]
+            r = self.poet.create_chat_completion(
+                messages=messages,
+                temperature=temp,
+                top_p=0.95,
+                repeat_penalty=1.15,
+                max_tokens=4096,
+                stop=self._get_stop_tokens("poet"),
+            )
+            output = r["choices"][0]["message"]["content"]
+
+        # Clean thinking tags and extract only the poem
+        return self._clean_poet_output(output)
 
     def _summarize_critique_history(self, revision_history: list) -> str:
         """Compress past draft+critique pairs. Each round: poet revised after critique."""
@@ -700,6 +736,11 @@ class PoetryPipeline:
             t1 = time.perf_counter()
             t_total = t1 - t_start
             poet_name = self.poet_model_override or "qwen2.5-7b-poet-Q4_K_M"
+
+            # Estimate token count (rough heuristic: ~4 chars per token)
+            estimated_tokens = len(draft) // 4
+            tokens_per_sec = round(estimated_tokens / t_total, 1) if t_total > 0 else 0
+
             return {
                 "final_poem": draft,
                 "generation_brief": None,
@@ -711,6 +752,8 @@ class PoetryPipeline:
                     "model_educator": "N/A (poet only)",
                     "model_poet": poet_name,
                     "perf_total_sec": round(t_total, 2),
+                    "perf_tokens_per_sec": tokens_per_sec,
+                    "perf_estimated_tokens": estimated_tokens,
                     "perf_first_token_ms": None,
                     "perf_avg_token_ms": None,
                 },
@@ -800,6 +843,17 @@ class PoetryPipeline:
         t_total = time.perf_counter() - t_start
         edu_name = self.educator_model_override or "qwen2.5-7b-educator-Q4_K_M"
         poet_name = self.poet_model_override or "qwen2.5-7b-poet-Q4_K_M"
+
+        # Estimate token count (rough heuristic: ~4 chars per token)
+        total_text = draft + brief
+        for h in revision_history:
+            if h.get("draft"):
+                total_text += h["draft"]
+            if h.get("critique"):
+                total_text += h["critique"]
+        estimated_tokens = len(total_text) // 4
+        tokens_per_sec = round(estimated_tokens / t_total, 1) if t_total > 0 else 0
+
         return {
             "final_poem": draft,
             "generation_brief": brief,
@@ -811,6 +865,8 @@ class PoetryPipeline:
                 "model_educator": edu_name,
                 "model_poet": poet_name,
                 "perf_total_sec": round(t_total, 2),
+                "perf_tokens_per_sec": tokens_per_sec,
+                "perf_estimated_tokens": estimated_tokens,
                 "perf_first_token_ms": None,
                 "perf_avg_token_ms": None,
             },

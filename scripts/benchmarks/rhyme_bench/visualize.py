@@ -602,6 +602,175 @@ def plot_model_performance_dimensions(
     plt.close()
 
 
+def _scheme_similarity(detected: str, expected: str) -> float:
+    """Calculate similarity between detected and expected rhyme schemes (0-1)."""
+    if not detected or not expected:
+        return 0.0
+
+    # Normalize schemes (remove spaces)
+    det = detected.replace(" ", "")
+    exp = expected.replace(" ", "")
+
+    # If lengths don't match, penalize
+    if len(det) != len(exp):
+        return 0.0
+
+    # Calculate character-wise match
+    matches = sum(1 for d, e in zip(det, exp) if d == e)
+    return matches / len(exp) if exp else 0.0
+
+
+def plot_scheme_similarity_heatmap(
+    runs: list[dict],
+    out_path: Path,
+    title: str = "Rhyme Scheme Accuracy by Model and Form",
+) -> None:
+    """Heatmap: rows=models, cols=forms, color=average scheme similarity."""
+    plt = _ensure_matplotlib()
+    import numpy as np
+    from collections import defaultdict
+
+    # Group by model and form
+    model_form_similarities = defaultdict(list)
+
+    for run in runs:
+        model_id = run.get("model_id", "unknown")
+        form = run.get("form", "unknown")
+        ra = run.get("rhyme_analysis", {})
+
+        detected = ra.get("detected_scheme", "")
+        expected = ra.get("expected_scheme", "")
+
+        if detected and expected:
+            similarity = _scheme_similarity(detected, expected)
+            model_form_similarities[(model_id, form)].append(similarity)
+
+    if not model_form_similarities:
+        return
+
+    # Calculate means
+    model_form_means = {
+        key: np.mean(sims)
+        for key, sims in model_form_similarities.items()
+    }
+
+    # Get unique models and forms
+    models = sorted(set(model for model, _ in model_form_means.keys()))
+    forms = sorted(set(form for _, form in model_form_means.keys()))
+
+    if not models or not forms:
+        return
+
+    # Build matrix
+    matrix = np.zeros((len(models), len(forms)))
+    for i, model in enumerate(models):
+        for j, form in enumerate(forms):
+            matrix[i, j] = model_form_means.get((model, form), 0.0)
+
+    fig, ax = plt.subplots(figsize=(max(10, len(forms) * 1.2), max(6, len(models) * 0.8)))
+    im = ax.imshow(matrix, cmap="RdYlGn", aspect="auto", vmin=0, vmax=1)
+
+    # Set ticks
+    ax.set_xticks(range(len(forms)))
+    ax.set_yticks(range(len(models)))
+    ax.set_xticklabels([f.title() for f in forms], rotation=30, ha="right")
+    ax.set_yticklabels(models)
+
+    # Add colorbar
+    cbar = fig.colorbar(im, ax=ax)
+    cbar.set_label("Scheme Accuracy (0-1)", rotation=270, labelpad=20)
+
+    # Add values to cells
+    for i in range(len(models)):
+        for j in range(len(forms)):
+            value = matrix[i, j]
+            if value > 0:
+                text_color = "white" if value < 0.5 else "black"
+                ax.text(j, i, f"{value:.2f}", ha="center", va="center", color=text_color, fontsize=9)
+
+    ax.set_xlabel("Poetic Form")
+    ax.set_ylabel("Model")
+    ax.set_title(title)
+    fig.tight_layout()
+    fig.savefig(out_path, dpi=150)
+    plt.close()
+
+
+def plot_form_difficulty_ranking(
+    runs: list[dict],
+    out_path: Path,
+    title: str = "Form Difficulty Ranking (by Average Scheme Accuracy)",
+) -> None:
+    """Bar chart showing average scheme accuracy by form (harder forms have lower accuracy)."""
+    plt = _ensure_matplotlib()
+    from collections import defaultdict
+
+    # Group by form
+    form_similarities = defaultdict(list)
+
+    for run in runs:
+        form = run.get("form", "unknown")
+        ra = run.get("rhyme_analysis", {})
+
+        detected = ra.get("detected_scheme", "")
+        expected = ra.get("expected_scheme", "")
+
+        if detected and expected:
+            similarity = _scheme_similarity(detected, expected)
+            form_similarities[form].append(similarity)
+
+    if not form_similarities:
+        return
+
+    # Calculate means and sort by difficulty (ascending accuracy = descending difficulty)
+    import numpy as np
+    form_means = {form: np.mean(sims) for form, sims in form_similarities.items()}
+    forms_sorted = sorted(form_means.items(), key=lambda x: x[1])
+
+    forms = [f[0] for f in forms_sorted]
+    accuracies = [f[1] for f in forms_sorted]
+
+    # Color by difficulty
+    def difficulty_color(acc):
+        if acc >= 0.7:
+            return "#27ae60"  # Green (easy)
+        elif acc >= 0.4:
+            return "#f39c12"  # Orange (medium)
+        else:
+            return "#e74c3c"  # Red (hard)
+
+    colors = [difficulty_color(acc) for acc in accuracies]
+
+    fig, ax = plt.subplots(figsize=(max(10, len(forms) * 0.8), 6))
+    bars = ax.bar(range(len(forms)), accuracies, color=colors, alpha=0.8, width=0.7)
+
+    ax.set_xticks(range(len(forms)))
+    ax.set_xticklabels([f.title() for f in forms], rotation=45, ha="right")
+    ax.set_ylabel("Average Scheme Accuracy (0-1)")
+    ax.set_title(title)
+    ax.set_ylim(0, 1.05)
+
+    # Add horizontal line at 0.5
+    ax.axhline(y=0.5, color='k', linestyle='--', alpha=0.3, linewidth=1)
+
+    # Add value labels on bars
+    for bar, acc in zip(bars, accuracies):
+        height = bar.get_height()
+        ax.text(bar.get_x() + bar.get_width() / 2., height + 0.02,
+                f'{acc:.0%}', ha='center', va='bottom', fontsize=9)
+
+    # Add legend
+    import matplotlib.patches as mpatches
+    green_patch = mpatches.Patch(color="#27ae60", label="Easy (≥70% accuracy)")
+    orange_patch = mpatches.Patch(color="#f39c12", label="Medium (40-70% accuracy)")
+    red_patch = mpatches.Patch(color="#e74c3c", label="Hard (<40% accuracy)")
+    ax.legend(handles=[green_patch, orange_patch, red_patch], loc="upper left")
+
+    fig.tight_layout()
+    fig.savefig(out_path, dpi=150)
+    plt.close()
+
+
 def main():
     parser = argparse.ArgumentParser(description="Rhyme benchmark visualizations")
     parser.add_argument(
@@ -634,6 +803,16 @@ def main():
     plot_matches_form_rate(
         runs, out_dir / "matches_form_rate.png",
         title=prefix + "Form Adherence Rate by Model",
+    )
+
+    # Scheme similarity analysis plots (always generate if we have runs)
+    plot_scheme_similarity_heatmap(
+        runs, out_dir / "scheme_similarity_heatmap.png",
+        title=prefix + "Rhyme Scheme Accuracy by Model and Form",
+    )
+    plot_form_difficulty_ranking(
+        runs, out_dir / "form_difficulty_ranking.png",
+        title=prefix + "Form Difficulty Ranking (by Average Scheme Accuracy)",
     )
 
     # Check for diagnostic report and generate diagnostic plots
@@ -676,7 +855,10 @@ def main():
         print(f"Diagnostic plots included (diagnostic_report.json found)")
         print(f"  - Model performance comparison plots generated")
 
-    print(f"Saved plots to {out_dir}")
+    print(f"\nScheme similarity analysis plots generated:")
+    print(f"  - Scheme accuracy heatmap (model x form)")
+    print(f"  - Form difficulty ranking")
+    print(f"\nSaved all plots to {out_dir}")
     return 0
 
 

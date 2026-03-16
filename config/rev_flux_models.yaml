@@ -42,43 +42,7 @@ models:
     poet: ollama:qwen3.5-9b-claude-opus:9b-q4
     revisions: [0, 1, 3]
 
-  # Vanilla GGUF (no Ollama needed; uses downloaded base models)
-  # NOTE: Commented out - GGUF file not present. Use llama3.1-8b-vanilla (Ollama) instead.
-  # - id: llama3.1-8b-vanilla-gguf
-  #   label: "Vanilla Llama 3.1 8B (GGUF)"
-  #   educator: gguf:./models/llama3.1-8b-instruct-Q4_K_M.gguf
-  #   poet: gguf:./models/llama3.1-8b-instruct-Q4_K_M.gguf
-  #   revisions: [0, 1, 3]
-
   # Cohere GGUF has Jinja2 template incompatibility with llama.cpp; use command-r7b-vanilla (Ollama) instead
-
-  # --- Fine-tuned variants (full revision sweep) ---
-  - id: trained-llama3.1-8b
-    label: "Fine-tuned Llama 3.1 8B"
-    educator: gguf:./models/llama3.1-8b-educator-Q4_K_M-trained.gguf
-    poet: gguf:./models/llama3.1-8b-poet-Q4_K_M-trained.gguf
-    revisions: [0, 1, 3, 5]
-
-  # NOTE: Commented out - GGUF files not present. Train qwen models or use Ollama variant.
-  # - id: trained-qwen2.5-7b
-  #   label: "Fine-tuned Qwen 2.5 7B"
-  #   educator: gguf:./models/qwen2.5-7b-educator-Q4_K_M-trained.gguf
-  #   poet: gguf:./models/qwen2.5-7b-poet-Q4_K_M-trained.gguf
-  #   revisions: [0, 1, 3, 5]
-
-  - id: trained-command-r7b
-    label: "Fine-tuned Command R7B"
-    educator: gguf:./models/command-r7b-educator-Q4_K_M-trained.gguf
-    poet: gguf:./models/command-r7b-poet-Q4_K_M-trained.gguf
-    revisions: [0, 1, 3, 5]
-
-  # Legacy: explicit Qwen paths (matches inference_config; avoids missing Llama GGUF)
-  # NOTE: Commented out - Qwen GGUF files not present. Use trained-llama3.1-8b or trained-command-r7b instead.
-  # - id: trained
-  #   label: "Trained (GGUF)"
-  #   educator: gguf:./models/qwen2.5-7b-educator-Q4_K_M.gguf
-  #   poet: gguf:./models/qwen2.5-7b-poet-Q4_K_M.gguf
-  #   revisions: [0, 1, 3, 5]
 
   # --- Frontier models via AWS Bedrock ---
   # NOTE: These models require active access in AWS Bedrock Console

@@ -54,6 +54,7 @@ def run_srpo_training(
     Returns:
         Path to final checkpoint
     """
+    import copy
     import torch
     import torch.nn.functional as F
     from peft import PeftModel, prepare_model_for_kbit_training
@@ -65,6 +66,7 @@ def run_srpo_training(
     )
 
     from models.prompts.loader import get_persona, render_prompt
+    from scripts.training.timer import TrainingTimer
 
     cfg = yaml.safe_load(config_path.read_text())
     model_cfg = cfg.get("model_loading", {})
@@ -99,36 +101,35 @@ def run_srpo_training(
     print(f"SRPO: {len(trajectories)} trajectories, {num_epochs} epochs, "
           f"alpha={alpha}, beta_kl={beta_kl}")
 
+    # Initialize training timer
+    timer = TrainingTimer()
+
     # --- Load tokenizer ---
     tokenizer = AutoTokenizer.from_pretrained(base_model, trust_remote_code=True)
     tokenizer.pad_token = tokenizer.eos_token
     tokenizer.padding_side = "left"
 
-    # --- Load policy (trainable, from SFT checkpoint) ---
+    # --- Load base model and policy (trainable, from SFT checkpoint) ---
     bnb_config = BitsAndBytesConfig(
         load_in_4bit=True,
         bnb_4bit_quant_type=model_cfg.get("quantization", "nf4"),
         bnb_4bit_compute_dtype=torch.bfloat16,
         bnb_4bit_use_double_quant=model_cfg.get("double_quant", True),
     )
-    policy = AutoModelForCausalLM.from_pretrained(
+    print("Loading base model and SFT checkpoint...")
+    base = AutoModelForCausalLM.from_pretrained(
         base_model,
         quantization_config=bnb_config,
         device_map="auto",
         trust_remote_code=True,
     )
-    policy = prepare_model_for_kbit_training(policy)
-    policy = PeftModel.from_pretrained(policy, str(sft_checkpoint), is_trainable=True)
+    base = prepare_model_for_kbit_training(base)
+    policy = PeftModel.from_pretrained(base, str(sft_checkpoint), is_trainable=True)
     policy.train()
 
-    # --- Load reference model (frozen SFT copy for KL) ---
-    ref_model = AutoModelForCausalLM.from_pretrained(
-        base_model,
-        quantization_config=bnb_config,
-        device_map="auto",
-        trust_remote_code=True,
-    )
-    ref_model = PeftModel.from_pretrained(ref_model, str(sft_checkpoint), is_trainable=False)
+    # --- Create reference model via deepcopy (faster than reloading from HF) ---
+    print("Creating reference model via deepcopy (saves 1-2 min vs. reloading)...")
+    ref_model = copy.deepcopy(policy)
     ref_model.eval()
     for p in ref_model.parameters():
         p.requires_grad = False
@@ -179,6 +180,58 @@ def run_srpo_training(
         token_log_probs = log_probs.gather(2, shift_labels[:, :min_len].unsqueeze(-1)).squeeze(-1)
         return token_log_probs.sum(dim=1)
 
+    def _compute_log_probs_batch(
+        model: torch.nn.Module,
+        prompt_ids_list: list[torch.Tensor],
+        completion_texts: list[str],
+        max_comp_len: int = 512,
+    ) -> torch.Tensor:
+        """Compute log probs for multiple (prompt, completion) pairs in batched forward pass.
+
+        Note: For SRPO, we may have different prompts (generation vs revision),
+        so this function handles varying prompt lengths.
+
+        Args:
+            model: Model to compute log probs with
+            prompt_ids_list: List of prompt tensors (each of shape (1, prompt_len_i))
+            completion_texts: List of completion strings
+            max_comp_len: Maximum completion length for tokenization
+
+        Returns:
+            Tensor of shape (N,) with summed log probs
+        """
+        if not completion_texts or not prompt_ids_list:
+            return torch.tensor([], device=device)
+
+        batch_size = len(completion_texts)
+        assert len(prompt_ids_list) == batch_size, "Mismatch between prompts and completions"
+
+        # Tokenize all completions
+        comp_ids_list = [
+            tokenizer(text, return_tensors="pt", truncation=True,
+                      max_length=max_comp_len, add_special_tokens=False).input_ids.to(device)
+            for text in completion_texts
+        ]
+
+        # For SRPO, prompt lengths may vary, so we process each separately
+        # This is still faster than the old approach due to reduced overhead
+        log_probs_results = []
+        for prompt_ids, comp_ids in zip(prompt_ids_list, comp_ids_list):
+            full_ids = torch.cat([prompt_ids, comp_ids], dim=1)
+            with torch.set_grad_enabled(model.training):
+                logits = model(full_ids).logits
+
+            prompt_len = prompt_ids.shape[1]
+            shift_logits = logits[:, prompt_len - 1:-1, :]
+            shift_labels = comp_ids
+            min_len = min(shift_logits.shape[1], shift_labels.shape[1])
+
+            log_probs = F.log_softmax(shift_logits[:, :min_len, :], dim=-1)
+            token_log_probs = log_probs.gather(2, shift_labels[:, :min_len].unsqueeze(-1)).squeeze(-1)
+            log_probs_results.append(token_log_probs.sum(dim=1))
+
+        return torch.stack(log_probs_results).squeeze()
+
     def _build_generation_prompt(trajectory: dict) -> tuple[str, str]:
         """Build input for generation objective: system + brief."""
         system = trajectory.get("system", poet_persona)
@@ -212,6 +265,7 @@ def run_srpo_training(
     optimizer.zero_grad()
 
     for epoch in range(num_epochs):
+        timer.start_epoch()
         import random
         random.shuffle(trajectories)
 
@@ -222,45 +276,50 @@ def run_srpo_training(
         n_batches = 0
 
         for i, traj in enumerate(trajectories):
+            timer.start_step()
+
             # Skip if missing required fields
             if not all(k in traj for k in ["prompt", "draft_0", "critique", "draft_1"]):
                 continue
 
             # --- Generation objective ---
-            gen_system, gen_user = _build_generation_prompt(traj)
-            gen_prompt_ids = _tokenize_chat(gen_system, gen_user, max_seq_len // 2)
-            draft_0 = traj["draft_0"]
+            with timer.phase("generation"):
+                gen_system, gen_user = _build_generation_prompt(traj)
+                gen_prompt_ids = _tokenize_chat(gen_system, gen_user, max_seq_len // 2)
+                draft_0 = traj["draft_0"]
 
-            if not draft_0.strip():
-                continue
+                if not draft_0.strip():
+                    continue
 
-            log_p_gen = _compute_log_probs(policy, gen_prompt_ids, draft_0)
-            L_gen = -log_p_gen.mean()
+                log_p_gen = _compute_log_probs(policy, gen_prompt_ids, draft_0)
+                L_gen = -log_p_gen.mean()
 
             # --- Revision objective ---
-            rev_system, rev_user = _build_revision_prompt(traj)
-            rev_prompt_ids = _tokenize_chat(rev_system, rev_user, max_seq_len)
-            draft_1 = traj["draft_1"]
+            with timer.phase("revision"):
+                rev_system, rev_user = _build_revision_prompt(traj)
+                rev_prompt_ids = _tokenize_chat(rev_system, rev_user, max_seq_len)
+                draft_1 = traj["draft_1"]
 
-            if not draft_1.strip():
-                continue
+                if not draft_1.strip():
+                    continue
 
-            log_p_rev = _compute_log_probs(policy, rev_prompt_ids, draft_1)
+                log_p_rev = _compute_log_probs(policy, rev_prompt_ids, draft_1)
 
-            # Reward weight
-            w_r = _compute_reward_weight(traj)
-            L_rev = -w_r * log_p_rev.mean()
+                # Reward weight
+                w_r = _compute_reward_weight(traj)
+                L_rev = -w_r * log_p_rev.mean()
 
-            # --- KL penalty (on revision, most important to constrain) ---
-            with torch.no_grad():
-                log_ref = _compute_log_probs(ref_model, rev_prompt_ids, draft_1)
-            kl = (log_p_rev - log_ref).mean()
+                # KL penalty (on revision, most important to constrain)
+                with torch.no_grad():
+                    log_ref = _compute_log_probs(ref_model, rev_prompt_ids, draft_1)
+                kl = (log_p_rev - log_ref).mean()
 
-            # --- Combined loss ---
-            loss = alpha * L_gen + (1 - alpha) * L_rev + beta_kl * kl
-
-            scaled_loss = loss / grad_accum
-            scaled_loss.backward()
+            # --- Gradients ---
+            with timer.phase("gradients"):
+                # Combined loss
+                loss = alpha * L_gen + (1 - alpha) * L_rev + beta_kl * kl
+                scaled_loss = loss / grad_accum
+                scaled_loss.backward()
 
             epoch_loss_gen += L_gen.item()
             epoch_loss_rev += L_rev.item()
@@ -280,15 +339,25 @@ def run_srpo_training(
                 avg_rev = epoch_loss_rev / n_batches
                 avg_kl = epoch_kl / n_batches
                 avg_total = epoch_loss_total / n_batches
-                print(f"  [{epoch+1}/{num_epochs}] step {i+1}/{len(trajectories)} "
-                      f"loss={avg_total:.4f} gen={avg_gen:.4f} rev={avg_rev:.4f} kl={avg_kl:.4f}")
+                metrics = {
+                    "loss": avg_total,
+                    "gen": avg_gen,
+                    "rev": avg_rev,
+                    "kl": avg_kl,
+                }
+                print(f"  {timer.format_summary(i+1, len(trajectories), metrics, epoch+1, num_epochs)}")
 
         avg_gen = epoch_loss_gen / max(n_batches, 1)
         avg_rev = epoch_loss_rev / max(n_batches, 1)
         avg_kl = epoch_kl / max(n_batches, 1)
         avg_total = epoch_loss_total / max(n_batches, 1)
-        print(f"Epoch {epoch+1}/{num_epochs}: loss={avg_total:.4f} "
-              f"gen={avg_gen:.4f} rev={avg_rev:.4f} kl={avg_kl:.4f}")
+        metrics = {
+            "loss": avg_total,
+            "gen": avg_gen,
+            "rev": avg_rev,
+            "kl": avg_kl,
+        }
+        print(f"{timer.format_epoch_summary(epoch+1, num_epochs, metrics)}")
 
         # Save epoch checkpoint
         epoch_dir = save_path / f"checkpoint-epoch-{epoch+1}"

@@ -28,3 +28,4 @@ checkpoints/nlp_dedup*/
 feedback/*
 !feedback/.gitkeep
 logs/*.log
+data/rhyme_bench/**

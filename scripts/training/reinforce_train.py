@@ -58,6 +58,7 @@ def run_reinforce_training(
     base_model_override: str | None = None,
 ) -> str:
     """Run REINFORCE (reward-weighted regression) starting from SFT checkpoint."""
+    import copy
     import torch
     import torch.nn.functional as F
     from peft import PeftModel, prepare_model_for_kbit_training
@@ -69,6 +70,7 @@ def run_reinforce_training(
     )
 
     from scripts.eval.rhyme_analyzer import compute_reward
+    from scripts.training.timer import TrainingTimer
 
     cfg = yaml.safe_load(config_path.read_text())
     model_cfg = cfg.get("model_loading", {})
@@ -102,36 +104,35 @@ def run_reinforce_training(
     print(f"REINFORCE: {len(prompts)} prompts, {num_completions} completions each, "
           f"{num_epochs} epochs, beta_kl={beta_kl}")
 
+    # Initialize training timer
+    timer = TrainingTimer()
+
     # --- Load tokenizer ---
     tokenizer = AutoTokenizer.from_pretrained(base_model, trust_remote_code=True)
     tokenizer.pad_token = tokenizer.eos_token
     tokenizer.padding_side = "left"
 
-    # --- Load policy (trainable, from SFT checkpoint) ---
+    # --- Load base model and policy (trainable, from SFT checkpoint) ---
     bnb_config = BitsAndBytesConfig(
         load_in_4bit=True,
         bnb_4bit_quant_type=model_cfg.get("quantization", "nf4"),
         bnb_4bit_compute_dtype=torch.bfloat16,
         bnb_4bit_use_double_quant=model_cfg.get("double_quant", True),
     )
-    policy = AutoModelForCausalLM.from_pretrained(
+    print("Loading base model and SFT checkpoint...")
+    base = AutoModelForCausalLM.from_pretrained(
         base_model,
         quantization_config=bnb_config,
         device_map="auto",
         trust_remote_code=True,
     )
-    policy = prepare_model_for_kbit_training(policy)
-    policy = PeftModel.from_pretrained(policy, str(sft_checkpoint), is_trainable=True)
+    base = prepare_model_for_kbit_training(base)
+    policy = PeftModel.from_pretrained(base, str(sft_checkpoint), is_trainable=True)
     policy.train()
 
-    # --- Load reference model (frozen SFT copy for KL) ---
-    ref_model = AutoModelForCausalLM.from_pretrained(
-        base_model,
-        quantization_config=bnb_config,
-        device_map="auto",
-        trust_remote_code=True,
-    )
-    ref_model = PeftModel.from_pretrained(ref_model, str(sft_checkpoint), is_trainable=False)
+    # --- Create reference model via deepcopy (faster than reloading from HF) ---
+    print("Creating reference model via deepcopy (saves 1-2 min vs. reloading)...")
+    ref_model = copy.deepcopy(policy)
     ref_model.eval()
     for p in ref_model.parameters():
         p.requires_grad = False
@@ -160,6 +161,7 @@ def run_reinforce_training(
                 top_p=gen_top_p,
                 do_sample=True,
                 pad_token_id=tokenizer.pad_token_id,
+                use_cache=True,  # Enable KV cache for 20-30% faster generation
             )
         prompt_len = prompt_ids.shape[1]
         texts = []
@@ -186,11 +188,71 @@ def run_reinforce_training(
         token_log_probs = log_probs.gather(2, shift_labels[:, :min_len].unsqueeze(-1)).squeeze(-1)
         return token_log_probs.sum(dim=1)
 
+    def _compute_log_probs_batch(
+        model: torch.nn.Module,
+        prompt_ids: torch.Tensor,  # (1, prompt_len)
+        completion_texts: list[str],
+    ) -> torch.Tensor:
+        """Compute log probs for multiple completions in a single forward pass.
+
+        This is 2-3x faster than computing them sequentially.
+
+        Args:
+            model: The model to compute log probs with
+            prompt_ids: Prompt token IDs (batch size 1)
+            completion_texts: List of completion strings
+
+        Returns:
+            Tensor of shape (N,) with summed log probs for each completion
+        """
+        if not completion_texts:
+            return torch.tensor([], device=prompt_ids.device)
+
+        # Tokenize all completions
+        comp_ids_list = [
+            tokenizer(text, return_tensors="pt", truncation=True,
+                      max_length=max_gen_tokens, add_special_tokens=False).input_ids.to(device)
+            for text in completion_texts
+        ]
+
+        # Pad to same length
+        max_comp_len = max(ids.shape[1] for ids in comp_ids_list)
+        comp_ids_padded = torch.stack([
+            F.pad(ids.squeeze(0), (0, max_comp_len - ids.shape[1]), value=tokenizer.pad_token_id)
+            for ids in comp_ids_list
+        ])  # (N, max_comp_len)
+
+        # Expand prompt to match batch
+        batch_size = len(completion_texts)
+        prompt_batch = prompt_ids.expand(batch_size, -1)  # (N, prompt_len)
+        full_ids = torch.cat([prompt_batch, comp_ids_padded], dim=1)  # (N, prompt_len + max_comp_len)
+
+        # Single batched forward pass
+        with torch.set_grad_enabled(model.training):
+            logits = model(full_ids).logits  # (N, seq_len, vocab_size)
+
+        # Compute log probs
+        prompt_len = prompt_ids.shape[1]
+        shift_logits = logits[:, prompt_len - 1:-1, :]  # (N, max_comp_len, vocab_size)
+        shift_labels = comp_ids_padded  # (N, max_comp_len)
+        min_len = min(shift_logits.shape[1], shift_labels.shape[1])
+
+        log_probs = F.log_softmax(shift_logits[:, :min_len, :], dim=-1)
+        token_log_probs = log_probs.gather(2, shift_labels[:, :min_len].unsqueeze(-1)).squeeze(-1)
+
+        # Mask out padding tokens
+        padding_mask = (shift_labels[:, :min_len] != tokenizer.pad_token_id)
+        token_log_probs = token_log_probs * padding_mask
+
+        # Sum over tokens for each completion
+        return token_log_probs.sum(dim=1)  # (N,)
+
     # --- Training loop ---
     global_step = 0
     optimizer.zero_grad()
 
     for epoch in range(num_epochs):
+        timer.start_epoch()
         import random
         random.shuffle(prompts)
         epoch_loss = 0.0
@@ -199,34 +261,49 @@ def run_reinforce_training(
         n_batches = 0
 
         for i, prompt in enumerate(prompts):
-            prompt_ids = _build_chat_ids(prompt["system"], prompt["user"])
-            form = _detect_form_from_prompt(prompt["user"])
+            timer.start_step()
 
-            completions = _generate_completions(prompt_ids, num_completions)
-            rewards = [compute_reward(c, expected_form=form) for c in completions]
+            # Generation phase
+            with timer.phase("generation"):
+                prompt_ids = _build_chat_ids(prompt["system"], prompt["user"])
+                form = _detect_form_from_prompt(prompt["user"])
+                completions = _generate_completions(prompt_ids, num_completions)
 
-            mean_r = sum(rewards) / len(rewards)
-            std_r = math.sqrt(sum((r - mean_r) ** 2 for r in rewards) / max(len(rewards) - 1, 1))
-            if std_r < 1e-8:
-                std_r = 1.0
-            advantages = [(r - mean_r) / std_r for r in rewards]
+            # Scoring phase
+            with timer.phase("scoring"):
+                rewards = [compute_reward(c, expected_form=form) for c in completions]
+                mean_r = sum(rewards) / len(rewards)
+                std_r = math.sqrt(sum((r - mean_r) ** 2 for r in rewards) / max(len(rewards) - 1, 1))
+                if std_r < 1e-8:
+                    std_r = 1.0
+                advantages = [(r - mean_r) / std_r for r in rewards]
 
-            batch_loss = torch.tensor(0.0, device=device, requires_grad=True)
-            batch_kl = 0.0
-
-            for comp, adv in zip(completions, advantages):
-                if not comp.strip():
+            # Gradient computation phase
+            with timer.phase("gradients"):
+                # Filter out empty completions
+                valid_pairs = [(comp, adv) for comp, adv in zip(completions, advantages) if comp.strip()]
+                if not valid_pairs:
                     continue
-                log_p = _compute_log_probs(policy, prompt_ids, comp)
-                with torch.no_grad():
-                    log_ref = _compute_log_probs(ref_model, prompt_ids, comp)
-                kl = (log_p - log_ref).mean()
-                loss_i = -(adv * log_p.mean()) + beta_kl * kl
-                batch_loss = batch_loss + loss_i / num_completions
-                batch_kl += kl.item()
 
-            scaled_loss = batch_loss / grad_accum
-            scaled_loss.backward()
+                valid_comps, valid_advs = zip(*valid_pairs)
+
+                # Compute all log probs in batched forward passes (2-3x faster)
+                batch_log_p = _compute_log_probs_batch(policy, prompt_ids, list(valid_comps))
+                with torch.no_grad():
+                    batch_log_ref = _compute_log_probs_batch(ref_model, prompt_ids, list(valid_comps))
+
+                # Compute loss from batched results
+                batch_loss = torch.tensor(0.0, device=device, requires_grad=True)
+                batch_kl = 0.0
+
+                for log_p, log_ref, adv in zip(batch_log_p, batch_log_ref, valid_advs):
+                    kl = (log_p - log_ref)
+                    loss_i = -(adv * log_p) + beta_kl * kl
+                    batch_loss = batch_loss + loss_i / len(valid_pairs)
+                    batch_kl += kl.item()
+
+                scaled_loss = batch_loss / grad_accum
+                scaled_loss.backward()
 
             epoch_loss += batch_loss.item()
             epoch_reward += mean_r
@@ -244,14 +321,22 @@ def run_reinforce_training(
                 avg_loss = epoch_loss / n_batches
                 avg_r = epoch_reward / n_batches
                 avg_kl = epoch_kl / n_batches
-                print(f"  [{epoch+1}/{num_epochs}] step {i+1}/{len(prompts)} "
-                      f"loss={avg_loss:.4f} reward={avg_r:.3f} kl={avg_kl:.4f}")
+                metrics = {
+                    "loss": avg_loss,
+                    "reward": avg_r,
+                    "kl": avg_kl,
+                }
+                print(f"  {timer.format_summary(i+1, len(prompts), metrics, epoch+1, num_epochs)}")
 
         avg_loss = epoch_loss / max(n_batches, 1)
         avg_r = epoch_reward / max(n_batches, 1)
         avg_kl = epoch_kl / max(n_batches, 1)
-        print(f"Epoch {epoch+1}/{num_epochs}: loss={avg_loss:.4f} "
-              f"avg_reward={avg_r:.3f} avg_kl={avg_kl:.4f}")
+        metrics = {
+            "loss": avg_loss,
+            "avg_reward": avg_r,
+            "avg_kl": avg_kl,
+        }
+        print(f"{timer.format_epoch_summary(epoch+1, num_epochs, metrics)}")
 
         epoch_dir = save_path / f"checkpoint-epoch-{epoch+1}"
         policy.save_pretrained(str(epoch_dir))

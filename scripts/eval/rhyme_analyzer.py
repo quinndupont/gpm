@@ -85,33 +85,47 @@ def _rhyme_type(word_a: str, word_b: str, strict: bool = False) -> str:
         parts_a = suffix_a.split()
         parts_b = suffix_b.split()
 
-        # Slant: same vowel + same trailing consonant(s), differing only
-        # in one element. E.g. "time" (AY1 M) / "mine" (AY1 N) — close but not perfect.
+        # Slant: same vowel + different final consonant(s), OR same vowel + same
+        # trailing consonant(s) but different stress. E.g. "time" (AY1 M) / "mine" (AY1 N).
+        #
+        # IMPORTANT: Pure consonance (same final consonant, different vowels) is NOT
+        # a slant rhyme. "coded" (IH0 D) and "deployed" (OY1 D) share final /D/ but
+        # have completely different vowels — they do not rhyme at all.
         vowel_a = re.sub(r"\d", "", parts_a[0]) if parts_a[0][-1].isdigit() else None
         vowel_b = re.sub(r"\d", "", parts_b[0]) if parts_b[0][-1].isdigit() else None
 
-        # Must share the same number of phonemes (or differ by at most 1)
-        if abs(len(parts_a) - len(parts_b)) <= 1 and vowel_a and vowel_b:
-            if vowel_a == vowel_b and len(parts_a) > 1 and len(parts_b) > 1:
-                # Same vowel AND shared final consonant(s)
-                if parts_a[-1] == parts_b[-1]:
-                    return "slant"
-            # Different vowel but identical trailing consonant cluster (consonance)
-            tail_a = [p for p in parts_a if not p[-1].isdigit()]
-            tail_b = [p for p in parts_b if not p[-1].isdigit()]
-            if tail_a and tail_b and tail_a == tail_b:
+        # Must share the same vowel for slant rhyme
+        if vowel_a and vowel_b and vowel_a == vowel_b:
+            # Same vowel — this is a slant rhyme (assonance)
+            # E.g. "time" (AY1 M) / "mine" (AY1 N) — same vowel, different consonant
+            # This is the classic definition of slant/near rhyme
+            if abs(len(parts_a) - len(parts_b)) <= 1:
                 return "slant"
 
         return "none"
 
     # Fallback: simple suffix matching for words not in CMU dict.
-    # In strict mode, never count fallback — orthographic matches (-ing, -ed) are false positives.
+    # In strict mode, never count fallback — orthographic matches are unreliable.
     if strict:
         return "none"
+
+    # Common suffixes that DON'T indicate rhyme (grammatical endings)
+    FALSE_RHYME_SUFFIXES = {"ed", "ing", "ly", "er", "est", "ness", "ment", "tion", "sion"}
+
     fa = _suffix_fallback(word_a)
     fb = _suffix_fallback(word_b)
+
+    # Don't count matches on common grammatical suffixes — they're false positives
+    if fa[-2:] in FALSE_RHYME_SUFFIXES or fb[-2:] in FALSE_RHYME_SUFFIXES:
+        if fa[-3:] in FALSE_RHYME_SUFFIXES or fb[-3:] in FALSE_RHYME_SUFFIXES:
+            return "none"
+        # Only accept if the full 3-char suffix matches AND it's not a common suffix
+        if fa == fb and fa not in FALSE_RHYME_SUFFIXES:
+            return "slant"  # Demote to slant since orthographic is unreliable
+        return "none"
+
     if fa == fb:
-        return "perfect"
+        return "slant"  # Demote to slant — orthographic matches are not reliable "perfect"
     if len(fa) >= 2 and len(fb) >= 2 and fa[-2:] == fb[-2:]:
         return "slant"
     return "none"
@@ -379,14 +393,21 @@ def compute_reward(
 ) -> float:
     """Compute a [0, 1] rhyme reward for REINFORCE training.
 
-    Scores each position-pair that should rhyme (per detected or expected scheme)
-    using tiered partial credit, then combines with overall strict rhyme density.
+    Combines three signals:
+    1. Pair quality (50%): How well do rhyme pairs phonetically match?
+    2. Scheme adherence (30%): Does the poem follow the expected rhyme pattern?
+    3. Rhyme density (20%): What fraction of lines participate in rhymes?
+
+    The scheme adherence component is critical for penalizing poems that rhyme
+    but in the wrong pattern (e.g., ABCD when ABAB is expected).
 
     Returns:
         Float in [0, 1]. Higher = better rhyme compliance.
     """
     analysis = analyze(poem, expected_form=expected_form, expected_variant=expected_variant)
     end_words = analysis.get("end_words", [])
+    line_count = analysis.get("line_count", 0)
+
     if len(end_words) < 2:
         return 0.0
 
@@ -417,9 +438,30 @@ def compute_reward(
     if not pair_scores:
         return analysis.get("strict_rhyme_density", 0.0)
 
+    # Component 1: Pair quality (how phonetically accurate are the rhymes?)
     pair_mean = sum(pair_scores) / len(pair_scores)
+
+    # Component 2: Scheme adherence (does it follow the expected pattern?)
+    # This is critical for penalizing wrong rhyme schemes
+    matches_form = analysis.get("matches_form")
+    deviations = analysis.get("deviations", [])
+    deviations_count = len(deviations)
+
+    if matches_form is True:
+        scheme_adherence = 1.0
+    elif matches_form is False and line_count > 0:
+        # Penalize based on fraction of lines that deviate
+        # More deviations = lower score
+        scheme_adherence = max(0.0, 1.0 - (deviations_count / line_count))
+    else:
+        # No expected form provided, assume full adherence
+        scheme_adherence = 1.0
+
+    # Component 3: Density (what fraction of lines participate in rhymes?)
     density = analysis.get("strict_rhyme_density", 0.0)
-    return 0.7 * pair_mean + 0.3 * density
+
+    # Weighted combination: 50% pairs, 30% scheme, 20% density
+    return 0.5 * pair_mean + 0.3 * scheme_adherence + 0.2 * density
 
 
 # ---------------------------------------------------------------------------

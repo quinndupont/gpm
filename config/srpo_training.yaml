@@ -33,7 +33,8 @@ srpo:
   reward_normalization: 0.2
   max_reward_weight: 2.0
   # Generation settings (used only if re-generating drafts during training)
-  max_gen_tokens: 512
+  # Note: SRPO uses pre-computed trajectories, so this is rarely used
+  max_gen_tokens: 300  # Reduced from 512 for consistency with REINFORCE
 
 training:
   learning_rate: 5e-6  # Lower than REINFORCE for stability

@@ -6,24 +6,24 @@ output_dir: "data/srpo_training"
 output_filename: "trajectories.jsonl"
 
 draft_generation:
-  # SFT checkpoint to generate initial drafts
-  checkpoint: "/vol/checkpoints/poet/final"
+  # Llama 4 Maverick via Bedrock for initial drafts
+  model: "llama4-maverick"
   temperature: 0.8
   top_p: 0.95
   max_tokens: 512
 
 critique_generation:
-  # Use local educator model (faster) or Claude API (higher quality)
-  use_educator: true
-  educator_checkpoint: "/vol/checkpoints/educator/final"
+  # Llama 4 Maverick via Bedrock for critiques (skip local Ollama)
+  use_educator: false
+  model: "llama4-maverick"
   # Always include deterministic rhyme analysis in critique
   include_rhyme_analysis: true
   temperature: 0.3
   max_tokens: 600
 
 revision_generation:
-  # Claude generates gold-standard revisions
-  model: "claude-sonnet-4-20250514"
+  # Llama 4 Maverick via Bedrock for revisions
+  model: "llama4-maverick"
   temperature: 0.7
   # Generate multiple candidates, keep best by reward
   candidates_per_draft: 2
@@ -38,7 +38,9 @@ filtering:
   max_trajectories: 5000
 
 rate_limits:
-  # Claude API rate limiting
-  requests_per_minute: 50
+  # Bedrock rate limiting (more aggressive since token-based billing)
+  requests_per_minute: 100
+  # Optional: token-level cap for Bedrock
+  max_tokens_per_minute: 50000
   # Cost cap (approximate)
   max_cost_usd: 100.0

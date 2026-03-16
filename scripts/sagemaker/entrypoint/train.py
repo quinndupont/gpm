@@ -26,16 +26,37 @@ def main():
 
     if task == "reinforce":
         from reinforce_train import run_reinforce_training
-        # Stage 1 model.tar.gz is passed as the "sft_checkpoint" input channel and
-        # automatically extracted by SageMaker. The tarball was created from SM_MODEL_DIR
-        # which contained poet/final/..., so the adapter lives at {channel}/poet/final/.
+        # Stage 1 model.tar.gz is passed as the "sft_checkpoint" input channel.
+        # SageMaker downloads but doesn't auto-extract, so we extract it here.
         sft_channel = Path(os.environ.get("SM_CHANNEL_SFT_CHECKPOINT", ""))
+
+        # Extract model.tar.gz if it exists
+        model_tar = sft_channel / "model.tar.gz"
+        if model_tar.exists():
+            print(f"Extracting {model_tar}...")
+            import tarfile
+            with tarfile.open(model_tar, "r:gz") as tar:
+                tar.extractall(path=sft_channel)
+            print("Extraction complete.")
+
         sft_checkpoint = sft_channel / "poet" / "final"
         if not sft_checkpoint.exists():
-            raise FileNotFoundError(
-                f"SFT checkpoint not found at {sft_checkpoint}. "
-                "Pass --sft-s3 <s3-uri-of-stage1-model.tar.gz> to train_sagemaker.py."
-            )
+            # Fallback: look for the latest checkpoint-N directory
+            poet_dir = sft_channel / "poet"
+            if poet_dir.exists():
+                checkpoints = sorted(
+                    [d for d in poet_dir.iterdir() if d.is_dir() and d.name.startswith("checkpoint-")],
+                    key=lambda p: int(p.name.split("-")[1]),
+                    reverse=True
+                )
+                if checkpoints:
+                    sft_checkpoint = checkpoints[0]
+                    print(f"Using latest checkpoint: {sft_checkpoint.name}")
+            if not sft_checkpoint.exists():
+                raise FileNotFoundError(
+                    f"SFT checkpoint not found at {sft_channel / 'poet'}. "
+                    "Pass --sft-s3 <s3-uri-of-stage1-model.tar.gz> to train_sagemaker.py."
+                )
         checkpoint_dir = model_dir / "poet_reinforce"
         checkpoint_dir.mkdir(parents=True, exist_ok=True)
         run_reinforce_training(
@@ -52,14 +73,37 @@ def main():
 
     if task == "srpo":
         from srpo_train import run_srpo_training
-        # Stage 1 model.tar.gz is passed as the "sft_checkpoint" input channel
+        # Stage 1 model.tar.gz is passed as the "sft_checkpoint" input channel.
+        # SageMaker downloads but doesn't auto-extract, so we extract it here.
         sft_channel = Path(os.environ.get("SM_CHANNEL_SFT_CHECKPOINT", ""))
+
+        # Extract model.tar.gz if it exists
+        model_tar = sft_channel / "model.tar.gz"
+        if model_tar.exists():
+            print(f"Extracting {model_tar}...")
+            import tarfile
+            with tarfile.open(model_tar, "r:gz") as tar:
+                tar.extractall(path=sft_channel)
+            print("Extraction complete.")
+
         sft_checkpoint = sft_channel / "poet" / "final"
         if not sft_checkpoint.exists():
-            raise FileNotFoundError(
-                f"SFT checkpoint not found at {sft_checkpoint}. "
-                "Pass --sft-s3 <s3-uri-of-stage1-model.tar.gz> to train_sagemaker.py."
-            )
+            # Fallback: look for the latest checkpoint-N directory
+            poet_dir = sft_channel / "poet"
+            if poet_dir.exists():
+                checkpoints = sorted(
+                    [d for d in poet_dir.iterdir() if d.is_dir() and d.name.startswith("checkpoint-")],
+                    key=lambda p: int(p.name.split("-")[1]),
+                    reverse=True
+                )
+                if checkpoints:
+                    sft_checkpoint = checkpoints[0]
+                    print(f"Using latest checkpoint: {sft_checkpoint.name}")
+            if not sft_checkpoint.exists():
+                raise FileNotFoundError(
+                    f"SFT checkpoint not found at {sft_channel / 'poet'}. "
+                    "Pass --sft-s3 <s3-uri-of-stage1-model.tar.gz> to train_sagemaker.py."
+                )
         # SRPO trajectories should be in train_dir/srpo_training/ or directly in train_dir
         srpo_data_dir = train_dir / "srpo_training"
         if not srpo_data_dir.exists():

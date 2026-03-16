@@ -234,10 +234,116 @@ data/
 
 ## Comparison: SRPO vs REINFORCE
 
+These are **alternative Stage 2 training approaches** - choose one based on your use case. They don't run together.
+
+### REINFORCE ([reinforce_train.py](reinforce_train.py))
+
+**Algorithm:** Reward-weighted regression with KL penalty
+
+```python
+# For each prompt:
+#   1. Generate N=4 completions from policy
+#   2. Score each with compute_reward() (deterministic rhyme analyzer)
+#   3. Normalize advantages: Â = (score - mean) / std
+#   4. Loss = -Σ(Â_i · log P_policy(completion_i | prompt)) + β_kl · KL(policy || ref)
+```
+
+**Training data:**
+- Format: JSONL with `messages` field (system + user)
+- Just prompts - no pre-generated completions needed
+- Example: `data/poet_training/train.jsonl` (same as Stage 1)
+
+**During training:**
+- Generates N=4 completions per prompt on-the-fly
+- Uses temperature=0.8 sampling for diversity
+- Scores with deterministic rhyme analyzer (perfect/slant/none rhyme detection)
+
+**What it learns:**
+- Policy to generate high-reward poems directly
+- No self-revision capability
+
+**Pros:**
+- Simpler setup - just needs prompts
+- Direct reward optimization
+- Good for pure generation tasks
+
+**Cons:**
+- Only learns generation, not revision
+- Requires Educator for all revisions at inference (6 calls per revision round)
+- Less sample-efficient than SRPO
+
+---
+
+### SRPO ([srpo_train.py](srpo_train.py))
+
+**Algorithm:** Self-Refinement Policy Optimization with dual objectives
+
+```python
+# For each trajectory (prompt, draft_0, critique, draft_1):
+#   1. Generation loss: L_gen = -log P(draft_0 | prompt)
+#   2. Revision loss: L_rev = -w(r) · log P(draft_1 | prompt, draft_0, critique)
+#   3. Reward weight: w(r) = clip((r1 - r0) / 0.2, 0, 2)
+#   4. Total: L = 0.4·L_gen + 0.6·L_rev + 0.08·KL(policy || ref)
+```
+
+**Training data:**
+- Format: JSONL trajectories with `(prompt, draft_0, critique, draft_1, reward_0, reward_1)`
+- Pre-computed using `scripts/data/generate_srpo_data.py`
+- Requires Educator model for generating critiques during data preparation
+- Example: `data/srpo_training/trajectories.jsonl`
+
+**During training:**
+- No generation - learns from pre-computed trajectories
+- Optimizes both generation (40%) and revision (60%) objectives simultaneously
+- Uses improvement-based reward weighting
+
+**What it learns:**
+- **Generation**: How to write poems from scratch (like REINFORCE)
+- **Self-revision**: How to improve poems based on critique feedback
+- Two skills in one model
+
+**Pros:**
+- Poet can self-revise at inference (eliminates 4 Educator calls per revision)
+- More sample-efficient (learns from both generation and revision examples)
+- Production-ready for multi-round revision workflows
+
+**Cons:**
+- Requires trajectory generation beforehand
+- More complex data pipeline
+- Slightly longer training time (3 epochs vs 2)
+
+---
+
+### Quick Comparison Table
+
 | Aspect | SRPO | REINFORCE |
 |--------|------|-----------|
+| **Algorithm** | Self-Refinement Policy Optimization | Reward-weighted regression |
 | **Skills learned** | Generation + Self-revision | Generation only |
-| **Training data** | Trajectories (draft → critique → revision) | Prompts + completions |
-| **Reward signal** | Improvement (r1 - r0) | Absolute score |
+| **Training data** | Pre-computed trajectories | Just prompts (JSONL) |
+| **Data preparation** | Requires trajectory generation | None (reuses Stage 1 data) |
+| **During training** | No generation (learns from trajectories) | Generates N=4 completions per prompt |
+| **Reward signal** | Improvement (r1 - r0) weighted | Absolute rhyme score |
 | **Inference calls** | 2 per revision (critique + self-revise) | 6 per revision (multiple Educator calls) |
-| **Recommended for** | Production use | Experimentation |
+| **Learning rate** | 5e-6 (lower for stability) | 1e-5 |
+| **Epochs** | 3 | 2 |
+| **Max sequence length** | 1536 (fits prompt + draft + critique) | 1024 |
+| **Recommended for** | Production use with revision | Experimentation, pure generation |
+
+---
+
+### Which Should I Use?
+
+**Use SRPO if:**
+- You need multi-round revision at inference
+- You want to minimize Educator API calls
+- You're deploying to production
+- You want a single model that can both generate and self-revise
+
+**Use REINFORCE if:**
+- You only need generation (no revision)
+- You want simpler data pipeline
+- You're experimenting with reward functions
+- You don't have an Educator model for trajectory generation
+
+**Note:** Both training modes benefit from the same optimizations (timing metrics, batched log probs, KV cache, etc.) implemented in this codebase.

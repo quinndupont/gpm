@@ -229,7 +229,7 @@ def main():
         training_data = TrainingInput(s3_data=f"s3://{bucket}/data/", input_mode="File")
 
         inputs = {"training": training_data}
-        if args.task == "reinforce":
+        if args.task in ("reinforce", "srpo"):
             inputs["sft_checkpoint"] = TrainingInput(
                 s3_data=args.sft_s3, input_mode="File",
             )

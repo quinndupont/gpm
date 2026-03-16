@@ -19,6 +19,8 @@ BEDROCK_MODEL_MAP = {
     "claude-sonnet-4-5": "us.anthropic.claude-sonnet-4-5-20250929-v1:0",
     "claude-sonnet-4-20250514": "us.anthropic.claude-sonnet-4-20250514-v1:0",
     "claude-opus-4-5": "us.anthropic.claude-opus-4-5-20251101-v1:0",
+    "llama4-maverick": "us.meta.llama4-maverick-17b-instruct-v1:0",
+    "llama-4-maverick": "us.meta.llama4-maverick-17b-instruct-v1:0",  # Alias
 }
 
 # Default AWS region for Bedrock
@@ -174,7 +176,13 @@ def _select_model(
             return requested, "claude"
         return CLAUDE_OPUS_4_6, "claude"
     if os.environ.get("DISABLE_LLM_QUOTA"):
-        return requested, "claude" if requested.startswith("claude-") else "local"
+        # Check if model is a Bedrock model (Claude or Llama)
+        is_bedrock_model = (
+            requested.startswith("claude-")
+            or requested.startswith("llama")
+            or requested in BEDROCK_MODEL_MAP
+        )
+        return requested, "claude" if is_bedrock_model else "local"
 
     opus_max = quotas.get("opus_max", 50)
     sonnet_max = quotas.get("sonnet_max", 400)
@@ -191,7 +199,13 @@ def _select_model(
         if sonnet_used < sonnet_max:
             return CLAUDE_SONNET_4_5, "claude"
         return "local", "local"
-    return requested, "claude" if requested.startswith("claude-") else "local"
+    # Check if model is a Bedrock model (Claude or Llama)
+    is_bedrock_model = (
+        requested.startswith("claude-")
+        or requested.startswith("llama")
+        or requested in BEDROCK_MODEL_MAP
+    )
+    return requested, "claude" if is_bedrock_model else "local"
 
 
 def _call_local(
@@ -225,6 +239,8 @@ def call_claude(
     max_tokens: int = 4096,
     fallback_model: str | None = CLAUDE_SONNET_4_5,
     force_anthropic: bool = False,
+    temperature: float | None = None,
+    top_p: float | None = None,
 ) -> str:
     """Call LLM. If force_anthropic=True, always use Anthropic (never local)."""
     load_env()
@@ -232,6 +248,13 @@ def call_claude(
 
     quotas, local_cfg = _load_quota_config()
     state = _load_quota_state()
+
+    # Add temperature and top_p to state if provided
+    if temperature is not None:
+        state["temperature"] = temperature
+    if top_p is not None:
+        state["top_p"] = top_p
+
     actual_model, provider = _select_model(model, quotas, state, force_anthropic)
 
     if provider == "local":
@@ -243,7 +266,19 @@ def call_claude(
         return _call_local(user_message, system_message, max_tokens, local_cfg)
 
     # Determine backend: Bedrock or direct Anthropic API
-    use_bedrock = os.environ.get("USE_BEDROCK", "").lower() in ("1", "true", "yes")
+    # Prefer Bedrock when AWS credentials are available (more cost-effective)
+    use_bedrock_env = os.environ.get("USE_BEDROCK", "").lower()
+    if use_bedrock_env in ("0", "false", "no"):
+        use_bedrock = False
+    elif use_bedrock_env in ("1", "true", "yes"):
+        use_bedrock = True
+    else:
+        # Auto-detect: prefer Bedrock if AWS credentials are available
+        use_bedrock = bool(
+            os.environ.get("AWS_ACCESS_KEY_ID")
+            or os.environ.get("AWS_PROFILE")
+            or Path.home().joinpath(".aws/credentials").exists()
+        )
 
     if use_bedrock:
         return _call_bedrock(
@@ -265,48 +300,85 @@ def _call_bedrock(
     fallback_model: str | None,
     state: dict,
 ) -> str:
-    """Call Claude via Amazon Bedrock."""
+    """Call Bedrock API (supports Claude + Llama models)."""
     import os
-    from anthropic import AnthropicBedrock, APIStatusError
 
     region = os.environ.get("AWS_REGION", BEDROCK_REGION)
-    client = AnthropicBedrock(aws_region=region)
 
     # Map model name to Bedrock model ID
     bedrock_model = BEDROCK_MODEL_MAP.get(model, model)
     bedrock_fallback = BEDROCK_MODEL_MAP.get(fallback_model, fallback_model) if fallback_model else None
 
-    kwargs = {
-        "model": bedrock_model,
-        "max_tokens": max_tokens,
-        "messages": [{"role": "user", "content": user_message}],
-    }
-    if system_message:
-        kwargs["system"] = system_message
+    # Route by model type
+    if "meta" in bedrock_model or "llama" in bedrock_model:
+        # Llama: use boto3 text generation API
+        import boto3
+        import json
 
-    try:
-        response = client.messages.create(**kwargs)
-        text = response.content[0].text
-        if model == CLAUDE_OPUS_4_6:
-            state["opus_used"] = state.get("opus_used", 0) + 1
-        else:
-            state["sonnet_used"] = state.get("sonnet_used", 0) + 1
+        bedrock = boto3.client("bedrock-runtime", region_name=region)
+
+        # Llama expects concatenated prompt
+        prompt = f"{system_message}\n\n{user_message}" if system_message else user_message
+        body = {
+            "prompt": prompt,
+            "max_gen_len": max_tokens,
+            "temperature": state.get("temperature", 0.7),
+            "top_p": state.get("top_p", 0.95),
+        }
+
+        response = bedrock.invoke_model(
+            modelId=bedrock_model,
+            body=json.dumps(body)
+        )
+        result = json.loads(response["body"].read())
+        text = result.get("generation", result.get("text", ""))
+
+        # Track usage
+        state["llama_used"] = state.get("llama_used", 0) + 1
         _save_quota_state(state)
         return text
-    except APIStatusError as e:
-        if e.status_code in (529, 429) and bedrock_fallback and bedrock_fallback != bedrock_model:
-            print(
-                f"  [Bedrock throttled, falling back to {fallback_model}]",
-                file=sys.stderr,
-                flush=True,
-            )
-            kwargs["model"] = bedrock_fallback
+
+    else:
+        # Claude: use AnthropicBedrock client
+        from anthropic import AnthropicBedrock, APIStatusError
+
+        client = AnthropicBedrock(aws_region=region)
+
+        kwargs = {
+            "model": bedrock_model,
+            "max_tokens": max_tokens,
+            "messages": [{"role": "user", "content": user_message}],
+        }
+        if system_message:
+            kwargs["system"] = system_message
+        if "temperature" in state:
+            kwargs["temperature"] = state["temperature"]
+        if "top_p" in state:
+            kwargs["top_p"] = state["top_p"]
+
+        try:
             response = client.messages.create(**kwargs)
             text = response.content[0].text
-            state["sonnet_used"] = state.get("sonnet_used", 0) + 1
+            if model == CLAUDE_OPUS_4_6:
+                state["opus_used"] = state.get("opus_used", 0) + 1
+            else:
+                state["sonnet_used"] = state.get("sonnet_used", 0) + 1
             _save_quota_state(state)
             return text
-        raise
+        except APIStatusError as e:
+            if e.status_code in (529, 429) and bedrock_fallback and bedrock_fallback != bedrock_model:
+                print(
+                    f"  [Bedrock throttled, falling back to {fallback_model}]",
+                    file=sys.stderr,
+                    flush=True,
+                )
+                kwargs["model"] = bedrock_fallback
+                response = client.messages.create(**kwargs)
+                text = response.content[0].text
+                state["sonnet_used"] = state.get("sonnet_used", 0) + 1
+                _save_quota_state(state)
+                return text
+            raise
 
 
 def _call_anthropic(
@@ -333,6 +405,10 @@ def _call_anthropic(
     }
     if system_message:
         kwargs["system"] = system_message
+    if "temperature" in state:
+        kwargs["temperature"] = state["temperature"]
+    if "top_p" in state:
+        kwargs["top_p"] = state["top_p"]
 
     try:
         response = client.messages.create(**kwargs)

@@ -2,10 +2,17 @@
 # Hard tasks: critiques, comparisons, revision_briefs (Opus)
 # Easier: briefs, autopsies, lessons (Sonnet or local)
 
-# Opus: 50 total, only hardest (rhyme poem generation). Sonnet: 150. Beyond that → local.
+# Backend: "bedrock" (preferred when AWS creds available) or "anthropic"
+# Auto-detected based on AWS_ACCESS_KEY_ID, AWS_PROFILE, or ~/.aws/credentials
+# Override with USE_BEDROCK=true/false env var
+backend:
+  preferred: bedrock
+  aws_region: us-east-1
+
+# Opus: 50 total, only hardest (rhyme poem generation). Sonnet: 400. Beyond that → local.
 quotas:
   opus_max: 50
-  sonnet_max: 150
+  sonnet_max: 400
 
 local:
   backend: ollama

@@ -114,11 +114,12 @@ def generate_critique(
     draft: str,
     brief: str,
     form: str | None,
-    use_educator: bool = True,
-    educator_model: str = "qwen2.5:7b-instruct",
+    model: str = "llama4-maverick",
+    temperature: float = 0.3,
+    max_tokens: int = 600,
     include_rhyme_analysis: bool = True,
 ) -> str:
-    """Generate a critique of the draft poem."""
+    """Generate a critique of the draft poem using configured model (Llama 4 Maverick)."""
     # Build critique prompt with form analysis if applicable
     form_ctx = ""
     if form and is_rhyming_form(form) and include_rhyme_analysis:
@@ -132,28 +133,13 @@ def generate_critique(
 
     system = get_persona("educator_neutral")
 
-    if use_educator:
-        # Use local educator model
-        try:
-            from ollama import chat
-
-            messages = [
-                {"role": "system", "content": system},
-                {"role": "user", "content": critique_prompt},
-            ]
-            response = chat(
-                model=educator_model,
-                messages=messages,
-                options={"temperature": 0.3, "num_predict": 600},
-            )
-            if hasattr(response, "message"):
-                return getattr(response.message, "content", "") or ""
-            return response.get("message", {}).get("content", "") or ""
-        except Exception as e:
-            print(f"  Educator error, falling back to Claude: {e}", file=sys.stderr)
-
-    # Fallback to Claude
-    return call_claude(critique_prompt, system, model="claude-sonnet-4-20250514", max_tokens=600)
+    # Direct call - fail fast if Bedrock unavailable
+    return call_claude(
+        critique_prompt,
+        system,
+        model=model,
+        max_tokens=max_tokens,
+    ).strip()
 
 
 def generate_revision(
@@ -254,14 +240,19 @@ def main():
             print(f"[{i+1}/{len(prompts)}] Generating trajectory...", flush=True)
 
             try:
-                # 1. Generate draft_0 using SFT poet
-                # For now, use Claude to simulate poet (in production, use local checkpoint)
-                draft_0 = call_claude(
-                    prompt["user"],
-                    prompt["system"],
-                    model="claude-sonnet-4-20250514",
-                    max_tokens=draft_cfg.get("max_tokens", 512),
-                )
+                # 1. Generate draft_0 using configured model
+                draft_model = draft_cfg.get("model", "llama4-maverick")
+                try:
+                    draft_0 = call_claude(
+                        prompt["user"],
+                        prompt["system"],
+                        model=draft_model,
+                        max_tokens=draft_cfg.get("max_tokens", 512),
+                        temperature=draft_cfg.get("temperature", 0.8),
+                    )
+                except Exception as e:
+                    # Fail fast - no fallback
+                    raise RuntimeError(f"Failed to generate draft_0 with {draft_model}: {e}") from e
 
                 # Rate limit
                 elapsed = time.time() - last_request_time
@@ -274,7 +265,9 @@ def main():
                     draft_0,
                     prompt["user"],
                     prompt.get("form"),
-                    use_educator=critique_cfg.get("use_educator", True),
+                    model=critique_cfg.get("model", "llama4-maverick"),
+                    temperature=critique_cfg.get("temperature", 0.3),
+                    max_tokens=critique_cfg.get("max_tokens", 600),
                     include_rhyme_analysis=critique_cfg.get("include_rhyme_analysis", True),
                 )
 
@@ -287,17 +280,22 @@ def main():
                 # 3. Generate revision candidates
                 best_revision = None
                 best_reward_1 = -1.0
+                revision_model = revision_cfg.get("model", "llama4-maverick")
 
                 for _ in range(candidates_per_draft):
-                    revision = generate_revision(
-                        prompt["user"],
-                        draft_0,
-                        critique,
-                        prompt.get("form"),
-                        model=revision_cfg.get("model", "claude-sonnet-4-20250514"),
-                        temperature=revision_cfg.get("temperature", 0.7),
-                        max_tokens=revision_cfg.get("max_tokens", 600),
-                    )
+                    try:
+                        revision = generate_revision(
+                            prompt["user"],
+                            draft_0,
+                            critique,
+                            prompt.get("form"),
+                            model=revision_model,
+                            temperature=revision_cfg.get("temperature", 0.7),
+                            max_tokens=revision_cfg.get("max_tokens", 600),
+                        )
+                    except Exception as e:
+                        # Fail fast - no fallback
+                        raise RuntimeError(f"Failed to generate revision with {revision_model}: {e}") from e
 
                     # Rate limit
                     elapsed = time.time() - last_request_time

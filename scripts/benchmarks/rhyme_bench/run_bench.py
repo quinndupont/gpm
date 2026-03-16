@@ -87,6 +87,7 @@ def run_single(
             "detected_scheme": analysis.get("detected_scheme", ""),
             "expected_scheme": analysis.get("expected_scheme"),
         },
+        "metadata": result.get("metadata", {}),
     }
 
 
@@ -230,12 +231,24 @@ def main():
             out_file = args.output_dir / f"rhyme_{form}_{idx}_{slug}_{run_timestamp}.json"
             with open(out_file, "w") as f:
                 json.dump(run, f, indent=2)
+
+            # Enhanced logging with tokens/s and abbreviated performance metrics
             ra = run["rhyme_analysis"]
+            meta = run.get("metadata", {})
+            tok_s = meta.get("perf_tokens_per_sec", 0)
+            time_s = meta.get("perf_total_sec", 0)
+            match_symbol = "T" if ra['matches_form'] is True else "F" if ra['matches_form'] is False else "?"
+            detected_scheme = ra.get("detected_scheme", "")[:20]  # Truncate long schemes
+            expected_scheme = ra.get("expected_scheme", "")
+
             print(
-                f"  strict_density={ra['strict_rhyme_density']} matches={ra['matches_form']} "
-                f"-> {out_file}",
+                f"  ({tok_s:.1f} tok/s, {time_s:.1f}s) "
+                f"sd={ra['strict_rhyme_density']:.2f} match={match_symbol} "
+                f"devs={ra['deviations_count']} lines={ra['line_count']} "
+                f"scheme={detected_scheme} expect={expected_scheme}",
                 flush=True,
             )
+            print(f"  -> {out_file}", flush=True)
 
     # Diagnostic analysis if requested
     if args.diagnostic:
