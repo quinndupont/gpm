@@ -117,7 +117,9 @@ Combines outputs into chat format. Poet data includes general pairs, rhyme pairs
 
 **Modal:** `python scripts/modal/upload_data.py` — uploads `data/educator_training/`, `data/poet_training/` to `poetry-data` volume.
 
-**SageMaker:** `python scripts/sagemaker/upload_to_s3.py` — uploads same dirs to S3 (uses `config/sagemaker.yaml`: bucket, region). Validate: `python scripts/sagemaker/validate_setup.py`.
+**SageMaker:** `python scripts/sagemaker/upload_to_s3.py` — uploads `data/educator_training/`, `data/poet_training/`, and `data/srpo_training/` (if exists) to S3 (uses `config/sagemaker.yaml`: bucket, region). Validate: `python scripts/sagemaker/validate_setup.py`.
+
+**Note:** For SRPO training, generate trajectories first with `scripts/data/generate_srpo_data.py`, then run upload.
 
 ### 4. Train + export
 
@@ -146,7 +148,12 @@ python scripts/sagemaker/train_sagemaker.py --task educator [--num-epochs-overri
 python scripts/sagemaker/train_sagemaker.py --task poet [--num-epochs-override N]
 
 # Stage 2 (optional): SRPO
-# Requires trajectories from generate_srpo_data.py
+# IMPORTANT: Generate and upload data BEFORE submitting training job
+# 1. Generate trajectories (local, using Bedrock):
+python scripts/data/generate_srpo_data.py --config config/srpo_data_generation.yaml --limit 5000
+# 2. Upload to S3 (includes trajectories.jsonl):
+python scripts/sagemaker/upload_to_s3.py
+# 3. Submit training job:
 python scripts/sagemaker/train_sagemaker.py --task srpo --sft-s3 s3://bucket/path/to/poet/model.tar.gz [--num-epochs-override N]
 
 # Export + download

@@ -1,6 +1,5 @@
 # Poet SRPO (Stage 2) — Self-Refinement Policy Optimization
 # Trains poet to both generate AND self-revise based on critique.
-# Replaces REINFORCE with trajectory-based learning: (prompt, draft_0, critique, draft_1)
 
 base_model: "meta-llama/Llama-3.1-8B-Instruct"
 model_loading:
@@ -41,8 +40,8 @@ training:
   warmup_ratio: 0.05
   num_epochs: 3
   per_device_batch_size: 1
-  gradient_accumulation_steps: 8
-  max_seq_length: 1536  # Longer to accommodate (prompt + draft + critique + revision)
+  gradient_accumulation_steps: 4  # Reduced from 8 to fit in 48GB GPU (effective batch size 4)
+  max_seq_length: 1024  # Reduced from 1536 (most trajectories << 1024 tokens); increase to 1280 if more room
   weight_decay: 0.01
   bf16: true
   max_grad_norm: 0.5

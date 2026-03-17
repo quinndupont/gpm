@@ -16,7 +16,7 @@ quotas:
 
 local:
   backend: ollama
-  model: qwen2.5:7b-instruct
+  model: llama3.1:8b
 
 # Contrastive balancing: bad poems ~114, good ~34k
 # Bad: use in comparison + critique + autopsy (each 3x)

@@ -281,6 +281,205 @@ class PoetryPipeline:
             else:
                 return result.get("text", result.get("generation", ""))
 
+        elif "cohere" in model_id:
+            # Cohere Command models - use chat history format
+            # Chat history uses user/assistant roles, system prompt included in message
+            body = {
+                "message": f"{system}\n\n{user}" if system else user,
+                "chat_history": [],
+                "max_tokens": max_tokens,
+                "temperature": temperature,
+                "p": top_p,
+            }
+            response = bedrock.invoke_model(
+                modelId=model_id,
+                body=json.dumps(body),
+            )
+            result = json.loads(response["body"].read())
+            if "text" in result:
+                return result["text"]
+            elif "reply" in result:
+                return result["reply"]
+            else:
+                return result.get("generation", "")
+
+        elif "amazon.nova" in model_id:
+            # Amazon Nova models use Messages API format with inferenceConfig
+            # Content must be array of content blocks (without type field)
+            messages = [
+                {
+                    "role": "user",
+                    "content": [
+                        {"text": f"{system}\n\n{user}"}
+                    ]
+                }
+            ]
+            body = {
+                "messages": messages,
+                "inferenceConfig": {
+                    "temperature": temperature,
+                    "topP": top_p,
+                    "maxTokens": max_tokens,
+                }
+            }
+            response = bedrock.invoke_model(
+                modelId=model_id,
+                body=json.dumps(body),
+            )
+            result = json.loads(response["body"].read())
+            # Nova response structure: output.message.content[0].text
+            return result["output"]["message"]["content"][0]["text"]
+
+        elif "google.gemma" in model_id:
+            # Google Gemma models use Messages API format
+            body = {
+                "messages": [
+                    {"role": "system", "content": system},
+                    {"role": "user", "content": user}
+                ],
+                "max_tokens": max_tokens,
+                "temperature": temperature,
+                "top_p": top_p,
+            }
+            response = bedrock.invoke_model(
+                modelId=model_id,
+                body=json.dumps(body),
+            )
+            result = json.loads(response["body"].read())
+            if "choices" in result:
+                return result["choices"][0]["message"]["content"]
+            else:
+                return result.get("text", result.get("output", {}).get("text", ""))
+
+        elif "nvidia.nemotron" in model_id:
+            # NVIDIA Nemotron models use Messages API format
+            body = {
+                "messages": [
+                    {"role": "system", "content": system},
+                    {"role": "user", "content": user}
+                ],
+                "max_tokens": max_tokens,
+                "temperature": temperature,
+                "top_p": top_p,
+            }
+            response = bedrock.invoke_model(
+                modelId=model_id,
+                body=json.dumps(body),
+            )
+            result = json.loads(response["body"].read())
+            if "choices" in result:
+                return result["choices"][0]["message"]["content"]
+            else:
+                return result.get("text", result.get("generation", ""))
+
+        elif "openai.gpt-oss" in model_id:
+            # OpenAI GPT-OSS models use Messages API format
+            body = {
+                "messages": [
+                    {"role": "system", "content": system},
+                    {"role": "user", "content": user}
+                ],
+                "max_tokens": max_tokens,
+                "temperature": temperature,
+                "top_p": top_p,
+            }
+            response = bedrock.invoke_model(
+                modelId=model_id,
+                body=json.dumps(body),
+            )
+            result = json.loads(response["body"].read())
+            if "choices" in result:
+                return result["choices"][0]["message"]["content"]
+            else:
+                return result.get("text", result.get("generation", ""))
+
+        elif "writer.palmyra" in model_id:
+            # Writer Palmyra models use text generation format
+            prompt = f"{system}\n\n{user}"
+            body = {
+                "prompt": prompt,
+                "maxTokens": max_tokens,
+                "temperature": temperature,
+                "topP": top_p,
+            }
+            response = bedrock.invoke_model(
+                modelId=model_id,
+                body=json.dumps(body),
+            )
+            result = json.loads(response["body"].read())
+            return result.get("text", result.get("generation", ""))
+
+        elif "zai.glm" in model_id:
+            # Zhipu GLM models use Messages API format
+            body = {
+                "max_tokens": max_tokens,
+                "temperature": temperature,
+                "top_p": top_p,
+                "messages": [
+                    {"role": "system", "content": system},
+                    {"role": "user", "content": user}
+                ],
+            }
+            response = bedrock.invoke_model(
+                modelId=model_id,
+                body=json.dumps(body),
+            )
+            result = json.loads(response["body"].read())
+            if "choices" in result:
+                return result["choices"][0]["message"]["content"]
+            elif "content" in result:
+                return result["content"][0]["text"] if isinstance(result["content"], list) else result["content"]
+            else:
+                return result.get("text", result.get("generation", ""))
+
+        elif "moonshotai.kimi" in model_id:
+            # Moonshot Kimi models use Messages API format
+            body = {
+                "max_tokens": max_tokens,
+                "temperature": temperature,
+                "top_p": top_p,
+                "messages": [
+                    {"role": "system", "content": system},
+                    {"role": "user", "content": user}
+                ],
+            }
+            response = bedrock.invoke_model(
+                modelId=model_id,
+                body=json.dumps(body),
+            )
+            result = json.loads(response["body"].read())
+            if "choices" in result:
+                return result["choices"][0]["message"]["content"]
+            elif "content" in result:
+                return result["content"][0]["text"] if isinstance(result["content"], list) else result["content"]
+            else:
+                return result.get("text", result.get("generation", ""))
+
+        elif "minimax.minimax" in model_id:
+            # MiniMax models use Messages API format
+            body = {
+                "max_tokens": max_tokens,
+                "temperature": temperature,
+                "top_p": top_p,
+                "messages": [
+                    {"role": "system", "content": system},
+                    {"role": "user", "content": user}
+                ],
+            }
+            response = bedrock.invoke_model(
+                modelId=model_id,
+                body=json.dumps(body),
+            )
+            result = json.loads(response["body"].read())
+            if "choices" in result:
+                return result["choices"][0]["message"]["content"]
+            elif "reply" in result:
+                return result["reply"]
+            elif "content" in result:
+                return result["content"][0]["text"] if isinstance(result["content"], list) else result["content"]
+            else:
+                return result.get("text", result.get("generation", ""))
+
         else:
             raise ValueError(f"Unsupported Bedrock model: {model_id}")
 

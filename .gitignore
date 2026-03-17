@@ -29,3 +29,6 @@ feedback/*
 !feedback/.gitkeep
 logs/*.log
 data/rhyme_bench/**
+data/srpo_training/trajectories.jsonl
+data/srpo_training/trajectories_v2.jsonl
+data/srpo_training/trajectories.jsonl

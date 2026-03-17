@@ -17,6 +17,13 @@ test_models:
   - claude-sonnet-4  # Frontier model for comparison
 
 models:
+  # --- Trained/Fine-tuned models ---
+  - id: trained-llama3.1-8b
+    label: "Trained Llama 3.1 8B Poet"
+    educator: gguf:./models/llama3.1-8b-poet-Q4_K_M-trained.gguf
+    poet: gguf:./models/llama3.1-8b-poet-Q4_K_M-trained.gguf
+    revisions: [0, 1, 3]
+
   # --- Vanilla baselines (rev0+rev1: same model as educator+poet for change_pcts) ---
   - id: qwen2.5-7b-vanilla
     label: "Vanilla Qwen 2.5 7B"
@@ -73,4 +80,54 @@ models:
     label: "Qwen 3 32B (Bedrock)"
     educator: bedrock:qwen.qwen3-32b-v1:0
     poet: bedrock:qwen.qwen3-32b-v1:0
+    revisions: [0, 1, 3]
+
+  # Additional Frontier Models
+  - id: glm4.7-v1
+    label: "GLM 4.7 v1 (Bedrock)"
+    educator: bedrock:zai.glm-4.7
+    poet: bedrock:zai.glm-4.7
+    revisions: [0, 1, 3]
+
+  - id: kimi-k2.5
+    label: "Kimi K2.5 (Bedrock)"
+    educator: bedrock:moonshotai.kimi-k2.5
+    poet: bedrock:moonshotai.kimi-k2.5
+    revisions: [0, 1, 3]
+
+  - id: minimax-m2.1
+    label: "MiniMax M2.1 (Bedrock)"
+    educator: bedrock:minimax.minimax-m2.1
+    poet: bedrock:minimax.minimax-m2.1
+    revisions: [0, 1, 3]
+
+  - id: nova-pro
+    label: "Nova Pro (Bedrock)"
+    educator: bedrock:amazon.nova-pro-v1:0
+    poet: bedrock:amazon.nova-pro-v1:0
+    revisions: [0, 1, 3]
+
+  # Additional Open Models
+  - id: gpt-oss-120b
+    label: "GPT OSS 120B (Bedrock)"
+    educator: bedrock:openai.gpt-oss-120b-1:0
+    poet: bedrock:openai.gpt-oss-120b-1:0
+    revisions: [0, 1, 3]
+
+  - id: nemotron-nano-30b
+    label: "Nemotron Nano 3 30B (Bedrock)"
+    educator: bedrock:nvidia.nemotron-nano-3-30b
+    poet: bedrock:nvidia.nemotron-nano-3-30b
+    revisions: [0, 1, 3]
+
+  - id: gemma3-27b
+    label: "Gemma 3 27B PT (Bedrock)"
+    educator: bedrock:google.gemma-3-27b-it
+    poet: bedrock:google.gemma-3-27b-it
+    revisions: [0, 1, 3]
+
+  - id: command-r-plus
+    label: "Command R+ (Bedrock)"
+    educator: bedrock:cohere.command-r-plus-v1:0
+    poet: bedrock:cohere.command-r-plus-v1:0
     revisions: [0, 1, 3]

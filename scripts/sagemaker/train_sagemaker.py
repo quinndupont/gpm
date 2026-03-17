@@ -104,8 +104,17 @@ def _build_source_dir() -> Path:
     srpo_train = ROOT / "scripts" / "training" / "srpo_train.py"
     if srpo_train.exists():
         shutil.copy(srpo_train, d / "srpo_train.py")
+    # Create scripts directory structure and copy training modules
     (d / "scripts").mkdir(exist_ok=True)
+    (d / "scripts" / "training").mkdir(exist_ok=True)
     (d / "scripts" / "eval").mkdir(parents=True, exist_ok=True)
+    # Create __init__.py to make directories Python packages
+    (d / "scripts" / "__init__.py").touch()
+    (d / "scripts" / "training" / "__init__.py").touch()
+    # Copy timer.py for SRPO training time metrics
+    timer_src = ROOT / "scripts" / "training" / "timer.py"
+    if timer_src.exists():
+        shutil.copy(timer_src, d / "scripts" / "training" / "timer.py")
     for eval_file in ["rhyme_analyzer.py", "form_registry.py", "meter_analyzer.py"]:
         src = ROOT / "scripts" / "eval" / eval_file
         if src.exists():
