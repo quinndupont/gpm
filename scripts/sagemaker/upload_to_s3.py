@@ -15,8 +15,13 @@ FILES = [
     (EDUCATOR_TRAINING / "valid.jsonl", "data/educator_valid.jsonl"),
     (POET_TRAINING / "train.jsonl", "data/poet_train.jsonl"),
     (POET_TRAINING / "valid.jsonl", "data/poet_valid.jsonl"),
-    # SRPO trajectories: uploaded as trajectories.jsonl so SageMaker entrypoint can find it
-    (SRPO_TRAINING / "trajectories.jsonl", "data/trajectories.jsonl"),
+    # SRPO trajectories: prefer v2 if present, uploaded as trajectories.jsonl for SageMaker
+    (
+        SRPO_TRAINING / "trajectories_v2.jsonl"
+        if (SRPO_TRAINING / "trajectories_v2.jsonl").exists()
+        else SRPO_TRAINING / "trajectories.jsonl",
+        "data/trajectories.jsonl",
+    ),
 ]
 
 

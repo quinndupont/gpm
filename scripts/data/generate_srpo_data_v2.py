@@ -31,6 +31,26 @@ from scripts.eval.form_registry import detect_form, get_scheme, is_rhyming_form
 from scripts.eval.rhyme_analyzer import analyze as analyze_rhyme
 from scripts.eval.rhyme_analyzer import compute_reward, format_analysis_for_prompt
 
+EducatorScorer = None  # Lazy import to avoid loading llama_cpp when not needed
+
+
+def _get_educator_scorer(cfg: dict):
+    """Load educator scorer if use_educator_scoring is enabled."""
+    global EducatorScorer
+    if not cfg.get("use_educator_scoring", False):
+        return None
+    if EducatorScorer is None:
+        from scripts.eval.educator_scorer import EducatorScorer as _ES
+        EducatorScorer = _ES
+    edu_cfg = cfg.get("educator_scoring", {})
+    model_path = edu_cfg.get("model_path", "llama3.1-8b-educator-Q4_K_M.gguf")
+    path = Path(model_path)
+    if not path.is_absolute():
+        path = ROOT / path
+    if not path.exists():
+        raise FileNotFoundError(f"Educator model not found: {path}")
+    return EducatorScorer(path)
+
 
 def load_config(config_path: Path) -> dict:
     """Load SRPO data generation config."""
@@ -147,6 +167,8 @@ def generate_variance_trajectory(
     prompt: dict,
     variance_cfg: dict,
     rate_limiter: "RateLimiter",
+    educator_scorer=None,
+    edu_weights: dict | None = None,
 ) -> dict | None:
     """Generate trajectory using variance strategy.
 
@@ -161,8 +183,16 @@ def generate_variance_trajectory(
         rate_limiter.wait()
         try:
             draft = call_model(prompt["user"], prompt["system"], model_cfg)
-            score = compute_reward(draft, expected_form=prompt.get("form"))
-            drafts.append({"draft": draft, "score": score})
+            if educator_scorer:
+                scores = educator_scorer.score_poem(
+                    poem=draft,
+                    brief=prompt["user"],
+                    expected_form=prompt.get("form"),
+                )
+                score = educator_scorer.compute_aggregate_reward(scores, edu_weights)
+            else:
+                score = compute_reward(draft, expected_form=prompt.get("form"))
+            drafts.append({"draft": draft, "score": score, "scores": scores if educator_scorer else None})
             print(f"    Candidate {i+1}/{num_candidates}: score={score:.3f}")
         except Exception as e:
             print(f"    Candidate {i+1} failed: {e}")
@@ -182,17 +212,21 @@ def generate_variance_trajectory(
         print(f"    Score gap {score_gap:.3f} < {min_score_gap}")
         return None
 
-    return {
+    out = {
         "prompt": prompt["user"],
         "system": prompt["system"],
         "draft_0": rejected["draft"],
-        "critique": "",  # No critique in variance strategy
+        "critique": "",
         "draft_1": chosen["draft"],
         "reward_0": round(rejected["score"], 4),
         "reward_1": round(chosen["score"], 4),
         "expected_form": prompt.get("form"),
         "strategy": "variance",
     }
+    if educator_scorer and rejected.get("scores") and chosen.get("scores"):
+        out["scores_0"] = {k: round(v, 3) for k, v in rejected["scores"].items()}
+        out["scores_1"] = {k: round(v, 3) for k, v in chosen["scores"].items()}
+    return out
 
 
 def generate_model_gap_trajectory(
@@ -201,6 +235,8 @@ def generate_model_gap_trajectory(
     critique_cfg: dict,
     chosen_model_idx: int,
     rate_limiter: "RateLimiter",
+    educator_scorer=None,
+    edu_weights: dict | None = None,
 ) -> dict | None:
     """Generate trajectory using model-gap strategy.
 
@@ -226,7 +262,16 @@ def generate_model_gap_trajectory(
         print(f"    Failed to generate rejected draft: {e}")
         return None
 
-    reward_0 = compute_reward(draft_0, expected_form=prompt.get("form"))
+    if educator_scorer:
+        scores_0 = educator_scorer.score_poem(
+            poem=draft_0,
+            brief=prompt["user"],
+            expected_form=prompt.get("form"),
+        )
+        reward_0 = educator_scorer.compute_aggregate_reward(scores_0, edu_weights)
+    else:
+        reward_0 = compute_reward(draft_0, expected_form=prompt.get("form"))
+        scores_0 = None
     print(f"    Rejected (8B): score={reward_0:.3f}")
 
     # 2. Generate critique
@@ -243,7 +288,6 @@ def generate_model_gap_trajectory(
         return None
 
     # 3. Generate chosen draft with strong model (frontier)
-    # Frontier revises draft_0 based on critique (teaches revision skill)
     rate_limiter.wait()
     try:
         draft_1 = generate_revision(
@@ -257,10 +301,19 @@ def generate_model_gap_trajectory(
         print(f"    Failed to generate chosen revision with {chosen_model_name}: {e}")
         return None
 
-    reward_1 = compute_reward(draft_1, expected_form=prompt.get("form"))
+    if educator_scorer:
+        scores_1 = educator_scorer.score_poem(
+            poem=draft_1,
+            brief=prompt["user"],
+            expected_form=prompt.get("form"),
+        )
+        reward_1 = educator_scorer.compute_aggregate_reward(scores_1, edu_weights)
+    else:
+        reward_1 = compute_reward(draft_1, expected_form=prompt.get("form"))
+        scores_1 = None
     print(f"    Chosen ({chosen_model_name}): score={reward_1:.3f}")
 
-    return {
+    out = {
         "prompt": prompt["user"],
         "system": prompt["system"],
         "draft_0": draft_0,
@@ -272,6 +325,10 @@ def generate_model_gap_trajectory(
         "strategy": "model_gap",
         "chosen_model": chosen_model_name,
     }
+    if educator_scorer and scores_0 and scores_1:
+        out["scores_0"] = {k: round(v, 3) for k, v in scores_0.items()}
+        out["scores_1"] = {k: round(v, 3) for k, v in scores_1.items()}
+    return out
 
 
 class RateLimiter:
@@ -360,6 +417,15 @@ def main():
 
     rate_limiter = RateLimiter(requests_per_minute)
 
+    use_educator_scoring = cfg.get("use_educator_scoring", False)
+    educator_scorer = None
+    edu_weights = None
+    if use_educator_scoring:
+        print("Loading educator model for multi-dimensional scoring...")
+        educator_scorer = _get_educator_scorer(cfg)
+        edu_weights = cfg.get("educator_scoring", {}).get("weights")
+        print("  Educator loaded successfully")
+
     trajectories_written = 0
     trajectories_filtered = 0
     variance_count = 0
@@ -388,12 +454,16 @@ def main():
                 if use_variance:
                     print("  Strategy: variance")
                     trajectory = generate_variance_trajectory(
-                        prompt, variance_cfg, rate_limiter
+                        prompt, variance_cfg, rate_limiter,
+                        educator_scorer=educator_scorer,
+                        edu_weights=edu_weights,
                     )
                 else:
                     print("  Strategy: model_gap")
                     trajectory = generate_model_gap_trajectory(
-                        prompt, model_gap_cfg, critique_cfg, chosen_model_idx, rate_limiter
+                        prompt, model_gap_cfg, critique_cfg, chosen_model_idx, rate_limiter,
+                        educator_scorer=educator_scorer,
+                        edu_weights=edu_weights,
                     )
                     chosen_model_idx += 1
 

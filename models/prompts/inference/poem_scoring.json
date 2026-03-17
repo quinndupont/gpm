@@ -1,0 +1,10 @@
+{
+  "id": "poem_scoring",
+  "version": "1",
+  "description": "Multi-dimensional poem scoring for SRPO rewards",
+  "persona": "educator_neutral",
+  "templates": {
+    "default": "## Generation Brief\n{brief}\n\n## Poem to Score\n{poem}\n\n{form_ctx}\n---\n\nScore this poem on these dimensions (1-5 scale):\n\n1. imagery_clarity: How concrete and sensory vs abstract? (1=all abstraction, 5=vivid sensory detail)\n2. originality: How fresh vs clichéd? (1=worn phrases, 5=defamiliarized language)\n3. sentiment_authenticity: Is emotion earned through image/event vs announced? (1=told feeling, 5=shown feeling)\n4. form_adherence: Does it follow the specified form/structure? (1=broken, 5=perfect)\n5. voice_distinctiveness: Is the speaker's voice present and consistent? (1=generic, 5=distinctive)\n\nOutput ONLY valid JSON:\n{{\"imagery_clarity\": X, \"originality\": X, \"sentiment_authenticity\": X, \"form_adherence\": X, \"voice_distinctiveness\": X}}"
+  },
+  "variables": ["brief", "poem", "form_ctx"]
+}

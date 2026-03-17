@@ -2,6 +2,20 @@
 # Hybrid strategy: variance (70%) + model-gap (30%)
 # Generates trajectories: (prompt, draft_0, critique, draft_1)
 
+# Multi-dimensional reward scoring (set false for rhyme-only, backward compatible)
+use_educator_scoring: false
+
+educator_scoring:
+  model_path: "models/llama3.1-8b-educator-Q4_K_M.gguf"
+  weights:
+    imagery_clarity: 0.20
+    originality: 0.20
+    sentiment_authenticity: 0.20
+    form_adherence: 0.25
+    voice_distinctiveness: 0.15
+  temperature: 0.1
+  max_tokens: 200
+
 source_data: "data/poet_training/train.jsonl"
 output_dir: "data/srpo_training"
 output_filename: "trajectories_v2.jsonl"

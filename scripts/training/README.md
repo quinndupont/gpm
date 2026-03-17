@@ -65,19 +65,25 @@ Where:
 First, generate trajectories `(prompt, draft_0, critique, draft_1)`:
 
 ```bash
-# Modal (recommended)
-modal run scripts/modal/generate_srpo_data.py --max-trajectories 5000
+# V2 (recommended): hybrid variance + model-gap, optional educator scoring
+python scripts/data/generate_srpo_data_v2.py --config config/srpo_data_generation_v2.yaml --limit 5000
 
-# Local
+# Legacy
 python scripts/data/generate_srpo_data.py --limit 100
 ```
 
-**Config:** `config/srpo_data_generation.yaml`
-**Output:** `data/srpo_training/trajectories.jsonl`
+**Config:** `config/srpo_data_generation_v2.yaml`
+**Output:** `data/srpo_training/trajectories_v2.jsonl`
+
+`upload_to_s3.py` prefers `trajectories_v2.jsonl` when present.
+
+**V2 features:**
+- **Hybrid strategy:** variance (70%) + model-gap (30%). Variance: N candidates from same model, pick best/worst. Model-gap: weak model (8B) for rejected, frontier for chosen.
+- **Multi-dimensional rewards (optional):** Set `use_educator_scoring: true` to score poems on imagery, originality, sentiment authenticity, form adherence, voice. Uses local educator GGUF (`llama3.1-8b-educator-Q4_K_M.gguf`). Default: rhyme-only rewards (backward compatible).
 
 ##### LLM Backend: Bedrock vs Anthropic API
 
-Data generation uses Claude for critiques and revisions. Two backends are supported:
+Data generation uses Bedrock (Gemma, GLM, Claude) for critiques and revisions. Two backends are supported:
 
 **Amazon Bedrock (recommended):**
 ```bash
@@ -96,10 +102,10 @@ export USE_BEDROCK=1
 export AWS_REGION=us-east-1  # optional, defaults to us-east-1
 
 # 5. Run data generation
-python scripts/data/generate_srpo_data.py --limit 100
+python scripts/data/generate_srpo_data_v2.py --config config/srpo_data_generation_v2.yaml --limit 100
 ```
 
-**Direct Anthropic API:**
+**Direct Anthropic API:** (legacy script)
 ```bash
 export ANTHROPIC_API_KEY=sk-ant-...
 python scripts/data/generate_srpo_data.py --limit 100
@@ -133,11 +139,12 @@ python scripts/sagemaker/train_sagemaker.py --task srpo \
 python scripts/training/srpo_train.py \
   --sft-checkpoint checkpoints/poet/final \
   --data-dir data/srpo_training \
+  --train-file trajectories_v2.jsonl \
   --checkpoint-dir checkpoints/poet_srpo
 ```
 
 **Config:** `config/srpo_training.yaml`
-**Data:** `data/srpo_training/trajectories.jsonl`
+**Data:** `data/srpo_training/trajectories_v2.jsonl` (or `trajectories.jsonl` for legacy)
 
 ## Inference Mode
 
@@ -186,11 +193,11 @@ scripts/training/
 └── model_discovery.py       # Model discovery utilities
 
 config/
-├── educator_training.yaml   # Educator QLoRA config
-├── poet_training.yaml       # Poet Stage 1 config
-├── srpo_training.yaml       # SRPO Stage 2 config
-├── srpo_data_generation.yaml # SRPO data generation config
-└── inference_config.yaml    # Inference config (revision_mode)
+├── educator_training.yaml      # Educator QLoRA config
+├── poet_training.yaml          # Poet Stage 1 config
+├── srpo_training.yaml          # SRPO Stage 2 config
+├── srpo_data_generation_v2.yaml # SRPO v2: hybrid + educator scoring
+└── inference_config.yaml       # Inference config (revision_mode)
 
 data/
 ├── educator_training/
@@ -200,7 +207,7 @@ data/
 │   ├── train.jsonl
 │   └── valid.jsonl
 └── srpo_training/
-    └── trajectories.jsonl   # (prompt, draft_0, critique, draft_1)
+    └── trajectories_v2.jsonl    # (prompt, draft_0, critique, draft_1, reward_0, reward_1)
 ```
 
 ## SRPO (Stage 2)
@@ -221,15 +228,15 @@ Dual-objective loss combining generation and revision:
 
 ### Training Data
 
-- **Format:** JSONL trajectories with `(prompt, draft_0, critique, draft_1, reward_0, reward_1)`
-- **Generation:** Use `scripts/data/generate_srpo_data.py` with Llama 4 Maverick via Bedrock
-- **Location:** `data/srpo_training/trajectories.jsonl`
+- **Format:** JSONL trajectories with `(prompt, draft_0, critique, draft_1, reward_0, reward_1)`. With educator scoring: optional `scores_0`, `scores_1` per dimension.
+- **Generation:** Use `scripts/data/generate_srpo_data_v2.py` (hybrid variance + model-gap). Optional `use_educator_scoring: true` for multi-dimensional rewards from local educator GGUF.
+- **Location:** `data/srpo_training/trajectories_v2.jsonl`
 
 Each trajectory shows:
 1. Initial poem attempt (draft_0)
 2. Critique with specific line references and rhyme analysis
 3. Improved revision (draft_1)
-4. Reward scores (r0, r1) from deterministic rhyme analyzer
+4. Reward scores (r0, r1): rhyme-only (default) or educator aggregate (imagery, originality, sentiment, form, voice)
 
 ### What The Model Learns
 
@@ -247,7 +254,8 @@ The trained model can both generate initial poems AND self-revise based on Educa
 
 ### Requirements
 
-- Pre-generated trajectories from `generate_srpo_data.py`
-- AWS Bedrock access with Llama 4 Maverick enabled
+- Pre-generated trajectories from `generate_srpo_data_v2.py`
+- AWS Bedrock access (Gemma, GLM, Claude) for critiques/revisions
+- Optional: educator GGUF for multi-dimensional rewards (`use_educator_scoring: true`)
 - Longer sequence length (1536) to fit prompt + draft + critique
 - Stage 1 SFT checkpoint as base model
