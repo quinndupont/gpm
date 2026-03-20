@@ -1,0 +1,10 @@
+{
+  "id": "critique_diagnostic",
+  "version": "1",
+  "description": "Educator checks whether the latest revision implemented prior critique directions",
+  "persona": "educator_neutral",
+  "templates": {
+    "default": "You are auditing one revision step — not writing a full workshop critique.\n\nDraft BEFORE the poet's last revision:\n---\n{prev_draft}\n---\n\nDraft AFTER that revision (current):\n---\n{current_draft}\n---\n\nDirections you gave (what the poet was asked to do):\n---\n{last_critique}\n---\n\nAnswer in ≤120 words, four labeled lines only (no other prose):\nSTATUS: FULL | PARTIAL | NONE — did they implement the main directions?\nMISSED: what was ignored or only weakly changed (or \"none\").\nDONE: what clearly improved, with line or phrase evidence (or \"unclear\").\nNOTE: one line on whether new problems were introduced.\n\nDo not end with any approval phrase. Do not re-critique the whole poem."
+  },
+  "variables": ["prev_draft", "current_draft", "last_critique"]
+}

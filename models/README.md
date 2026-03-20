@@ -27,9 +27,9 @@ System prompts that define model behavior:
 
 | ID | Description |
 |----|-------------|
-| `educator_neutral` | Craft-focused poetry educator; names failure types, gives concrete direction |
+| `educator_neutral` | SFT-style workshop voice: critique and briefs for a revision/rhyme-trained poet |
 | `educator_condensed` | Short persona for training |
-| `poet` | Receives briefs, outputs poems only; rhyme-aware when scheme specified |
+| `poet` | SRPO/rhyme-trained: generate and revise under form constraints; poem-only output |
 
 ### Tuning (`prompts/tuning/`)
 
@@ -55,7 +55,8 @@ Used by the runtime pipeline (`scripts/inference/pipeline.py`):
 | Prompt | Purpose |
 |--------|---------|
 | `brief` | User request → generation brief |
-| `critique` | Draft + brief → workshop critique |
+| `critique` | Brief + selective revision memory + implementation diagnostic → workshop critique |
+| `critique_diagnostic` | Prior draft vs current vs last critique — implementation audit (internal step) |
 | `revision_brief` | Draft + critique → revised brief |
 | `poet_generation` | Brief → poem |
 | `poet_revision_instructions` | Educator → compact revision instructions |

@@ -1,10 +1,10 @@
 {
   "id": "brief",
-  "version": "1",
-  "description": "User request → generation brief (inference)",
+  "version": "2",
+  "description": "User request → generation brief (inference); sets form contract for SRPO poet",
   "persona": "educator_neutral",
   "templates": {
-    "default": "A poet has asked for help. Their request:\n\n\"{user_request}\"\n\nConstruct a COMPACT generation brief (~300 tokens max). Include:\n- Angle (2-3 sentences, not the obvious approach)\n- Clichés to avoid (5-6 specific phrases for this topic)\n- Imagery domain (1-2 sentences, unexpected)\n- Form guidance (1-2 sentences)\n{style_ctx}No rhetorical flourish. Actionable only."
+    "default": "A poet has asked for help. Their request:\n\n\"{user_request}\"\n\nThe poet model you are briefing was trained with strong rhyme and revision supervision (SRPO-style): it follows explicit form contracts well when you spell them out. Vague form language produces weak drafts.\n\nConstruct a COMPACT generation brief (~300 tokens max). Include:\n- Angle (2-3 sentences — a real angle, not the default take on the topic)\n- Clichés to avoid (5-6 specific phrases tied to this topic)\n- Imagery domain (1-2 sentences — concrete, not generic \"nature\")\n- Form contract: If they named or implied a fixed form (sonnet, villanelle, terza rima, etc.), state line count, stanza structure, and the exact rhyme scheme labels (e.g. ABAB…). If they asked for rhyme without naming a form, still specify scheme or rhyme pairs. If free verse, say so explicitly.\n- Hard constraints vs soft preferences (what must not be violated vs what is negotiable)\n{style_ctx}No rhetorical flourish. No poem draft — instructions only. Actionable only."
   },
   "variables": ["user_request", "style_ctx"]
 }

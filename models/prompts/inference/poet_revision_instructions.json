@@ -1,10 +1,10 @@
 {
   "id": "poet_revision_instructions",
-  "version": "1",
-  "description": "Educator produces compact revision instructions for poet (~100-150 words)",
+  "version": "2",
+  "description": "Educator → machine-readable patch list for SRPO/rhyme poet",
   "persona": "educator_neutral",
   "templates": {
-    "default": "{draft_label}:\n---\n{draft}\n---\n\nYour critique:\n---\n{critique}\n---\n\nRevision brief:\n---\n{revision_brief}\n---\n\n{past_section}{user_ctx}Produce compact revision instructions for the poet (~100–150 words). Be SPECIFIC: name which lines or sections need changes. The poet will make ONLY these changes — do not ask for broad rewrites. Bullet or numbered list. No preamble. Actionable only."
+    "default": "{draft_label}:\n---\n{draft}\n---\n\nYour critique:\n---\n{critique}\n---\n\nRevision brief:\n---\n{revision_brief}\n---\n\n{past_section}{user_ctx}Produce compact revision instructions for the poet (~100–150 words). The poet is rhyme- and revision-trained: it executes precise, local edits well.\n\nFormat: numbered or bulleted list. Each item should name line(s) or rhyme position (e.g. \"line 7 end-word\") and the single intended fix. Group must-fix (form/rhyme/sense) before nice-to-have (texture, diction).\n- Do not ask for a full poem rewrite unless unavoidable.\n- Do not paste a replacement poem.\n- No preamble. Actionable only."
   },
   "variables": ["draft_label", "draft", "critique", "revision_brief", "past_section", "user_ctx"]
 }

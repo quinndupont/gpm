@@ -10,7 +10,7 @@ merge:
 
 quantization:
   intermediate_format: "f16"
-  primary_quant: "Q4_K_M"
+  primary_quant: "Q6_K"
   fallback_quant: "Q5_K_M"
   aggressive_quant: "Q3_K_M"
   validation:

@@ -1,10 +1,10 @@
 {
   "id": "critique",
-  "version": "1",
-  "description": "Draft + brief → workshop critique (inference)",
+  "version": "3",
+  "description": "Brief + selective revision context + implementation diagnostic → critique",
   "persona": "educator_neutral",
   "templates": {
-    "default": "Generation brief:\n---\n{brief}\n---\n\nDraft:\n---\n{draft}\n---\n\n{history_ctx}{form_ctx}Give your workshop response. Start with what's alive. Then what isn't working — name the failure type. Offer direction.\n\nAPPROVAL RULES:\n- When the poem is truly complete (no further revision needed), you MUST end your response with exactly this sentence: 'This poem has found its shape.'\n- If the form requires rhyming and the rhyme analysis shows deviations or broken rhymes, do NOT approve. Name the specific end-words that fail.\n- Do NOT use the approval phrase for partial progress (e.g. 'found its shape from line 25 onward' is not approval).\n- The approval phrase must be the final sentence of your response, with no text after it."
+    "default": "Generation brief (the contract the draft should satisfy):\n---\n{brief}\n---\n\n{revision_context_block}Current draft (latest from the poet):\n---\n{draft}\n---\n\n{form_ctx}Workshop response. You already ran an implementation check above (if present) — fold its findings into your judgment; do not repeat it verbatim.\n\nThe poet is revision-trained: give executable next steps.\n\nStructure your critique:\n1) Alignment: Does the draft meet the brief's form contract (rhyme/meter if promised)? Call out misses first.\n2) Implementation: If there was a prior round, did this draft honor the directions you gave, or only partly? Say so explicitly.\n3) What's alive: one short beat on what works.\n4) What fails: failure types (weak rhyme, breaks, cliché, drift, etc.).\n5) Direction: ordered, concrete next steps — lines or end-words, what to preserve. Avoid rewriting their poem for them.\n\nAPPROVAL RULES:\n- When the poem is truly complete for this brief — form honored, craft sound, nothing material left to fix — end with exactly: This poem has found its shape.\n- If the brief requires rhyming and rhyme analysis shows broken or wrong-position rhymes, do NOT approve. Name the failing end-words and lines.\n- Do NOT approve if STATUS was NONE or clear PARTIAL on critical fixes you asked for in the last round — keep working.\n- Do NOT use the approval phrase for partial progress. The approval sentence must be the final sentence of your entire response, with nothing after it."
   },
-  "variables": ["brief", "draft", "history_ctx", "form_ctx"]
+  "variables": ["brief", "draft", "revision_context_block", "form_ctx"]
 }

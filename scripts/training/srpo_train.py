@@ -98,6 +98,13 @@ def run_srpo_training(
     trajectories = load_jsonl(train_file)
     if not trajectories:
         raise ValueError(f"No training data in {train_filename}")
+    # Exclude trajectories with empty critique (e.g. v2 variance before refactor)
+    before = len(trajectories)
+    trajectories = [t for t in trajectories if t.get("critique", "").strip()]
+    if len(trajectories) < before:
+        print(f"Filtered {before - len(trajectories)} trajectories with empty critique")
+    if not trajectories:
+        raise ValueError(f"No valid trajectories (all had empty critique)")
     print(f"SRPO: {len(trajectories)} trajectories, {num_epochs} epochs, "
           f"alpha={alpha}, beta_kl={beta_kl}")
 
@@ -402,7 +409,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--train-file",
         type=str,
-        default="trajectories.jsonl",
+        default="trajectories_v2.jsonl",
         help="Training data filename",
     )
     parser.add_argument(

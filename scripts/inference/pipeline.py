@@ -151,6 +151,7 @@ class PoetryPipeline:
         self.user_profile = self.config.user_style_profile
         self.educator_model_override = educator_model_override
         self.poet_model_override = poet_model_override
+        self._last_implementation_diagnostic = ""
 
     def _get_stop_tokens(self, role: str) -> list[str]:
         """Return stop tokens for educator or poet."""
@@ -531,6 +532,7 @@ class PoetryPipeline:
             "final_note": {"temperature": 0.3, "max_tokens": 400},
             "summarize": {"temperature": 0.2, "max_tokens": 300},
             "poet_instructions": {"temperature": 0.2, "max_tokens": 250},
+            "diagnostic": {"temperature": 0.2, "max_tokens": 220},
         }[task]
         if self.educator_model_override and self.educator_model_override.startswith("ollama:"):
             model = self.educator_model_override[7:]  # strip "ollama:"
@@ -597,9 +599,10 @@ class PoetryPipeline:
             scheme = get_scheme(detected)
             if scheme:
                 scheme_reminder = (
-                    f"\n\nIMPORTANT: This poem must follow the {detected} rhyme scheme: {scheme}. "
-                    "Every end-word pair must be a true phonetic rhyme. "
-                    "Plan your end-words before writing each line."
+                    f"\n\nFORM CONTRACT: {detected} — scheme {scheme}. "
+                    "You are trained for rhyme-heavy generation: choose end-words for rhyming slots before you draft those lines; "
+                    "each required pair must be true phonetic rhyme (not eye-rhyme unless the brief says otherwise). "
+                    "If a line fights the rhyme, change the line, not the scheme."
                 )
         return render_prompt(
             "inference", "poet_generation", brief=brief, scheme_reminder=scheme_reminder,
@@ -831,14 +834,92 @@ class PoetryPipeline:
             style_ctx = f"\n\nThis poet's style profile:\n{self.user_profile}\n"
         return render_prompt("inference", "brief", user_request=user_request, style_ctx=style_ctx)
 
+    @staticmethod
+    def _truncate_for_ctx(text: str, cap: int) -> str:
+        if len(text) <= cap:
+            return text
+        cut = text[:cap].rsplit("\n", 1)[0]
+        return cut + "\n[truncated]"
+
+    def _summarize_prior_rounds(self, entries: list) -> str:
+        """Compress older revision rounds (excludes the latest predecessor pair)."""
+        if not entries:
+            return ""
+        parts = []
+        for i, h in enumerate(entries, start=1):
+            d = self._truncate_for_ctx(h.get("draft") or "", 450)
+            c = self._truncate_for_ctx(h.get("critique") or "", 400)
+            parts.append(
+                f"Round {i} — draft excerpt:\n{d}\nRound {i} — your critique excerpt:\n{c}",
+            )
+        block = "\n\n---\n\n".join(parts)
+        prompt = (
+            "These are EARLIER workshop rounds (before the poet's latest revision). "
+            "Compress into 3–7 short bullets: what was wrong, what you directed, "
+            "whether later evidence suggests those issues were partly fixed. "
+            "Do not judge the newest draft — it appears later. No preamble.\n\n"
+            + block
+        )
+        return self._educator_generate(prompt, task="summarize")
+
+    def _implementation_diagnostic(
+        self,
+        prev_draft: str,
+        current_draft: str,
+        last_critique: str,
+    ) -> str:
+        """Did the poet implement the last critique when moving prev → current?"""
+        body = render_prompt(
+            "inference",
+            "critique_diagnostic",
+            prev_draft=self._truncate_for_ctx(prev_draft, 2200),
+            current_draft=self._truncate_for_ctx(current_draft, 2200),
+            last_critique=self._truncate_for_ctx(last_critique, 3200),
+        )
+        return self._educator_generate(body, task="diagnostic")
+
     def _build_critique_prompt(self, draft: str, brief: str, history: list) -> str:
-        history_ctx = ""
+        # Exposed for callers (e.g. serve_gpm) that want to stream the diagnostic separately.
+        self._last_implementation_diagnostic = ""
+        revision_context_block = ""
         if history:
             prev = history[-1]
-            history_ctx = (
-            f"\n\nPrevious draft and your critique:\n---\n{prev['draft']}\n---\n"
-            f"Your notes:\n{prev['critique']}\n\nThis is the revision.\n"
-        )
+            prev_draft = prev.get("draft") or ""
+            last_crit = prev.get("critique") or ""
+            last_crit_comp = (
+                last_crit if len(last_crit) <= 800 else self._summarize_critique(last_crit)
+            )
+
+            prior_summary = ""
+            if len(history) >= 2:
+                prior_summary = self._summarize_prior_rounds(history[:-1])
+
+            diagnostic = self._implementation_diagnostic(
+                prev_draft, draft, last_crit_comp,
+            )
+
+            blocks = []
+            if prior_summary.strip():
+                blocks.append(
+                    "Earlier revision thread (compressed memory — not full prior drafts):\n"
+                    + prior_summary.strip(),
+                )
+            prev_excerpt = self._truncate_for_ctx(prev_draft, 950)
+            blocks.append(
+                "Previous draft you critiqued (excerpt — the poet revised from this):\n---\n"
+                + prev_excerpt
+                + "\n---\n\nDirections you gave last time (may be shortened):\n---\n"
+                + last_crit_comp
+                + "\n---",
+            )
+            diag_stripped = diagnostic.strip()
+            self._last_implementation_diagnostic = diag_stripped
+            blocks.append(
+                "Implementation diagnostic (prior directions vs current draft):\n---\n"
+                + diag_stripped
+                + "\n---",
+            )
+            revision_context_block = "\n\n".join(blocks) + "\n\n"
 
         # If the brief specifies a formal form, run deterministic analysis
         # and inject the results so the educator has concrete data to work with.
@@ -849,12 +930,12 @@ class PoetryPipeline:
             if is_rhyming_form(detected):
                 rhyme = analyze_rhyme(draft, expected_form=detected)
                 form_parts.append(
-                    f"Rhyme analysis (automated):\n{format_analysis_for_prompt(rhyme)}"
+                    f"Rhyme analysis (automated):\n{format_analysis_for_prompt(rhyme)}",
                 )
             if is_metered_form(detected):
                 meter = analyze_meter(draft, expected_form=detected)
                 form_parts.append(
-                    f"Meter analysis (automated):\n{format_meter_for_prompt(meter)}"
+                    f"Meter analysis (automated):\n{format_meter_for_prompt(meter)}",
                 )
             if form_parts:
                 form_ctx = (
@@ -865,7 +946,10 @@ class PoetryPipeline:
 
         return render_prompt(
             "inference", "critique",
-            brief=brief, draft=draft, history_ctx=history_ctx, form_ctx=form_ctx,
+            brief=brief,
+            draft=draft,
+            revision_context_block=revision_context_block,
+            form_ctx=form_ctx,
         )
 
     def _build_revision_brief_prompt(

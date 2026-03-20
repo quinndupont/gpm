@@ -54,7 +54,7 @@ def train_poet_srpo(
     num_epochs_override: int | None = None,
     base_model_override: str | None = None,
     sft_checkpoint: str | None = None,
-    train_filename: str = "trajectories.jsonl",
+    train_filename: str = "trajectories_v2.jsonl",
 ):
     """Run SRPO training on Modal.
 
@@ -113,7 +113,7 @@ if __name__ == "__main__":
         help="Path to SFT checkpoint (default: /vol/checkpoints/poet/final)",
     )
     ap.add_argument(
-        "--train-file", type=str, default="trajectories.jsonl",
+        "--train-file", type=str, default="trajectories_v2.jsonl",
         help="SRPO trajectories filename",
     )
     a = ap.parse_args()

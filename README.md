@@ -174,7 +174,7 @@ Then:
 python scripts/inference/pipeline.py "Write a poem about winter light" [--config PATH]
 ```
 
-**Reference chat server:** `python serve_gpm.py [port]` (default 11435). `POST /api/chat` with JSON `{ "messages": [ {"role":"user","content":"..."} ] }` for streaming (application/x-ndjson).
+**Local test server:** `python serve_gpm.py [port] [--config config/inference_config.yaml]` (default port 11435). Open `/` for a browser UI. API: `GET /api/models` (GGUF list), `GET /api/defaults` (load/gen defaults from YAML), `POST /api/chat` with `{ "role": "educator"|"poet", "model": "models/....gguf", "messages": [...] }` (streaming NDJSON + final `metrics`), `POST /api/revision-loop` with `{ "user_request", "educator_model", "poet_model", "max_revisions", "stop_on_approval" }` (educator revision mode; one GGUF loaded at a time via `SwappingPipeline`).
 
 ## Full workflow
 
@@ -224,7 +224,7 @@ persona/                 # educator_neutral.txt, persona_condensed.txt
 adapters/                # LoRA adapters
 config/                  # YAML configs
 scripts/{benchmarks,data_generation,modal,sagemaker,eval,inference,training,aem}/
-serve_gpm.py             # Reference HTTP chat server (POST /api/chat)
+serve_gpm.py             # Local test UI + API (chat, revision loop, metrics)
 ```
 
 **Alternative inference:** `scripts/inference/swapping_pipeline.py` loads one model at a time (e.g. 32B poet). **Vanilla comparison:** pipeline supports `educator_model_override` and `poet_model_override` (e.g. `ollama:llama3.1:8b`) for trained GGUF vs base.

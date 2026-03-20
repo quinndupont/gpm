@@ -19,9 +19,15 @@ test_models:
 models:
   # --- Trained/Fine-tuned models ---
   - id: trained-llama3.1-8b
-    label: "Trained Llama 3.1 8B Poet"
+    label: "Trained Llama 3.1 8B Poet (Q4)"
     educator: gguf:./models/llama3.1-8b-poet-Q4_K_M-trained.gguf
     poet: gguf:./models/llama3.1-8b-poet-Q4_K_M-trained.gguf
+    revisions: [0, 1, 3]
+
+  - id: trained-llama3.1-8b-q6
+    label: "Trained Llama 3.1 8B Poet (Q6)"
+    educator: gguf:./models/llama3.1-8b-educator-Q6_K-trained.gguf
+    poet: gguf:./models/llama3.1-8b-educator-Q6_K-trained.gguf
     revisions: [0, 1, 3]
 
   # --- Vanilla baselines (rev0+rev1: same model as educator+poet for change_pcts) ---

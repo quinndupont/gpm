@@ -152,9 +152,18 @@ class TestTemplateRendering:
 
     def test_render_inference_critique(self):
         out = render_prompt("inference", "critique", "default",
-            brief="Brief", draft="Draft", history_ctx="", form_ctx="")
+            brief="Brief", draft="Draft", revision_context_block="", form_ctx="")
         assert "Brief" in out
         assert "Draft" in out
+
+    def test_render_inference_critique_diagnostic(self):
+        out = render_prompt(
+            "inference", "critique_diagnostic", "default",
+            prev_draft="Old", current_draft="New", last_critique="Fix line 1",
+        )
+        assert "Old" in out
+        assert "New" in out
+        assert "STATUS" in out
 
     def test_render_inference_poet_generation(self):
         out = render_prompt("inference", "poet_generation", "default",

@@ -2,6 +2,7 @@
 """Multi-dimensional poem scoring using trained educator model."""
 
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -84,18 +85,47 @@ class EducatorScorer:
             stop=["<|im_end|>", "<|endoftext|>"],
         )
 
-        output_text = response["choices"][0]["message"]["content"]
+        output_text = response["choices"][0]["message"]["content"].strip()
 
-        try:
-            scores = json.loads(output_text)
-            normalized = {
-                dim: (score - 1) / 4
-                for dim, score in scores.items()
-            }
-            return normalized
-        except json.JSONDecodeError:
-            print(f"Failed to parse educator scores: {output_text}", file=sys.stderr)
+        def _extract_json(text: str) -> dict | None:
+            """Extract first JSON object from text (handles prose + JSON)."""
+            start = text.find("{")
+            if start < 0:
+                return None
+            depth = 0
+            for i, c in enumerate(text[start:], start):
+                if c == "{":
+                    depth += 1
+                elif c == "}":
+                    depth -= 1
+                    if depth == 0:
+                        try:
+                            return json.loads(text[start : i + 1])
+                        except json.JSONDecodeError:
+                            return None
+            return None
+
+        scores = _extract_json(output_text)
+        if scores is None:
+            try:
+                scores = json.loads(output_text)
+            except json.JSONDecodeError:
+                pass
+        if scores is None:
+            print(f"Failed to parse educator scores: {output_text[:200]}...", file=sys.stderr)
             return NEUTRAL_FALLBACK.copy()
+
+        required = set(DEFAULT_WEIGHTS)
+        if not required.issubset(scores.keys()):
+            print(f"Missing dimensions in educator scores: {scores}", file=sys.stderr)
+            return NEUTRAL_FALLBACK.copy()
+
+        normalized = {
+            dim: (float(score) - 1) / 4
+            for dim, score in scores.items()
+            if dim in required
+        }
+        return normalized
 
     def compute_aggregate_reward(
         self,
@@ -108,6 +138,41 @@ class EducatorScorer:
         return sum(
             scores.get(dim, 0.5) * weight for dim, weight in weights.items()
         )
+
+    def generate_critique(
+        self,
+        poem: str,
+        brief: str,
+        expected_form: str | None = None,
+        include_rhyme_analysis: bool = True,
+    ) -> str:
+        """Generate workshop-style critique of a poem. In-distribution for educator."""
+        form_ctx = ""
+        if expected_form and is_rhyming_form(expected_form) and include_rhyme_analysis:
+            rhyme = analyze_rhyme(poem, expected_form=expected_form)
+            form_ctx = f"\n\nRhyme analysis (automated):\n{format_analysis_for_prompt(rhyme)}\n"
+
+        user_prompt = render_prompt(
+            "inference",
+            "critique",
+            brief=brief,
+            draft=poem,
+            history_ctx="",
+            form_ctx=form_ctx,
+        )
+
+        response = self.llm.create_chat_completion(
+            messages=[
+                {"role": "system", "content": self.system},
+                {"role": "user", "content": user_prompt},
+            ],
+            temperature=0.3,
+            max_tokens=600,
+            top_p=0.9,
+            repeat_penalty=1.1,
+            stop=["<|im_end|>", "<|endoftext|>"],
+        )
+        return response["choices"][0]["message"]["content"].strip()
 
 
 def load_educator_scorer(

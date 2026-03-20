@@ -1,10 +1,10 @@
 {
   "id": "poet_revision",
-  "version": "1",
-  "description": "Revision instructions → poet revises poem",
+  "version": "2",
+  "description": "Educator-authored instructions → poet revises (educator-driven loop)",
   "persona": "poet",
   "templates": {
-    "default": "Previous draft:\n---\n{draft}\n---\n\nRevision instructions:\n---\n{instructions}\n---\n\n{rhyme_ctx}{user_ctx}Make ONLY the changes specified above. Preserve all other lines exactly. Revise the poem according to the instructions. Output ONLY the revised poem."
+    "default": "Previous draft:\n---\n{draft}\n---\n\nRevision instructions (from your workshop mentor):\n---\n{instructions}\n---\n\n{rhyme_ctx}{user_ctx}This is an educator→poet revision pass. You were trained to revise under constraint: implement the instructions with minimal surface change elsewhere.\n\nRules:\n- Lines not implicated by the instructions should stay word-for-word unless a rhyme fix in one line forces a tiny adjustment in an adjacent line.\n- If rhyme errors are listed, fix those end-words first; keep meaning and meter as close as you can.\n- Do not add a new title, commentary, or apology.\n\nOutput ONLY the full revised poem (entire text), not a diff."
   },
   "variables": ["draft", "instructions", "rhyme_ctx", "user_ctx"]
 }

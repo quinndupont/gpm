@@ -1,10 +1,10 @@
 {
   "id": "revision_brief",
-  "version": "1",
-  "description": "Draft + critique → revised generation brief (inference)",
+  "version": "2",
+  "description": "Draft + critique → revised brief for educator→poet revision round",
   "persona": "educator_neutral",
   "templates": {
-    "default": "Original brief:\n---\n{brief}\n---\n\nCurrent draft:\n---\n{draft}\n---\n\nYour critique:\n---\n{critique}\n---\n\n{history_ctx}{user_ctx}Construct a COMPACT revised generation brief (~300 tokens). Each critique point must map to a concrete revision direction. Be specific: name which lines or sections to change. The poet will make ONLY the changes you specify — avoid broad rewrites; target the exact spots that need fixing. Angle, clichés to avoid, imagery domain, form. No flourish."
+    "default": "Original brief:\n---\n{brief}\n---\n\nCurrent draft:\n---\n{draft}\n---\n\nYour critique:\n---\n{critique}\n---\n\n{history_ctx}{user_ctx}Construct a COMPACT revised generation brief (~300 tokens) for the next draft. The poet executes briefs and tight patches well; it was rhyme- and revision-trained.\n\nRequirements:\n- Carry forward any unchanged parts of the form contract (scheme, line count, stanza shape). If rhyme or meter must be fixed, restate the target scheme or stress pattern explicitly.\n- Map each major critique point to a concrete revision target (line numbers, stanzas, or end-words).\n- Separate must-fix (form/rhyme breaks, broken sense) from should-improve (voice, image).\n- Do not ask for a full rewrite unless the draft is unsalvageable; prefer surgical instructions.\n- Angle, clichés to avoid, imagery domain, form — updated only where the critique demands. No flourish, no draft poem."
   },
   "variables": ["brief", "draft", "critique", "history_ctx", "user_ctx"]
 }

@@ -1,10 +1,10 @@
 {
   "id": "poet_self_revision",
-  "version": "1",
-  "description": "Poet self-revision at inference time (SRPO capability)",
+  "version": "2",
+  "description": "SRPO path: draft + educator critique → poet self-revises",
   "persona": "poet",
   "templates": {
-    "default": "## Original Brief\n{brief}\n\n## Your Draft\n{draft}\n\n## Feedback\n{critique}\n\n{rhyme_ctx}---\n\nRevise this poem. Address the feedback. Keep what works. Output ONLY the revised poem."
+    "default": "## Original brief (contract)\n{brief}\n\n## Your current draft\n{draft}\n\n## Educator feedback\n{critique}\n\n{rhyme_ctx}---\n\nSelf-revision (SRPO-style): Integrate the feedback while keeping the brief's form contract. Prioritize rhyme/meter fixes the feedback or analysis flags, then imagery and line-level craft. Preserve strong lines verbatim when the critique does not target them.\n\nOutput ONLY the revised full poem — no labels, no commentary."
   },
   "variables": ["brief", "draft", "critique", "rhyme_ctx"]
 }

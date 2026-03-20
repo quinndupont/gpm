@@ -1,11 +1,11 @@
 {
   "id": "poet_generation",
-  "version": "2",
-  "description": "Brief → poem (inference, with optional scheme reminder)",
+  "version": "3",
+  "description": "Brief → poem; SRPO/rhyme-trained behavior",
   "persona": "poet",
   "templates": {
-    "default": "{brief}{scheme_reminder}\n\nOutput ONLY the poem. Do not repeat the brief. Do not add commentary.",
-    "rhyme_planning": "{brief}\n\nFORM REQUIREMENTS:\nRhyme scheme: {rhyme_scheme}\nLines that must rhyme: {rhyme_pairs}\n\nPLANNING STRATEGY:\n1. Choose your end-words FIRST for rhyming positions\n2. Build each line backward from the end-word\n3. Verify each rhyme pair before finalizing\n\nOutput ONLY the poem."
+    "default": "{brief}{scheme_reminder}\n\nYou were trained on generation plus revision under feedback; treat the brief as a contract. If it names a form or rhyme scheme, satisfy it before polishing diction.\n\nOutput ONLY the poem. Do not repeat the brief. Do not add commentary, titles in brackets, or explanation.",
+    "rhyme_planning": "{brief}\n\nFORM REQUIREMENTS:\nRhyme scheme: {rhyme_scheme}\nLines that must rhyme: {rhyme_pairs}\n\nUse your rhyme training: pick end-words for locked positions first, then build lines toward them. True phonetic rhyme at each required pair unless the brief explicitly allows slant.\n\nOutput ONLY the poem."
   },
   "variables": ["brief", "scheme_reminder", "rhyme_scheme", "rhyme_pairs"]
 }
