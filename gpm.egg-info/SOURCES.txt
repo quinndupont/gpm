@@ -30,6 +30,7 @@ scripts/benchmarks/rhyme_bench/__init__.py
 scripts/benchmarks/rhyme_bench/clean_reasoning.py
 scripts/benchmarks/rhyme_bench/diagnostic.py
 scripts/benchmarks/rhyme_bench/prompts.py
+scripts/benchmarks/rhyme_bench/reporting.py
 scripts/benchmarks/rhyme_bench/run_bench.py
 scripts/benchmarks/rhyme_bench/visualize.py
 scripts/data/__init__.py

@@ -69,10 +69,19 @@ The rhyme benchmark suite evaluates a model's ability to generate poems that adh
 
 ### Interactive (default)
 
-Run with **no arguments** to configure the benchmark in the terminal: study/ablation, output directory, models, prompt subset, max revisions, diagnostic mode, form filters, and verbose logging. You get a confirmation step before any generation runs.
+Run with **no arguments** to configure the benchmark in the terminal: study/ablation (including **all** to run every study sequentially, each under its default `data/rhyme_bench/studies/<study_id>/`), output directory (single-study only), models, prompt subset, **poems per model** (default 60 — cycles through the selected prompts), max revisions, diagnostic mode, form filters, and verbose logging. You get a confirmation step before any generation runs.
+
+Run from the **repository root** (`gpm/`), or Python will look for a doubled path like `.../rhyme_bench/scripts/benchmarks/rhyme_bench/run_bench.py` and fail:
 
 ```bash
+cd /path/to/gpm
 python scripts/benchmarks/rhyme_bench/run_bench.py
+```
+
+If your shell is already in `scripts/benchmarks/rhyme_bench/`, use:
+
+```bash
+python run_bench.py
 ```
 
 ### Batch / CI (`--non-interactive`)
@@ -83,8 +92,11 @@ Scripts and CI must pass **`--non-interactive`**; command-line flags are ignored
 # Quick test (2 prompts, trained model only)
 python scripts/benchmarks/rhyme_bench/run_bench.py --non-interactive --test --output-dir data/rhyme_bench/studies/baseline_default
 
-# Full suite: all prompts, all models from config/rev_flux_models.yaml
+# Full suite: all prompts, all models (default 60 generations per model, cycling prompts; use --test for 2 prompts × 1 pass)
 python scripts/benchmarks/rhyme_bench/run_bench.py --non-interactive --output-dir data/rhyme_bench/studies/baseline_default
+
+# Fewer/more generations per model
+python scripts/benchmarks/rhyme_bench/run_bench.py --non-interactive --poems-per-model 47 --output-dir data/rhyme_bench/studies/baseline_default
 
 # Specific models
 python scripts/benchmarks/rhyme_bench/run_bench.py --non-interactive --models trained qwen2.5-7b --output-dir data/rhyme_bench/studies/baseline_default
@@ -108,6 +120,18 @@ python scripts/benchmarks/rhyme_bench/run_bench.py --non-interactive --bench-con
 ### Studies (ablation metadata)
 
 Version-controlled **info cards** live under [`studies/`](studies/): `baseline_default`, `ablate_backward`, `ablate_cmu_two_pass`. Each folder has `CARD.yaml` (machine-readable) and a short `README.md`.
+
+### Regenerate summaries + pooled plots (all studies / ablations)
+
+From `rhyme_*.json` under each `studies/<study_id>/`, rebuild **`summary.json`**, a timestamped copy, and **`studies/SUMMARY_BY_STUDY.json`**, then write pooled plots (including **study-level ablation charts**) to **`studies/plots/`**:
+
+```bash
+uv run python scripts/benchmarks/rhyme_bench/visualize.py \
+  --studies-root data/rhyme_bench/studies --regenerate-summaries \
+  -o data/rhyme_bench/studies/plots
+```
+
+New charts when multiple studies have runs: **`study_strict_density_boxplot.png`**, **`study_aggregate_metrics.png`**.
 
 ### Quick Start (visualizations)
 

@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
@@ -78,6 +79,7 @@ class BenchConfig:
     )
     models: list[str] | None = None  # None = all selected from config
     prompt_indices: list[int] | None = None  # None = all
+    poems_per_model: int = 60  # generations per model (cycles through selected prompts); ignored in --test
     test: bool = False
     max_revisions: int = 0
     diagnostic: bool = False
@@ -122,22 +124,34 @@ def _parse_int_list(s: str) -> list[int]:
     return out
 
 
-def prompt_bench_config() -> BenchConfig:
+def prompt_bench_config() -> list[BenchConfig]:
     print("\n=== Rhyme benchmark — interactive setup ===\n")
     print("Study / condition:")
     keys = list(STUDY_REGISTRY.keys())
     for i, sid in enumerate(keys, start=1):
         print(f"  {i}. {sid} — {STUDY_REGISTRY[sid]['label']}")
-    choice = _prompt_line("Enter number or study_id", "1")
-    if choice.isdigit():
+    all_n = len(keys) + 1
+    print(f"  {all_n}. all — run every study sequentially (default dir per study)")
+    choice = _prompt_line("Enter number, study_id, or 'all'", "1").strip().lower()
+    all_studies = choice in ("all", "every", "*") or (choice.isdigit() and int(choice) == all_n)
+    if all_studies:
+        study_ids = list(keys)
+    elif choice.isdigit():
         idx = int(choice) - 1
-        study_id = keys[idx] if 0 <= idx < len(keys) else keys[0]
+        study_ids = [keys[idx]] if 0 <= idx < len(keys) else [keys[0]]
     else:
-        study_id = choice if choice in STUDY_REGISTRY else "baseline_default"
+        study_ids = [choice] if choice in STUDY_REGISTRY else [keys[0]]
 
-    default_out = str(_default_output_dir_for_study(study_id))
-    out_raw = _prompt_line("Output directory", default_out)
-    output_dir = Path(out_raw).expanduser()
+    output_dir: Path | None = None
+    if all_studies:
+        print(
+            "\nOutput: each study uses data/rhyme_bench/studies/<study_id>/ "
+            "(repo defaults).",
+        )
+    else:
+        default_out = str(_default_output_dir_for_study(study_ids[0]))
+        out_raw = _prompt_line("Output directory", default_out)
+        output_dir = Path(out_raw).expanduser()
 
     models_config = _models_config_for_rhyme_bench()
     if not models_config:
@@ -167,6 +181,9 @@ def prompt_bench_config() -> BenchConfig:
     else:
         prompt_indices = _parse_int_list(pr_raw)
 
+    poems_raw = _prompt_line("Poems per model (cycles through selected prompts)", "60")
+    poems_per_model = max(1, int(poems_raw or "60"))
+
     max_rev = int(_prompt_line("Max revisions (0 = poet only)", "0"))
     diagnostic = _prompt_yes_no("Run diagnostic report after?", default=False)
 
@@ -177,24 +194,37 @@ def prompt_bench_config() -> BenchConfig:
 
     verbose = _prompt_yes_no("Verbose pipeline output?", default=False)
 
-    cfg = BenchConfig(
-        study_id=study_id,
-        output_dir=output_dir,
-        models=models,
-        prompt_indices=prompt_indices,
-        test=test,
-        max_revisions=max_rev,
-        diagnostic=diagnostic,
-        forms=forms,
-        verbose=verbose,
-    )
+    def _one_cfg(sid: str, out: Path) -> BenchConfig:
+        return BenchConfig(
+            study_id=sid,
+            output_dir=out,
+            models=models,
+            prompt_indices=prompt_indices,
+            poems_per_model=poems_per_model,
+            test=test,
+            max_revisions=max_rev,
+            diagnostic=diagnostic,
+            forms=forms,
+            verbose=verbose,
+        )
+
+    if all_studies:
+        cfgs = [_one_cfg(sid, _default_output_dir_for_study(sid)) for sid in study_ids]
+    else:
+        assert output_dir is not None
+        cfgs = [_one_cfg(study_ids[0], output_dir)]
 
     print("\n--- Confirm ---")
-    print(json.dumps(cfg.to_summary_dict(), indent=2))
+    if len(cfgs) == 1:
+        print(json.dumps(cfgs[0].to_summary_dict(), indent=2))
+    else:
+        print(f"Studies ({len(cfgs)}): {', '.join(c.study_id for c in cfgs)}")
+        print(json.dumps(cfgs[0].to_summary_dict(), indent=2))
+        print("(same models / poems-per-model / prompts / flags for each study; output_dir varies)")
     if not _prompt_yes_no("Run with these settings?", default=True):
         print("Aborted.")
         sys.exit(0)
-    return cfg
+    return cfgs
 
 
 def load_bench_config_json(path: Path) -> BenchConfig:
@@ -209,6 +239,7 @@ def load_bench_config_json(path: Path) -> BenchConfig:
         output_dir=Path(out).expanduser(),
         models=raw.get("models"),
         prompt_indices=raw.get("prompt_indices"),
+        poems_per_model=max(1, int(raw.get("poems_per_model", 60))),
         test=raw.get("test", False),
         max_revisions=raw.get("max_revisions", 0),
         diagnostic=raw.get("diagnostic", False),
@@ -317,6 +348,12 @@ def execute_bench(cfg: BenchConfig) -> None:
         print("No prompts to run (check --forms / indices).")
         return
 
+    if cfg.test:
+        run_sequence = prompt_indices
+    else:
+        n = max(1, cfg.poems_per_model)
+        run_sequence = [prompt_indices[k % len(prompt_indices)] for k in range(n)]
+
     if cfg.test and cfg.models is None:
         models_to_run = models_to_run[:1]
         if not models_to_run:
@@ -339,11 +376,11 @@ def execute_bench(cfg: BenchConfig) -> None:
             educator_model_override=edu_override,
             poet_model_override=poet_override,
         )
-        for idx in prompt_indices:
+        for run_i, idx in enumerate(run_sequence):
             if idx >= len(RHYME_PROMPTS):
                 continue
             form, variant, request = RHYME_PROMPTS[idx]
-            print(f"[{mid}] study={cfg.study_id} form={form} prompt {idx}...", flush=True)
+            print(f"[{mid}] study={cfg.study_id} form={form} prompt {idx} ({run_i+1}/{len(run_sequence)})...", flush=True)
             run = run_single(
                 pipeline,
                 request,
@@ -357,9 +394,12 @@ def execute_bench(cfg: BenchConfig) -> None:
                 cmu_second_pass=cmu_second_pass,
                 study_id=cfg.study_id,
             )
+            run["run_seq"] = run_i
             runs.append(run)
             slug = _slug(mid)
-            out_file = cfg.output_dir / f"rhyme_{form}_{idx}_{slug}_{run_timestamp}.json"
+            out_file = (
+                cfg.output_dir / f"rhyme_{form}_{idx}_{slug}_{run_timestamp}_{run_i:04d}.json"
+            )
             with open(out_file, "w") as f:
                 json.dump(run, f, indent=2)
 
@@ -416,6 +456,8 @@ def execute_bench(cfg: BenchConfig) -> None:
         ),
         "models_tested": model_ids,
         "prompt_indices": prompt_indices,
+        "poems_per_model": cfg.poems_per_model,
+        "generations_per_model": len(run_sequence),
         "max_revisions": cfg.max_revisions,
     }
     summary_timestamped_path = cfg.output_dir / f"summary_{run_timestamp}.json"
@@ -455,8 +497,8 @@ def main() -> None:
                 file=sys.stderr,
             )
             sys.exit(2)
-        cfg = prompt_bench_config()
-        execute_bench(cfg)
+        for cfg in prompt_bench_config():
+            execute_bench(cfg)
         return
 
     parser = argparse.ArgumentParser(description="Rhyme benchmark: test rhyming form adherence")
@@ -491,6 +533,12 @@ def main() -> None:
         choices=list(STUDY_REGISTRY.keys()),
         help="Study / ablation id",
     )
+    parser.add_argument(
+        "--poems-per-model",
+        type=int,
+        default=None,
+        help="Generations per model (cycles through selected prompts); default 60; ignored with --test",
+    )
     args = parser.parse_args()
 
     cfg = load_bench_config_json(args.bench_config) if args.bench_config else BenchConfig()
@@ -512,8 +560,11 @@ def main() -> None:
         cfg.forms = list(args.forms)
     if args.list_models:
         cfg.list_models_only = True
+    if args.poems_per_model is not None:
+        cfg.poems_per_model = max(1, args.poems_per_model)
     execute_bench(cfg)
 
 
 if __name__ == "__main__":
+    os.chdir(ROOT)
     main()

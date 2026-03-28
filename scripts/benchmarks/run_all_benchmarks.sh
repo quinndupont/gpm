@@ -34,9 +34,12 @@ else
   $RUN scripts/benchmarks/rhyme_bench/run_bench.py --non-interactive --output-dir "$RHYME_DIR"
 fi
 
-log "=== Rhyme visualization ==="
-uv run --with matplotlib python3 scripts/benchmarks/rhyme_bench/visualize.py "$RHYME_DIR" -o "$RHYME_DIR/plots" 2>/dev/null || log "Skipping rhyme plots (matplotlib?)"
+log "=== Rhyme reporting + visualization (all studies) ==="
+STUDIES_ROOT=${STUDIES_ROOT:-$ROOT/data/rhyme_bench/studies}
+uv run --with matplotlib python3 scripts/benchmarks/rhyme_bench/visualize.py \
+  --studies-root "$STUDIES_ROOT" --regenerate-summaries \
+  -o "$STUDIES_ROOT/plots" 2>/dev/null || log "Skipping rhyme plots (matplotlib?)"
 
 log "=== Benchmarks complete ==="
 log "RevFlux: $REV_FLUX_DIR/summary.json"
-log "Rhyme:   $RHYME_DIR/summary.json"
+log "Rhyme:   $STUDIES_ROOT/SUMMARY_BY_STUDY.json (per-study summary.json regenerated)"

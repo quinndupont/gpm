@@ -95,6 +95,79 @@ def plot_matches_form_rate(
     plt.close()
 
 
+def plot_study_strict_density_distribution(
+    runs: list[dict],
+    out_path: Path,
+    title: str = "Strict rhyme density by study",
+) -> None:
+    """Box plot: per-run strict_rhyme_density grouped by study_id."""
+    plt = _ensure_matplotlib()
+    from collections import defaultdict
+
+    by_study: dict[str, list[float]] = defaultdict(list)
+    for r in runs:
+        sid = r.get("study_id") or r.get("_study_dir") or "unknown"
+        d = r.get("rhyme_analysis", {}).get("strict_rhyme_density")
+        if d is None:
+            continue
+        by_study[sid].append(float(d))
+    if len(by_study) < 2:
+        return
+    studies = sorted(by_study.keys())
+    data = [by_study[s] for s in studies]
+    fig, ax = plt.subplots(figsize=(max(6, len(studies) * 1.4), 5))
+    bp = ax.boxplot(data, tick_labels=studies, patch_artist=True)
+    for patch in bp["boxes"]:
+        patch.set_facecolor("#9b59b6")
+        patch.set_alpha(0.65)
+    ax.set_ylabel("Strict rhyme density (0–1)")
+    ax.set_title(title)
+    ax.set_ylim(0, 1.05)
+    fig.tight_layout()
+    fig.savefig(out_path, dpi=150)
+    plt.close()
+
+
+def plot_study_aggregate_bars(
+    runs: list[dict],
+    out_path: Path,
+    title: str = "Aggregate metrics by study (ablation)",
+) -> None:
+    """Grouped bars: mean strict density and matches_form rate per study."""
+    plt = _ensure_matplotlib()
+    from collections import defaultdict
+
+    by_s: dict[str, dict] = defaultdict(lambda: {"sd": [], "m": 0, "t": 0})
+    for r in runs:
+        sid = r.get("study_id") or r.get("_study_dir") or "unknown"
+        ra = r.get("rhyme_analysis", {})
+        d = ra.get("strict_rhyme_density")
+        if d is not None:
+            by_s[sid]["sd"].append(float(d))
+        by_s[sid]["t"] += 1
+        if ra.get("matches_form") is True:
+            by_s[sid]["m"] += 1
+    studies = sorted(by_s.keys())
+    if len(studies) < 1:
+        return
+    means = [sum(by_s[s]["sd"]) / len(by_s[s]["sd"]) if by_s[s]["sd"] else 0 for s in studies]
+    rates = [by_s[s]["m"] / by_s[s]["t"] if by_s[s]["t"] else 0 for s in studies]
+    x = range(len(studies))
+    w = 0.35
+    fig, ax = plt.subplots(figsize=(max(7, len(studies) * 1.5), 5))
+    ax.bar([i - w / 2 for i in x], means, width=w, label="Mean strict density", color="#3498db", alpha=0.85)
+    ax.bar([i + w / 2 for i in x], rates, width=w, label="Matches form rate", color="#2ecc71", alpha=0.85)
+    ax.set_xticks(list(x))
+    ax.set_xticklabels(studies, rotation=12, ha="right")
+    ax.set_ylabel("Score (0–1)")
+    ax.set_ylim(0, 1.05)
+    ax.legend(loc="upper right")
+    ax.set_title(title)
+    fig.tight_layout()
+    fig.savefig(out_path, dpi=150)
+    plt.close()
+
+
 def plot_failure_breakdown(
     diagnostic_report: dict,
     out_path: Path,
@@ -771,6 +844,19 @@ def plot_form_difficulty_ranking(
     plt.close()
 
 
+def _find_diagnostic_report(search_dir: Path) -> Path | None:
+    direct = search_dir / "diagnostic_report.json"
+    if direct.is_file():
+        return direct
+    if search_dir.is_dir():
+        for sub in sorted(search_dir.iterdir()):
+            if sub.is_dir():
+                p = sub / "diagnostic_report.json"
+                if p.is_file():
+                    return p
+    return None
+
+
 def main():
     parser = argparse.ArgumentParser(description="Rhyme benchmark visualizations")
     parser.add_argument(
@@ -778,21 +864,56 @@ def main():
         type=Path,
         nargs="?",
         default=ROOT / "data" / "rhyme_bench" / "studies" / "baseline_default",
-        help="Directory with rhyme bench output JSONs",
+        help="Directory with rhyme bench output JSONs (ignored if --studies-root is set)",
     )
     parser.add_argument(
         "-o", "--output", type=Path, default=None,
-        help="Output directory (default: data_dir/plots)",
+        help="Output directory (default: data_dir/plots or studies_root/plots)",
     )
     parser.add_argument("--title", type=str, default=None, help="Plot title prefix")
+    parser.add_argument(
+        "--studies-root",
+        type=Path,
+        default=None,
+        help=(
+            "Load rhyme_*.json from every immediate child of this directory (e.g. "
+            "data/rhyme_bench/studies) for pooled plots + ablation/study comparison charts"
+        ),
+    )
+    parser.add_argument(
+        "--regenerate-summaries",
+        action="store_true",
+        help="Rebuild summary.json per study + SUMMARY_BY_STUDY.json from rhyme_*.json (then plot)",
+    )
     args = parser.parse_args()
 
-    runs = _load_runs(args.data_dir)
+    from scripts.benchmarks.rhyme_bench.reporting import (
+        load_tagged_runs_from_studies_root,
+        regenerate_all_study_summaries,
+    )
+
+    studies_root = ROOT / "data" / "rhyme_bench" / "studies"
+    if args.regenerate_summaries:
+        root = args.studies_root if args.studies_root is not None else studies_root
+        regenerate_all_study_summaries(root)
+        print(f"Regenerated summaries under {root}", flush=True)
+
+    if args.studies_root is not None:
+        runs = load_tagged_runs_from_studies_root(args.studies_root)
+        out_dir = args.output or (args.studies_root / "plots")
+        diag_path = _find_diagnostic_report(args.studies_root)
+    else:
+        runs = _load_runs(args.data_dir)
+        folder = args.data_dir.resolve().name
+        for r in runs:
+            r.setdefault("study_id", folder)
+        out_dir = args.output or (args.data_dir / "plots")
+        diag_path = _find_diagnostic_report(args.data_dir)
+
     if not runs:
         print("No run data found.", file=sys.stderr)
         return 1
 
-    out_dir = args.output or (args.data_dir / "plots")
     out_dir.mkdir(parents=True, exist_ok=True)
     prefix = (args.title + ": ") if args.title else ""
 
@@ -803,6 +924,17 @@ def main():
     plot_matches_form_rate(
         runs, out_dir / "matches_form_rate.png",
         title=prefix + "Form Adherence Rate by Model",
+    )
+
+    studies_present = {r.get("study_id") or r.get("_study_dir") or "?" for r in runs}
+    if len(studies_present) >= 2:
+        plot_study_strict_density_distribution(
+            runs, out_dir / "study_strict_density_boxplot.png",
+            title=prefix + "Strict rhyme density by study (ablation)",
+        )
+    plot_study_aggregate_bars(
+        runs, out_dir / "study_aggregate_metrics.png",
+        title=prefix + "Mean strict density & form rate by study",
     )
 
     # Scheme similarity analysis plots (always generate if we have runs)
@@ -816,9 +948,8 @@ def main():
     )
 
     # Check for diagnostic report and generate diagnostic plots
-    diag_path = args.data_dir / "diagnostic_report.json"
-    if diag_path.exists():
-        with open(diag_path) as f:
+    if diag_path and diag_path.exists():
+        with open(diag_path, encoding="utf-8") as f:
             diag = json.load(f)
 
         plot_failure_breakdown(
