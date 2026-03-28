@@ -101,9 +101,6 @@ python scripts/benchmarks/rhyme_bench/run_bench.py --non-interactive --study abl
 
 # Optional JSON config (merged with CLI; CLI overrides for overlapping fields)
 python scripts/benchmarks/rhyme_bench/run_bench.py --non-interactive --bench-config path/to/bench.json --output-dir data/rhyme_bench/studies/baseline_default
-
-# Exclude educator fine-tuned models
-python scripts/benchmarks/rhyme_bench/run_bench.py --non-interactive --exclude-educator-finetuned --output-dir data/rhyme_bench/studies/baseline_default
 ```
 
 **Summary fields:** Each `summary.json` includes `study_id`, `bench_config` (resolved options), and the usual aggregate metrics so runs are self-describing.
@@ -273,7 +270,8 @@ Run `python scripts/benchmarks/rhyme_bench/run_bench.py --help` for interactive-
 - `--non-interactive` — required for any CLI flags (scripts/CI)
 - `--study {baseline_default,ablate_backward,ablate_cmu_two_pass}` — ablation / condition
 - `--bench-config PATH` — JSON file with the same fields as `bench_config` in `summary.json`
-- `--prompts`, `--max-revisions`, `--test`, `--models`, `--list-models`, `--output-dir`, `--verbose`, `--diagnostic`, `--forms`, `--exclude-educator-finetuned`
+- `--prompts`, `--max-revisions`, `--test`, `--models`, `--list-models`, `--output-dir`, `--verbose`, `--diagnostic`, `--forms`  
+  (entries in `rev_flux_models.yaml` whose **educator** is `gguf` / `gguf:…` / `./…` are **never** run on rhyme bench)
 
 ## Diagnostic Analysis
 

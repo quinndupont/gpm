@@ -53,7 +53,7 @@ def _slug(s: str) -> str:
 
 
 def _is_educator_finetuned(model_config: dict) -> bool:
-    """Check if a model has a fine-tuned educator."""
+    """True if this config uses a local/GGUF educator (rhyme bench never runs these)."""
     educator = model_config.get("educator", "gguf")
     if educator == "gguf":
         return True
@@ -62,6 +62,12 @@ def _is_educator_finetuned(model_config: dict) -> bool:
     if educator.startswith("./"):
         return True
     return False
+
+
+def _models_config_for_rhyme_bench() -> list[dict]:
+    """Load rev_flux models and drop entries that use a GGUF/local educator."""
+    raw = _load_models_config()
+    return [m for m in raw if not _is_educator_finetuned(m)]
 
 
 @dataclass
@@ -77,7 +83,6 @@ class BenchConfig:
     diagnostic: bool = False
     forms: list[str] | None = None
     verbose: bool = False
-    exclude_educator_finetuned: bool = False
     list_models_only: bool = False
 
     def to_summary_dict(self) -> dict[str, Any]:
@@ -134,31 +139,29 @@ def prompt_bench_config() -> BenchConfig:
     out_raw = _prompt_line("Output directory", default_out)
     output_dir = Path(out_raw).expanduser()
 
-    models_config = _load_models_config()
+    models_config = _models_config_for_rhyme_bench()
+    if not models_config:
+        print("No models left after skipping GGUF/local educators. Check config/rev_flux_models.yaml.")
+        sys.exit(1)
+
     if _prompt_yes_no("List models (preview only)?", default=False):
         for m in models_config:
-            tag = " [educator-finetuned]" if _is_educator_finetuned(m) else ""
-            print(f"  {m['id']}: {m.get('label', m['id'])}{tag}")
+            print(f"  {m['id']}: {m.get('label', m['id'])}")
         print()
-
-    exclude_edu = _prompt_yes_no("Exclude educator fine-tuned models?", default=False)
-    if exclude_edu:
-        models_config = [m for m in models_config if not _is_educator_finetuned(m)]
 
     print("Models: comma-separated ids, or 'all'")
     mid_raw = _prompt_line("Model id(s)", "all").lower()
+    print("Prompts: 'all' | 'test' (first two prompts, first eligible model) | comma-separated indices")
+    pr_raw = _prompt_line("Prompt selection", "all").lower()
+    prompt_indices: list[int] | None
+    test = pr_raw == "test"
     if mid_raw in ("all", "*", ""):
-        models = [m["id"] for m in models_config]
+        models = None if test else [m["id"] for m in models_config]
     else:
         models = [x.strip() for x in mid_raw.split(",") if x.strip()]
 
-    print("Prompts: 'all' | 'test' (first two) | comma-separated indices")
-    pr_raw = _prompt_line("Prompt selection", "all").lower()
-    prompt_indices: list[int] | None
-    test = False
-    if pr_raw == "test":
+    if test:
         prompt_indices = [0, 1]
-        test = True
     elif pr_raw in ("all", "*", ""):
         prompt_indices = None
     else:
@@ -184,7 +187,6 @@ def prompt_bench_config() -> BenchConfig:
         diagnostic=diagnostic,
         forms=forms,
         verbose=verbose,
-        exclude_educator_finetuned=exclude_edu,
     )
 
     print("\n--- Confirm ---")
@@ -212,7 +214,6 @@ def load_bench_config_json(path: Path) -> BenchConfig:
         diagnostic=raw.get("diagnostic", False),
         forms=raw.get("forms"),
         verbose=raw.get("verbose", False),
-        exclude_educator_finetuned=raw.get("exclude_educator_finetuned", False),
         list_models_only=raw.get("list_models_only", False),
     )
 
@@ -289,12 +290,10 @@ def _resolve_prompt_indices(cfg: BenchConfig) -> list[int]:
 
 
 def execute_bench(cfg: BenchConfig) -> None:
-    models_config = _load_models_config()
-    if cfg.exclude_educator_finetuned:
-        models_config = [m for m in models_config if not _is_educator_finetuned(m)]
-        if not models_config:
-            print("No models available after filtering educator fine-tuned models.")
-            return
+    models_config = _models_config_for_rhyme_bench()
+    if not models_config:
+        print("No models available (all entries use GGUF/local educators; rhyme bench skips those).")
+        return
 
     model_ids = cfg.models or [m["id"] for m in models_config]
     models_to_run = [m for m in models_config if m["id"] in model_ids]
@@ -303,13 +302,10 @@ def execute_bench(cfg: BenchConfig) -> None:
         return
 
     if cfg.list_models_only:
+        print("  (GGUF/local educator entries from rev_flux_models.yaml are never run on rhyme bench.)")
         for m in models_config:
             mark = " *" if m["id"] in model_ids else ""
-            educator_tag = " [educator-finetuned]" if _is_educator_finetuned(m) else ""
-            print(f"  {m['id']}: {m.get('label', m['id'])}{mark}{educator_tag}")
-        if cfg.exclude_educator_finetuned:
-            filtered_count = sum(1 for m in _load_models_config() if _is_educator_finetuned(m))
-            print(f"\n  ({filtered_count} educator fine-tuned models excluded)")
+            print(f"  {m['id']}: {m.get('label', m['id'])}{mark}")
         return
 
     study = STUDY_REGISTRY.get(cfg.study_id, STUDY_REGISTRY["baseline_default"])
@@ -322,9 +318,9 @@ def execute_bench(cfg: BenchConfig) -> None:
         return
 
     if cfg.test and cfg.models is None:
-        models_to_run = [m for m in models_to_run if m["id"] == "trained"]
+        models_to_run = models_to_run[:1]
         if not models_to_run:
-            print("Test mode expects a model id 'trained' in config; select models explicitly.")
+            print("No models available for test run.")
             return
 
     from scripts.inference.pipeline import PoetryPipeline
@@ -477,14 +473,17 @@ def main() -> None:
     )
     parser.add_argument("--prompts", nargs="+", type=int, default=None, help="Prompt indices")
     parser.add_argument("--max-revisions", type=int, default=0, help="Revision cycles (0=poet only)")
-    parser.add_argument("--test", action="store_true", help="Short test: 2 prompts, trained model")
+    parser.add_argument(
+        "--test",
+        action="store_true",
+        help="Short test: 2 prompts, first eligible model (GGUF educator configs are skipped)",
+    )
     parser.add_argument("--models", nargs="+", default=None, help="Model ids from rev_flux_models.yaml")
     parser.add_argument("--list-models", action="store_true", help="Print models and exit")
     parser.add_argument("--output-dir", type=Path, default=None, help="Output directory")
     parser.add_argument("--verbose", action="store_true", help="Verbose pipeline output")
     parser.add_argument("--diagnostic", action="store_true", help="Run diagnostic analysis")
     parser.add_argument("--forms", nargs="+", default=None, help="Limit to these forms")
-    parser.add_argument("--exclude-educator-finetuned", action="store_true")
     parser.add_argument(
         "--study",
         type=str,
@@ -511,8 +510,6 @@ def main() -> None:
         cfg.diagnostic = True
     if args.forms is not None:
         cfg.forms = list(args.forms)
-    if args.exclude_educator_finetuned:
-        cfg.exclude_educator_finetuned = True
     if args.list_models:
         cfg.list_models_only = True
     execute_bench(cfg)
