@@ -590,22 +590,39 @@ class PoetryPipeline:
 
         return cleaned
 
-    def _build_poet_prompt(self, brief: str) -> str:
+    def _build_poet_prompt(
+        self,
+        brief: str,
+        poet_generation_mode: str = "default",
+        expected_form: str | None = None,
+        expected_variant: str | None = None,
+    ) -> str:
         if len(brief) > BRIEF_CAP:
             brief = brief[:BRIEF_CAP].rsplit("\n", 1)[0] + "\n\n[truncated]"
-        detected = detect_form(brief)
+        form_for_scheme = expected_form or detect_form(brief)
         scheme_reminder = ""
-        if detected and is_rhyming_form(detected):
-            scheme = get_scheme(detected)
+        if form_for_scheme and is_rhyming_form(form_for_scheme):
+            variant = expected_variant if expected_form else None
+            scheme = get_scheme(form_for_scheme, variant)
             if scheme:
-                scheme_reminder = (
-                    f"\n\nFORM CONTRACT: {detected} — scheme {scheme}. "
-                    "You are trained for rhyme-heavy generation: choose end-words for rhyming slots before you draft those lines; "
-                    "each required pair must be true phonetic rhyme (not eye-rhyme unless the brief says otherwise). "
-                    "If a line fights the rhyme, change the line, not the scheme."
-                )
+                if poet_generation_mode == "backward":
+                    scheme_reminder = (
+                        f"\n\nFORM CONTRACT: {form_for_scheme} — scheme {scheme}. "
+                        "Work backward: choose end-words for the last rhyme positions and stanza closures first, "
+                        "then draft lines toward those anchors. "
+                        "Each required pair must be true phonetic rhyme (not eye-rhyme unless the brief says otherwise). "
+                        "If a line fights the rhyme, change the line, not the scheme."
+                    )
+                else:
+                    scheme_reminder = (
+                        f"\n\nFORM CONTRACT: {form_for_scheme} — scheme {scheme}. "
+                        "You are trained for rhyme-heavy generation: choose end-words for rhyming slots before you draft those lines; "
+                        "each required pair must be true phonetic rhyme (not eye-rhyme unless the brief says otherwise). "
+                        "If a line fights the rhyme, change the line, not the scheme."
+                    )
+        tpl = "backward" if poet_generation_mode == "backward" else "default"
         return render_prompt(
-            "inference", "poet_generation", brief=brief, scheme_reminder=scheme_reminder,
+            "inference", "poet_generation", template=tpl, brief=brief, scheme_reminder=scheme_reminder,
         )
 
     def _build_poet_revision_instructions(
@@ -697,6 +714,9 @@ class PoetryPipeline:
         prompt: str,
         is_revision: bool = False,
         revision_context: dict | None = None,
+        poet_generation_mode: str = "default",
+        expected_form: str | None = None,
+        expected_variant: str | None = None,
     ) -> str:
         """Generate or revise a poem.
 
@@ -706,7 +726,6 @@ class PoetryPipeline:
           - critique: the educator's critique
         """
         temp = 0.75 if is_revision else 0.8
-        system = get_persona("poet")
 
         if is_revision and revision_context:
             # SRPO path: poet self-revises using learned capability
@@ -726,20 +745,30 @@ class PoetryPipeline:
             poet_prompt = prompt
         else:
             # Generation path
-            poet_prompt = self._build_poet_prompt(prompt)
+            poet_prompt = self._build_poet_prompt(
+                prompt,
+                poet_generation_mode=poet_generation_mode,
+                expected_form=expected_form,
+                expected_variant=expected_variant,
+            )
 
+        return self._complete_poet_user_message(poet_prompt, temperature=temp)
+
+    def _complete_poet_user_message(self, poet_prompt: str, temperature: float = 0.8) -> str:
+        """Run the poet model on a fully built user message (shared by generation and CMU revision)."""
+        system = get_persona("poet")
         output = ""
         if self.poet_model_override and self.poet_model_override.startswith("ollama:"):
             model = self.poet_model_override[7:]
             output = self._ollama_chat(
                 model, system, poet_prompt,
-                temperature=temp, max_tokens=4096, top_p=0.95, repeat_penalty=1.15,
+                temperature=temperature, max_tokens=4096, top_p=0.95, repeat_penalty=1.15,
             )
         elif self.poet_model_override and self.poet_model_override.startswith("bedrock:"):
             model_id = self.poet_model_override[8:]
             output = self._bedrock_chat(
                 model_id, system, poet_prompt,
-                temperature=temp, max_tokens=4096, top_p=0.95,
+                temperature=temperature, max_tokens=4096, top_p=0.95,
             )
         else:
             self._load_models()
@@ -749,16 +778,30 @@ class PoetryPipeline:
             ]
             r = self.poet.create_chat_completion(
                 messages=messages,
-                temperature=temp,
+                temperature=temperature,
                 top_p=0.95,
                 repeat_penalty=1.15,
                 max_tokens=4096,
                 stop=self._get_stop_tokens("poet"),
             )
             output = r["choices"][0]["message"]["content"]
-
-        # Clean thinking tags and extract only the poem
         return self._clean_poet_output(output)
+
+    def poet_cmu_second_pass(
+        self,
+        brief: str,
+        draft: str,
+        expected_form: str | None,
+        expected_variant: str | None,
+    ) -> str:
+        """Revise a draft using CMU-backed rhyme analysis only (no educator critique)."""
+        rhyme = analyze_rhyme(draft, expected_form=expected_form, expected_variant=expected_variant)
+        rhyme_analysis = format_analysis_for_prompt(rhyme)
+        poet_prompt = render_prompt(
+            "inference", "poet_cmu_revision",
+            brief=brief, draft=draft, rhyme_analysis=rhyme_analysis,
+        )
+        return self._complete_poet_user_message(poet_prompt, temperature=0.75)
 
     def _summarize_critique_history(self, revision_history: list) -> str:
         """Compress past draft+critique pairs. Each round: poet revised after critique."""
@@ -996,6 +1039,10 @@ class PoetryPipeline:
         min_revisions: int = None,
         verbose: bool = False,
         interactive: bool = False,
+        poet_generation_mode: str = "default",
+        expected_form: str | None = None,
+        expected_variant: str | None = None,
+        cmu_second_pass: bool = False,
     ) -> dict:
         import time
         t_start = time.perf_counter()
@@ -1015,7 +1062,28 @@ class PoetryPipeline:
                 f"Write a poem. Request: {user_request}\n\n"
                 "Output ONLY the poem. Do not add commentary."
             )
-            draft = self._poet_generate(poet_prompt, is_revision=False)
+            draft = self._poet_generate(
+                poet_prompt,
+                is_revision=False,
+                poet_generation_mode=poet_generation_mode,
+                expected_form=expected_form,
+                expected_variant=expected_variant,
+            )
+            pass1_poem = None
+            rhyme_analysis_pass1 = None
+            if cmu_second_pass:
+                pass1_poem = draft
+                eff_form = expected_form or detect_form(user_request) or detect_form(poet_prompt)
+                eff_variant = expected_variant
+                rhyme_analysis_pass1 = analyze_rhyme(
+                    draft, expected_form=eff_form, expected_variant=eff_variant,
+                )
+                if verbose:
+                    print("→ Poet: CMU-guided second pass...", flush=True)
+                draft = self.poet_cmu_second_pass(
+                    poet_prompt, draft, eff_form, eff_variant,
+                )
+
             t1 = time.perf_counter()
             t_total = t1 - t_start
             poet_name = self.poet_model_override or "qwen2.5-7b-poet-Q4_K_M"
@@ -1024,23 +1092,31 @@ class PoetryPipeline:
             estimated_tokens = len(draft) // 4
             tokens_per_sec = round(estimated_tokens / t_total, 1) if t_total > 0 else 0
 
-            return {
+            meta = {
+                "revisions": 0,
+                "approved": False,
+                "approved_at_round": None,
+                "model_educator": "N/A (poet only)",
+                "model_poet": poet_name,
+                "perf_total_sec": round(t_total, 2),
+                "perf_tokens_per_sec": tokens_per_sec,
+                "perf_estimated_tokens": estimated_tokens,
+                "perf_first_token_ms": None,
+                "perf_avg_token_ms": None,
+                "poet_generation_mode": poet_generation_mode,
+                "cmu_second_pass": cmu_second_pass,
+            }
+            out_dict = {
                 "final_poem": draft,
                 "generation_brief": None,
                 "revision_history": [],
-                "metadata": {
-                    "revisions": 0,
-                    "approved": False,
-                    "approved_at_round": None,
-                    "model_educator": "N/A (poet only)",
-                    "model_poet": poet_name,
-                    "perf_total_sec": round(t_total, 2),
-                    "perf_tokens_per_sec": tokens_per_sec,
-                    "perf_estimated_tokens": estimated_tokens,
-                    "perf_first_token_ms": None,
-                    "perf_avg_token_ms": None,
-                },
+                "metadata": meta,
             }
+            if pass1_poem is not None:
+                out_dict["pass1_poem"] = pass1_poem
+            if rhyme_analysis_pass1 is not None:
+                out_dict["rhyme_analysis_pass1"] = rhyme_analysis_pass1
+            return out_dict
 
         if verbose:
             print("\n→ Educator: generating brief...", flush=True)

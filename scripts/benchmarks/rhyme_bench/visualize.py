@@ -777,7 +777,7 @@ def main():
         "data_dir",
         type=Path,
         nargs="?",
-        default=ROOT / "data" / "rhyme_bench",
+        default=ROOT / "data" / "rhyme_bench" / "studies" / "baseline_default",
         help="Directory with rhyme bench output JSONs",
     )
     parser.add_argument(

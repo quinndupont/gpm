@@ -1,0 +1,32 @@
+study_id: baseline_default
+title: Baseline (default inference)
+description: >
+  Poet-only generation with the rhyme-bench harness: max_revisions=0, no educator brief.
+  The model receives the hardcoded wrapper plus inference poet_generation (template default).
+  run_single passes expected_form and expected_variant from RHYME_PROMPTS into generate(),
+  so FORM CONTRACT / get_scheme match the benchmark tuple (including sonnet variants).
+max_revisions: 0
+pipeline: PoetryPipeline.generate (poet-only branch)
+prompt_sources:
+  - scripts/inference/pipeline.py (Write a poem. Request: …)
+  - models/prompts/inference/poet_generation.json (template default)
+git_paths:
+  - scripts/inference/pipeline.py
+  - models/prompts/inference/poet_generation.json
+  - scripts/benchmarks/rhyme_bench/prompts.py
+  - scripts/benchmarks/rhyme_bench/run_bench.py
+
+# Snapshot of generated data on record (see also data/rhyme_bench/studies/baseline_default/CARD.yaml)
+existing_generated_baseline:
+  data_directory: data/rhyme_bench/studies/baseline_default
+  summary_path: data/rhyme_bench/studies/baseline_default/summary.json
+  run_timestamp: "20260318_111958"
+  total_runs: 47
+  matches_form_count: 9
+  matches_form_rate: 0.19
+  mean_strict_rhyme_density: 0.65
+  models_tested:
+    - trained-llama3.1-8b-q6
+  prompt_indices: "0–46"
+  max_revisions: 0
+  schema: legacy_summary_without_study_id

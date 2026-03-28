@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import json
+from collections import Counter
 import time
 import types
 import urllib.parse
@@ -25,6 +26,13 @@ from scripts.inference.swapping_pipeline import SwappingPipeline  # noqa: E402
 from scripts.training.model_registry import DEFAULT_STOP_TOKENS, stop_tokens_for  # noqa: E402
 
 from models.prompts.loader import get_persona  # noqa: E402
+from scripts.benchmarks.rev_flux.line_change import (
+    lines_changed_per_round,
+    revision_line_word_edit_details,
+    revision_round_changes,
+    revision_round_word_changes,
+    words_changed_per_round,
+)
 
 
 def load_yaml_config():
@@ -155,6 +163,7 @@ def iter_revision_loop_events(
 
     revision_history: list = []
     approved = False
+    approved_at_round: int | None = None
 
     for i in range(max_revisions):
         t_crit = time.perf_counter()
@@ -177,6 +186,7 @@ def iter_revision_loop_events(
 
         if stop_on_approval and pipe._educator_approves(critique, draft=draft, brief=brief):
             approved = True
+            approved_at_round = i + 1
             yield {"event": "approved", "round": i + 1}
             break
 
@@ -210,10 +220,83 @@ def iter_revision_loop_events(
             "phase_sec": round(time.perf_counter() - t_rev, 3),
         }
 
+    # RevFlux-style revision analytics (line + word).
+    # Serve_gpm's revision_history stores the drafts that were critiqued; when the loop
+    # ends, we may need to append the final poem so diffs cover the full trajectory.
+    revision_history_full = list(revision_history)
+    if revision_history_full and (revision_history_full[-1].get("draft") != draft):
+        revision_history_full.append(
+            {"draft": draft, "critique": None, "iteration": "final"},
+        )
+
+    revisions_required = len([h for h in revision_history_full if h.get("critique")])
+    graduation = 1 if approved else 0
+
+    line_rounds = revision_round_changes(revision_history_full)
+    word_rounds = revision_round_word_changes(revision_history_full)
+    lines_changed = lines_changed_per_round(line_rounds, threshold=0.5)
+    words_changed = words_changed_per_round(word_rounds, threshold=0.5)
+
+    per_revision = []
+    for r in range(1, len(revision_history_full)):
+        line_list = line_rounds[r] if r < len(line_rounds) else []
+        word_list = word_rounds[r] if r < len(word_rounds) else []
+        avg_line = (sum(line_list) / len(line_list)) if line_list else 0.0
+        avg_word = (sum(word_list) / len(word_list)) if word_list else 0.0
+        per_revision.append(
+            {
+                "round": r,
+                "lines_changed": lines_changed[r] if r < len(lines_changed) else 0,
+                "words_changed": words_changed[r] if r < len(words_changed) else 0,
+                "avg_line_change_pct": round(float(avg_line), 3),
+                "avg_word_change_pct": round(float(avg_word), 3),
+            }
+        )
+
+    per_line_details = revision_line_word_edit_details(
+        revision_history_full,
+        line_threshold=0.5,
+        word_threshold=0.5,
+        token_limit=6,
+        max_lines_per_round=12,
+    )
+
+    # Aggregate top inserted/deleted tokens across changed lines (per transition round).
+    def _top_items(c: Counter, limit: int = 10) -> list[list[int | str]]:
+        items = sorted(c.items(), key=lambda kv: (-kv[1], kv[0]))[: max(0, limit)]
+        return [[tok, cnt] for tok, cnt in items]
+
+    top_word_edits_per_round = []
+    for r in range(len(revision_history_full)):
+        if r == 0:
+            top_word_edits_per_round.append({"inserted": [], "deleted": []})
+            continue
+        c_ins: Counter = Counter()
+        c_del: Counter = Counter()
+        for d in per_line_details[r] if r < len(per_line_details) else []:
+            for tok, cnt in d.get("inserted_tokens", []):
+                c_ins[tok] += int(cnt)
+            for tok, cnt in d.get("deleted_tokens", []):
+                c_del[tok] += int(cnt)
+        top_word_edits_per_round.append(
+            {"inserted": _top_items(c_ins), "deleted": _top_items(c_del)}
+        )
+
+    rev_flux = {
+        "revisions_required": revisions_required,
+        "graduation": graduation,
+        "approved_at_round": approved_at_round,
+        "max_revisions": max_revisions,
+        "per_revision": per_revision,
+        "per_line_details": per_line_details,
+        "top_word_edits_per_round": top_word_edits_per_round,
+    }
+
     yield {
         "event": "done",
         "final_poem": draft,
         "approved": approved,
+        "rev_flux": rev_flux,
         "total_sec": round(time.perf_counter() - t0, 3),
     }
 
@@ -252,6 +335,12 @@ INDEX_HTML = """<!DOCTYPE html>
     .metrics {
       background: #1e2a1e; border: 1px solid #354; padding: 0.5rem 0.75rem;
       border-radius: 4px; font-size: 0.8rem; margin-top: 0.75rem;
+    }
+    .revflux {
+      white-space: pre-wrap;
+      font-family: ui-monospace, monospace;
+      font-size: 0.78rem;
+      line-height: 1.25;
     }
     .log {
       background: #0d0d0d; border: 1px solid #333; padding: 0.75rem;
@@ -355,6 +444,7 @@ INDEX_HTML = """<!DOCTYPE html>
     </div>
     <button class="run" type="button" id="loop-run">Run loop</button>
     <div class="metrics" id="loop-metrics"></div>
+    <div class="metrics revflux" id="loop-revflux"></div>
     <div class="log" id="loop-out"></div>
     <p class="hint">Loads one model at a time (swapping). Uses educator revision brief → poet revises.</p>
   </section>
@@ -447,6 +537,91 @@ function parseMessages(raw, fallbackUser) {
   return [{ role: "user", content: fallbackUser.trim() || t }];
 }
 
+function asciiBar(pct, width) {
+  const v = Number.isFinite(pct) ? pct : 0;
+  const n = Math.max(0, Math.min(width, Math.round((v / 100) * width)));
+  return "#".repeat(n) + "-".repeat(width - n);
+}
+
+function formatTokPairs(pairs) {
+  // pairs: [[token, count], ...]
+  if (!Array.isArray(pairs)) return "";
+  return pairs
+    .slice(0, 8)
+    .map(x => {
+      const tok = (x && x[0] != null) ? String(x[0]) : "";
+      const cnt = (x && x[1] != null) ? String(x[1]) : "0";
+      return tok + "(" + cnt + ")";
+    })
+    .join(" ");
+}
+
+function renderRevFluxText(rv) {
+  if (!rv) return "";
+  const gradTxt = rv.graduation === 1 ? "APPROVED" : "NOT_APPROVED";
+  const lines = [];
+  lines.push("RevFlux revision analytics");
+  lines.push("Graduation: " + gradTxt + "  |  Revisions required: " + rv.revisions_required);
+  if (rv.approved_at_round != null) lines.push("Approved at round: " + rv.approved_at_round);
+  if (rv.max_revisions != null) lines.push("Max revisions: " + rv.max_revisions);
+  lines.push("");
+
+  if (Array.isArray(rv.per_revision) && rv.per_revision.length) {
+    lines.push("Per transition round (draft[r-1] -> draft[r])");
+    lines.push("Round  LinesChg WordsChg  AvgLine% AvgWord%  LineBar           WordBar");
+    rv.per_revision.forEach(pr => {
+      const r = pr.round;
+      const lc = pr.lines_changed ?? 0;
+      const wc = pr.words_changed ?? 0;
+      const al = (pr.avg_line_change_pct ?? 0).toFixed(1);
+      const aw = (pr.avg_word_change_pct ?? 0).toFixed(1);
+      const lineBar = asciiBar(pr.avg_line_change_pct, 18);
+      const wordBar = asciiBar(pr.avg_word_change_pct, 18);
+      lines.push(
+        String(r).padStart(5) + "  " +
+        String(lc).padStart(9) + " " +
+        String(wc).padStart(8) + "  " +
+        String(al).padStart(8) + "  " +
+        String(aw).padStart(8) + "  " +
+        lineBar + "  " + wordBar
+      );
+    });
+    lines.push("");
+  } else {
+    lines.push("No poet revision transitions to diff (approval may have happened immediately).");
+    lines.push("");
+  }
+
+  if (Array.isArray(rv.per_line_details)) {
+    lines.push("Changed lines + top word edits (per transition round)");
+    const maxRounds = rv.per_line_details.length;
+    for (let r = 1; r < maxRounds; r++) {
+      const details = rv.per_line_details[r] || [];
+      if (!details.length) continue;
+      lines.push("");
+      lines.push("Round " + r + " changed lines: " + details.length);
+      details.slice(0, 6).forEach(d => {
+        const li = d.line_idx;
+        const lp = (d.line_pct ?? 0).toFixed(1);
+        const wp = (d.word_pct ?? 0).toFixed(1);
+        const from = d.from_line != null ? String(d.from_line) : "";
+        const to = d.to_line != null ? String(d.to_line) : "";
+        lines.push("  L" + li + ": " + lp + "% line | " + wp + "% words");
+        lines.push("    -" + from);
+        lines.push("    +" + to);
+        if (d.deleted_tokens || d.inserted_tokens) {
+          const del = formatTokPairs(d.deleted_tokens);
+          const ins = formatTokPairs(d.inserted_tokens);
+          if (del) lines.push("    del: " + del);
+          if (ins) lines.push("    ins: " + ins);
+        }
+      });
+    }
+  }
+
+  return lines.join("\\n");
+}
+
 async function streamChat(role, opts) {
   const out = document.getElementById(role === "educator" ? "edu-out" : "poet-out");
   const met = document.getElementById(role === "educator" ? "edu-metrics" : "poet-metrics");
@@ -527,8 +702,10 @@ document.getElementById("poet-send").addEventListener("click", async () => {
 document.getElementById("loop-run").addEventListener("click", async () => {
   const out = document.getElementById("loop-out");
   const met = document.getElementById("loop-metrics");
+  const rfd = document.getElementById("loop-revflux");
   out.textContent = "";
   met.textContent = "…";
+  rfd.textContent = "";
   const body = {
     user_request: document.getElementById("loop-request").value,
     educator_model: document.getElementById("loop-edu-model").value,
@@ -557,7 +734,10 @@ document.getElementById("loop-run").addEventListener("click", async () => {
         const j = JSON.parse(line);
         out.textContent += "\\n---\\n[" + (j.event || "?") + "]\\n" +
           (j.text != null ? j.text : JSON.stringify(j)) + "\\n";
-        if (j.event === "done") met.textContent = JSON.stringify(j, null, 2);
+        if (j.event === "done") {
+          met.textContent = JSON.stringify(j, null, 2);
+          if (j.rev_flux) rfd.textContent = renderRevFluxText(j.rev_flux);
+        }
       } catch (e) { out.textContent += line + "\\n"; }
     }
   }

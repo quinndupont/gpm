@@ -1,7 +1,10 @@
 """Compute per-line change percentage between consecutive drafts."""
 from __future__ import annotations
 
+import difflib
 import math
+import re
+from collections import Counter
 
 
 def _lines(text: str) -> list[str]:
@@ -63,6 +66,191 @@ def revision_round_changes(revision_history: list[dict]) -> list[list[float]]:
         curr = revision_history[i]["draft"]
         rounds.append(line_change_percentages(prev, curr))
     return rounds
+
+
+def _word_tokens(line: str) -> list[str]:
+    """
+    Tokenize a line into "words" plus punctuation.
+    Uses a conservative regex to keep diffs stable for evaluation.
+    """
+    # Words (including internal apostrophes) or single non-whitespace punctuation/symbol tokens.
+    # Note: this is intentionally not language-specific stemming/lemmatization.
+    return re.findall(r"[A-Za-z0-9]+(?:'[A-Za-z0-9]+)?|[^A-Za-z0-9\s]", line)
+
+
+def _word_change_pct(a: str, b: str) -> float:
+    """Word-level edit distance as % of max token length. 0 = identical, 100 = fully different."""
+    if not a and not b:
+        return 0.0
+    if not a or not b:
+        return 100.0
+    a_toks = _word_tokens(a)
+    b_toks = _word_tokens(b)
+    m, n = len(a_toks), len(b_toks)
+    if m == 0 and n == 0:
+        return 0.0
+    if m == 0 or n == 0:
+        return 100.0
+
+    # Levenshtein distance on token sequences.
+    dp = [[0] * (n + 1) for _ in range(m + 1)]
+    for i in range(m + 1):
+        dp[i][0] = i
+    for j in range(n + 1):
+        dp[0][j] = j
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            cost = 0 if a_toks[i - 1] == b_toks[j - 1] else 1
+            dp[i][j] = min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost)
+    dist = dp[m][n]
+    denom = max(m, n, 1)
+    return 100.0 * dist / denom
+
+
+def word_change_percentages(prev_draft: str, next_draft: str) -> list[float]:
+    """
+    For each line position, compute word-level change % from prev to next.
+    Aligns by index; if lengths differ, extra lines are treated as 100% change.
+    """
+    prev_lines = _lines(prev_draft)
+    next_lines = _lines(next_draft)
+    max_len = max(len(prev_lines), len(next_lines), 1)
+    result: list[float] = []
+    for i in range(max_len):
+        p = prev_lines[i] if i < len(prev_lines) else ""
+        n = next_lines[i] if i < len(next_lines) else ""
+        result.append(_word_change_pct(p, n))
+    return result
+
+
+def revision_round_word_changes(revision_history: list[dict]) -> list[list[float]]:
+    """
+    For each revision round, return per-line word change percentages vs previous draft.
+    round 0 is [] (no predecessor), round i is change from history[i-1] -> history[i].
+    """
+    if not revision_history:
+        return []
+    rounds: list[list[float]] = []
+    for i in range(len(revision_history)):
+        if i == 0:
+            rounds.append([])
+            continue
+        prev = revision_history[i - 1]["draft"]
+        curr = revision_history[i]["draft"]
+        rounds.append(word_change_percentages(prev, curr))
+    return rounds
+
+
+def revised_words_per_round(
+    rounds: list[list[float]],
+    threshold: float = 0.5,
+) -> list[list[tuple[int, float]]]:
+    """
+    Per round: list of (line_idx, word_change_pct) for lines that changed (pct > threshold).
+    """
+    result: list[list[tuple[int, float]]] = []
+    for r in rounds:
+        result.append([(i, p) for i, p in enumerate(r) if p > threshold])
+    return result
+
+
+def words_changed_per_round(
+    rounds: list[list[float]],
+    threshold: float = 0.5,
+) -> list[int]:
+    """Count of lines changed per round (word_change_pct > threshold)."""
+    return [len([p for p in r if p > threshold]) for r in rounds]
+
+
+def _top_counter_items(c: Counter, limit: int) -> list[tuple[str, int]]:
+    items = sorted(c.items(), key=lambda kv: (-kv[1], kv[0]))
+    return items[: max(0, limit)]
+
+
+def _word_token_diff_counters(a_line: str, b_line: str) -> tuple[Counter, Counter]:
+    """
+    Compute deleted/inserted token counts using a token-level SequenceMatcher diff.
+    This is designed to be deterministic and cheap for small poem sizes.
+    """
+    a_toks = _word_tokens(a_line)
+    b_toks = _word_tokens(b_line)
+    sm = difflib.SequenceMatcher(a=a_toks, b=b_toks, autojunk=False)
+
+    deleted: Counter = Counter()
+    inserted: Counter = Counter()
+    for tag, i1, i2, j1, j2 in sm.get_opcodes():
+        if tag == "equal":
+            continue
+        if tag in ("delete", "replace"):
+            if i2 > i1:
+                deleted.update(a_toks[i1:i2])
+        if tag in ("insert", "replace"):
+            if j2 > j1:
+                inserted.update(b_toks[j1:j2])
+    return deleted, inserted
+
+
+def revision_line_word_edit_details(
+    revision_history: list[dict],
+    *,
+    line_threshold: float = 0.5,
+    word_threshold: float = 0.5,
+    token_limit: int = 6,
+    max_lines_per_round: int = 12,
+) -> list[list[dict]]:
+    """
+    Return nested per-round per-line details for the educator↔poet loop.
+
+    Output is suitable for direct embedding into `serve_gpm` JSON payloads.
+    rounds[0] = [].
+    """
+    if not revision_history:
+        return []
+
+    line_rounds = revision_round_changes(revision_history)
+    word_rounds = revision_round_word_changes(revision_history)
+
+    per_round: list[list[dict]] = []
+    for i in range(len(revision_history)):
+        if i == 0:
+            per_round.append([])
+            continue
+
+        prev_text = revision_history[i - 1]["draft"] or ""
+        curr_text = revision_history[i]["draft"] or ""
+        prev_lines = _lines(prev_text)
+        curr_lines = _lines(curr_text)
+        max_len = max(len(prev_lines), len(curr_lines), 1)
+
+        round_details: list[dict] = []
+        for line_idx in range(max_len):
+            line_pct = line_rounds[i][line_idx] if line_idx < len(line_rounds[i]) else 100.0
+            word_pct = word_rounds[i][line_idx] if line_idx < len(word_rounds[i]) else 100.0
+            if line_pct <= line_threshold and word_pct <= word_threshold:
+                continue
+
+            from_line = prev_lines[line_idx] if line_idx < len(prev_lines) else ""
+            to_line = curr_lines[line_idx] if line_idx < len(curr_lines) else ""
+            deleted, inserted = _word_token_diff_counters(from_line, to_line)
+
+            detail = {
+                "line_idx": line_idx,
+                "line_pct": round(float(line_pct), 3),
+                "word_pct": round(float(word_pct), 3),
+                "from_line": from_line,
+                "to_line": to_line,
+                "deleted_tokens": _top_counter_items(deleted, limit=token_limit),
+                "inserted_tokens": _top_counter_items(inserted, limit=token_limit),
+            }
+            round_details.append(detail)
+
+            if len(round_details) >= max_lines_per_round:
+                # Keep payload small for the serve page; detailed expansion is for harness outputs.
+                break
+
+        per_round.append(round_details)
+
+    return per_round
 
 
 def aggregate_line_changes(rounds: list[list[float]]) -> list[float]:

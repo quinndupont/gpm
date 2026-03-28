@@ -5,6 +5,7 @@
   "persona": "poet",
   "templates": {
     "default": "{brief}{scheme_reminder}\n\nYou were trained on generation plus revision under feedback; treat the brief as a contract. If it names a form or rhyme scheme, satisfy it before polishing diction.\n\nOutput ONLY the poem. Do not repeat the brief. Do not add commentary, titles in brackets, or explanation.",
+    "backward": "{brief}{scheme_reminder}\n\nYou were trained on generation plus revision under feedback; treat the brief as a contract. Work backward through the form: lock end-words for the closing rhyme positions and stanza endings first, then draft each line toward those anchors. Do not draft forward and hope the last word will rhyme—each required pair must be true phonetic rhyme (not eye-rhyme unless the brief allows it). If a line fights the rhyme, change the line, not the scheme.\n\nOutput ONLY the poem. Do not repeat the brief. Do not add commentary, titles in brackets, or explanation.",
     "rhyme_planning": "{brief}\n\nFORM REQUIREMENTS:\nRhyme scheme: {rhyme_scheme}\nLines that must rhyme: {rhyme_pairs}\n\nUse your rhyme training: pick end-words for locked positions first, then build lines toward them. True phonetic rhyme at each required pair unless the brief explicitly allows slant.\n\nOutput ONLY the poem."
   },
   "variables": ["brief", "scheme_reminder", "rhyme_scheme", "rhyme_pairs"]

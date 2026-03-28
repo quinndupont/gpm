@@ -18,7 +18,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 REV_FLUX_DIR=${REV_FLUX_DIR:-$ROOT/data/rev_flux}
-RHYME_DIR=${RHYME_DIR:-$ROOT/data/rhyme_bench}
+RHYME_DIR=${RHYME_DIR:-$ROOT/data/rhyme_bench/studies/baseline_default}
 
 log "=== RevFlux benchmark ==="
 if $TEST; then
@@ -29,9 +29,9 @@ fi
 
 log "=== Rhyme benchmark ==="
 if $TEST; then
-  $RUN scripts/benchmarks/rhyme_bench/run_bench.py --test --output-dir "$RHYME_DIR"
+  $RUN scripts/benchmarks/rhyme_bench/run_bench.py --non-interactive --test --output-dir "$RHYME_DIR"
 else
-  $RUN scripts/benchmarks/rhyme_bench/run_bench.py --output-dir "$RHYME_DIR"
+  $RUN scripts/benchmarks/rhyme_bench/run_bench.py --non-interactive --output-dir "$RHYME_DIR"
 fi
 
 log "=== Rhyme visualization ==="

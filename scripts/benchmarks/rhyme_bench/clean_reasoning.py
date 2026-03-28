@@ -8,7 +8,7 @@ from pathlib import Path
 from collections import defaultdict
 from scripts.eval.rhyme_analyzer import analyze as analyze_rhyme
 
-DATA_DIR = Path("data/rhyme_bench")
+DATA_DIR = Path("data/rhyme_bench/studies/baseline_default")
 
 
 def extract_poem(text: str) -> str:

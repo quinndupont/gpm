@@ -1,0 +1,10 @@
+{
+  "id": "poet_cmu_revision",
+  "version": "1",
+  "description": "Second pass: revise draft using CMU-backed rhyme analysis only (no educator)",
+  "persona": "poet",
+  "templates": {
+    "default": "## Original request (contract)\n{brief}\n\n## Your current draft\n{draft}\n\n## Rhyme analysis (CMU dictionary)\n{rhyme_analysis}\n---\n\nRevise the poem to fix every rhyme and scheme issue flagged above. Preserve strong lines that already satisfy the analysis. Output ONLY the full revised poem — no labels, no commentary."
+  },
+  "variables": ["brief", "draft", "rhyme_analysis"]
+}

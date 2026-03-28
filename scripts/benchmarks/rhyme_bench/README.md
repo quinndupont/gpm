@@ -67,41 +67,65 @@ The rhyme benchmark suite evaluates a model's ability to generate poems that adh
 
 ## Usage Guide
 
-### Quick Start
+### Interactive (default)
+
+Run with **no arguments** to configure the benchmark in the terminal: study/ablation, output directory, models, prompt subset, max revisions, diagnostic mode, form filters, and verbose logging. You get a confirmation step before any generation runs.
 
 ```bash
-# Run a quick test (2 prompts, trained model only)
-python scripts/benchmarks/rhyme_bench/run_bench.py --test
+python scripts/benchmarks/rhyme_bench/run_bench.py
+```
 
-# Generate visualizations
+### Batch / CI (`--non-interactive`)
+
+Scripts and CI must pass **`--non-interactive`**; command-line flags are ignored without it (the interactive wizard is the default human path).
+
+```bash
+# Quick test (2 prompts, trained model only)
+python scripts/benchmarks/rhyme_bench/run_bench.py --non-interactive --test --output-dir data/rhyme_bench/studies/baseline_default
+
+# Full suite: all prompts, all models from config/rev_flux_models.yaml
+python scripts/benchmarks/rhyme_bench/run_bench.py --non-interactive --output-dir data/rhyme_bench/studies/baseline_default
+
+# Specific models
+python scripts/benchmarks/rhyme_bench/run_bench.py --non-interactive --models trained qwen2.5-7b --output-dir data/rhyme_bench/studies/baseline_default
+
+# Specific prompts
+python scripts/benchmarks/rhyme_bench/run_bench.py --non-interactive --prompts 0 1 2 3 4 --output-dir data/rhyme_bench/studies/baseline_default
+
+# Revision cycles (educator + poet)
+python scripts/benchmarks/rhyme_bench/run_bench.py --non-interactive --max-revisions 2 --output-dir data/rhyme_bench/studies/baseline_default
+
+# Ablation study (backward prompt or CMU two-pass)
+python scripts/benchmarks/rhyme_bench/run_bench.py --non-interactive --study ablate_backward --output-dir data/rhyme_bench/studies/ablate_backward
+python scripts/benchmarks/rhyme_bench/run_bench.py --non-interactive --study ablate_cmu_two_pass --output-dir data/rhyme_bench/studies/ablate_cmu_two_pass
+
+# Optional JSON config (merged with CLI; CLI overrides for overlapping fields)
+python scripts/benchmarks/rhyme_bench/run_bench.py --non-interactive --bench-config path/to/bench.json --output-dir data/rhyme_bench/studies/baseline_default
+
+# Exclude educator fine-tuned models
+python scripts/benchmarks/rhyme_bench/run_bench.py --non-interactive --exclude-educator-finetuned --output-dir data/rhyme_bench/studies/baseline_default
+```
+
+**Summary fields:** Each `summary.json` includes `study_id`, `bench_config` (resolved options), and the usual aggregate metrics so runs are self-describing.
+
+### Studies (ablation metadata)
+
+Version-controlled **info cards** live under [`studies/`](studies/): `baseline_default`, `ablate_backward`, `ablate_cmu_two_pass`. Each folder has `CARD.yaml` (machine-readable) and a short `README.md`.
+
+### Quick Start (visualizations)
+
+```bash
 python scripts/benchmarks/rhyme_bench/visualize.py
 ```
 
 ### Standard Benchmark
 
-Run the full benchmark suite to measure overall rhyme performance:
-
-```bash
-# All prompts, all models from config/rev_flux_models.yaml
-python scripts/benchmarks/rhyme_bench/run_bench.py
-
-# Specific models only
-python scripts/benchmarks/rhyme_bench/run_bench.py --models trained qwen2.5-7b
-
-# Specific prompts
-python scripts/benchmarks/rhyme_bench/run_bench.py --prompts 0 1 2 3 4
-
-# With revision cycles
-python scripts/benchmarks/rhyme_bench/run_bench.py --max-revisions 2
-
-# Exclude models with fine-tuned educators (only vanilla or poet-only fine-tuned)
-python scripts/benchmarks/rhyme_bench/run_bench.py --exclude-educator-finetuned
-```
+Run the full benchmark suite to measure overall rhyme performance (use `--non-interactive` as above). Examples in other sections of this README that omit `--non-interactive` should be read as **interactive** (run with no args) or updated to add `--non-interactive` for automation.
 
 **Output**:
-- Individual run files: `data/rhyme_bench/rhyme_{form}_{idx}_{model}_{timestamp}.json`
-- Run summaries: `data/rhyme_bench/summary_{timestamp}.json` (each run)
-- Latest summary: `data/rhyme_bench/summary.json` (most recent run)
+- Individual run files: `data/rhyme_bench/studies/<study_id>/rhyme_{form}_{idx}_{model}_{timestamp}.json`
+- Run summaries: `data/rhyme_bench/studies/<study_id>/summary_{timestamp}.json` (each run)
+- Default study folder: `data/rhyme_bench/studies/baseline_default/` (contains `summary.json` for the latest default run)
 
 ### Data Accumulation
 
@@ -121,14 +145,14 @@ python scripts/benchmarks/rhyme_bench/run_bench.py --exclude-educator-finetuned
 
 **Building a dataset:**
 ```bash
-# Run 1: Test initial set of models
-python scripts/benchmarks/rhyme_bench/run_bench.py --models trained-llama3.1-8b qwen2.5-7b-vanilla
+# Run 1: Test initial set of models (--non-interactive required for flags)
+python scripts/benchmarks/rhyme_bench/run_bench.py --non-interactive --models trained-llama3.1-8b qwen2.5-7b-vanilla --output-dir data/rhyme_bench/studies/baseline_default
 
 # Run 2: Add frontier models (data accumulates)
-python scripts/benchmarks/rhyme_bench/run_bench.py --models claude-sonnet-4 claude-opus-4
+python scripts/benchmarks/rhyme_bench/run_bench.py --non-interactive --models claude-sonnet-4 claude-opus-4 --output-dir data/rhyme_bench/studies/baseline_default
 
 # Run 3: Test with different prompts (data continues to accumulate)
-python scripts/benchmarks/rhyme_bench/run_bench.py --prompts 0 1 2 --models llama4-maverick
+python scripts/benchmarks/rhyme_bench/run_bench.py --non-interactive --prompts 0 1 2 --models llama4-maverick --output-dir data/rhyme_bench/studies/baseline_default
 
 # Result: All runs preserved in data/rhyme_bench/
 # Visualizations include ALL accumulated data
@@ -180,19 +204,19 @@ Run diagnostic mode to identify specific failure patterns and get actionable rec
 
 ```bash
 # Full diagnostic analysis
-python scripts/benchmarks/rhyme_bench/run_bench.py --diagnostic
+python scripts/benchmarks/rhyme_bench/run_bench.py --non-interactive --diagnostic --output-dir data/rhyme_bench/studies/baseline_default
 
 # Diagnostic on specific forms
-python scripts/benchmarks/rhyme_bench/run_bench.py --diagnostic --forms sonnet villanelle
+python scripts/benchmarks/rhyme_bench/run_bench.py --non-interactive --diagnostic --forms sonnet villanelle --output-dir data/rhyme_bench/studies/baseline_default
 
 # Diagnostic test run (fast)
-python scripts/benchmarks/rhyme_bench/run_bench.py --test --diagnostic
+python scripts/benchmarks/rhyme_bench/run_bench.py --non-interactive --test --diagnostic --output-dir data/rhyme_bench/studies/baseline_default
 ```
 
 **Output**:
 - Detailed report: `data/rhyme_bench/diagnostic_report.json`
 - Human-readable summary: `data/rhyme_bench/diagnostic_summary.md`
-- Visualizations: `data/rhyme_bench/plots/failure_breakdown.png`, etc.
+- Visualizations: `data/rhyme_bench/studies/<study_id>/plots/failure_breakdown.png`, etc.
 
 **Example diagnostic_summary.md**:
 ```markdown
@@ -242,30 +266,14 @@ Severity: 0.72 (affects 8 runs)
 Recommendation: Review training data for proper couplet patterns
 ```
 
-### Command-Line Reference
+### Command-Line Reference (requires `--non-interactive`)
 
-```
-usage: run_bench.py [-h] [--prompts PROMPTS [PROMPTS ...]] [--max-revisions MAX_REVISIONS]
-                    [--test] [--models MODELS [MODELS ...]] [--list-models]
-                    [--output-dir OUTPUT_DIR] [--verbose] [--diagnostic]
-                    [--forms FORMS [FORMS ...]]
+Run `python scripts/benchmarks/rhyme_bench/run_bench.py --help` for interactive-mode help, or `python scripts/benchmarks/rhyme_bench/run_bench.py --non-interactive --help` for the full batch parser. Typical flags:
 
-options:
-  --prompts PROMPTS [PROMPTS ...]
-                        Indices of prompts to run (default: all)
-  --max-revisions MAX_REVISIONS
-                        Revision cycles (0=poet only, default: 0)
-  --test                Short test: 2 prompts, trained model only
-  --models MODELS [MODELS ...]
-                        Model IDs from config/rev_flux_models.yaml
-  --list-models         Print available models and exit
-  --output-dir OUTPUT_DIR
-                        Output directory (default: data/rhyme_bench)
-  --verbose             Verbose pipeline output
-  --diagnostic          Run diagnostic analysis with failure categorization
-  --forms FORMS [FORMS ...]
-                        Specific forms to test (default: all)
-```
+- `--non-interactive` — required for any CLI flags (scripts/CI)
+- `--study {baseline_default,ablate_backward,ablate_cmu_two_pass}` — ablation / condition
+- `--bench-config PATH` — JSON file with the same fields as `bench_config` in `summary.json`
+- `--prompts`, `--max-revisions`, `--test`, `--models`, `--list-models`, `--output-dir`, `--verbose`, `--diagnostic`, `--forms`, `--exclude-educator-finetuned`
 
 ## Diagnostic Analysis
 
@@ -360,7 +368,7 @@ If `trained-llama3.1-8b` shows:
 
 **Workflow**:
 
-1. **Run diagnostic**: `python scripts/benchmarks/rhyme_bench/run_bench.py --diagnostic`
+1. **Run diagnostic**: `python scripts/benchmarks/rhyme_bench/run_bench.py --non-interactive --diagnostic --output-dir data/rhyme_bench/studies/baseline_default`
 
 2. **Review insights**: `cat data/rhyme_bench/diagnostic_summary.md`
 
@@ -379,14 +387,14 @@ If `trained-llama3.1-8b` shows:
 **Example Improvement Cycle**:
 ```bash
 # Baseline
-python scripts/benchmarks/rhyme_bench/run_bench.py --diagnostic
+python scripts/benchmarks/rhyme_bench/run_bench.py --non-interactive --diagnostic --output-dir data/rhyme_bench/studies/baseline_default
 # → Result: 35% scheme violations on sonnets
 
 # Fix: Add 500 more perfect-rhyme sonnet examples to training data
 # Re-train model
 
 # Test improvement
-python scripts/benchmarks/rhyme_bench/run_bench.py --diagnostic --forms sonnet
+python scripts/benchmarks/rhyme_bench/run_bench.py --non-interactive --diagnostic --forms sonnet --output-dir data/rhyme_bench/studies/baseline_default
 # → Result: 15% scheme violations on sonnets (20% reduction!)
 ```
 
@@ -458,13 +466,13 @@ python scripts/benchmarks/rhyme_bench/visualize.py
 python scripts/benchmarks/rhyme_bench/visualize.py -o /path/to/output
 
 # Custom data directory
-python scripts/benchmarks/rhyme_bench/visualize.py /path/to/data/rhyme_bench
+python scripts/benchmarks/rhyme_bench/visualize.py /path/to/data/rhyme_bench/studies/baseline_default
 
 # With title prefix
 python scripts/benchmarks/rhyme_bench/visualize.py --title "Model v2.0"
 ```
 
-**Output**: All plots saved to `data/rhyme_bench/plots/`
+**Output**: All plots saved next to the run data (default: `data/rhyme_bench/studies/baseline_default/plots/`)
 
 ## Configuration
 
@@ -536,7 +544,7 @@ aws configure
 # Enter your AWS Access Key ID, Secret Access Key, and region (us-east-1)
 
 # Run benchmark with Bedrock models
-python scripts/benchmarks/rhyme_bench/run_bench.py --models claude-3-5-sonnet-v2
+python scripts/benchmarks/rhyme_bench/run_bench.py --non-interactive --models claude-3-5-sonnet-v2 --output-dir data/rhyme_bench/studies/baseline_default
 ```
 
 Add new models to `rev_flux_models.yaml` to include them in benchmarking.
@@ -551,7 +559,7 @@ Add to your CI pipeline to catch rhyme regressions:
 # .github/workflows/test.yml
 - name: Run rhyme benchmark
   run: |
-    python scripts/benchmarks/rhyme_bench/run_bench.py --test --diagnostic
+    python scripts/benchmarks/rhyme_bench/run_bench.py --non-interactive --test --diagnostic --output-dir data/rhyme_bench/studies/baseline_default
 
 - name: Check rhyme thresholds
   run: pytest tests/test_rhyme_bench.py -m data -v
@@ -563,10 +571,10 @@ Run benchmarks after each training stage:
 
 ```bash
 # After Stage 1 (SFT)
-python scripts/benchmarks/rhyme_bench/run_bench.py --diagnostic --output-dir data/rhyme_bench/stage1
+python scripts/benchmarks/rhyme_bench/run_bench.py --non-interactive --diagnostic --output-dir data/rhyme_bench/stage1
 
 # After Stage 2 (SRPO)
-python scripts/benchmarks/rhyme_bench/run_bench.py --diagnostic --output-dir data/rhyme_bench/stage2
+python scripts/benchmarks/rhyme_bench/run_bench.py --non-interactive --diagnostic --output-dir data/rhyme_bench/stage2
 
 # Compare
 python -c "
@@ -586,7 +594,7 @@ print(f'Density improvement: {s1[\"mean_strict_rhyme_density\"]} → {s2[\"mean_
 cp data/rhyme_bench/summary.json data/rhyme_bench/baseline.json
 
 # After changes, compare
-python scripts/benchmarks/rhyme_bench/run_bench.py
+python scripts/benchmarks/rhyme_bench/run_bench.py --non-interactive --output-dir data/rhyme_bench/studies/baseline_default
 python -c "
 import json
 with open('data/rhyme_bench/baseline.json') as f:
@@ -679,20 +687,18 @@ scripts/benchmarks/rhyme_bench/
 └── README.md             # This file
 
 data/rhyme_bench/
-├── rhyme_*.json          # Individual run files
-├── summary.json          # Aggregate metrics
-├── diagnostic_report.json  # Detailed failure analysis
-├── diagnostic_summary.md   # Human-readable summary
-└── plots/                # Visualization outputs
-    ├── model_comparison.png              # Strict rhyme density by model
-    ├── matches_form_rate.png             # Form adherence rate by model
-    ├── failure_breakdown.png             # Failure category distribution
-    ├── severity_heatmap.png              # Severity by form and category
-    ├── near_miss_analysis.png            # Perfect vs slant rhyme scatter
-    ├── model_performance_comparison.png  # Success rates grouped by type
-    ├── trained_vs_vanilla.png            # Paired model comparison
-    ├── model_severity_comparison.png     # Severity by model
-    └── model_performance_dimensions.png  # Failure categories per model
+├── README.md
+└── studies/
+    └── baseline_default/   # Default output dir (and other study_id folders)
+        ├── CARD.yaml
+        ├── rhyme_*.json
+        ├── summary.json
+        ├── diagnostic_report.json
+        ├── diagnostic_summary.md
+        └── plots/
+            ├── model_comparison.png
+            ├── matches_form_rate.png
+            └── ...
 
 tests/
 ├── test_rhyme_bench.py      # Benchmark tests
@@ -716,7 +722,7 @@ tests/
 
 ### Tests failing on fresh install
 - Data tests require benchmark data: `pytest -m "not data"`
-- Or generate data first: `python scripts/benchmarks/rhyme_bench/run_bench.py --test`
+- Or generate data first: `python scripts/benchmarks/rhyme_bench/run_bench.py --non-interactive --test --output-dir data/rhyme_bench/studies/baseline_default`
 
 ## References
 

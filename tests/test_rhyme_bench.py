@@ -9,7 +9,8 @@ from scripts.benchmarks.rhyme_bench.prompts import RHYME_PROMPTS
 from scripts.eval.form_registry import FORMS, get_scheme
 
 ROOT = Path(__file__).resolve().parent.parent
-RHYME_BENCH_DIR = ROOT / "data" / "rhyme_bench"
+RHYME_BENCH_DIR = ROOT / "data" / "rhyme_bench" / "studies" / "baseline_default"
+STUDIES_DIR = ROOT / "scripts" / "benchmarks" / "rhyme_bench" / "studies"
 
 
 @pytest.mark.eval
@@ -47,7 +48,7 @@ class TestRhymeBenchSummary:
 
     def test_summary_structure_if_exists(self, summary_path):
         if not summary_path.exists():
-            pytest.skip("data/rhyme_bench/summary.json not present")
+            pytest.skip("data/rhyme_bench/studies/baseline_default/summary.json not present")
         with open(summary_path) as f:
             summary = json.load(f)
         assert "total_runs" in summary
@@ -57,7 +58,7 @@ class TestRhymeBenchSummary:
 
     def test_summary_thresholds_if_exists(self, summary_path):
         if not summary_path.exists():
-            pytest.skip("data/rhyme_bench/summary.json not present")
+            pytest.skip("data/rhyme_bench/studies/baseline_default/summary.json not present")
         with open(summary_path) as f:
             summary = json.load(f)
         mean_density = summary.get("mean_strict_rhyme_density", 0)
@@ -101,7 +102,7 @@ class TestTimestampedBehavior:
         """Verify summary.json timestamp is in correct format."""
         summary_path = RHYME_BENCH_DIR / "summary.json"
         if not summary_path.exists():
-            pytest.skip("data/rhyme_bench/summary.json not present")
+            pytest.skip("data/rhyme_bench/studies/baseline_default/summary.json not present")
 
         with open(summary_path) as f:
             summary = json.load(f)
@@ -131,7 +132,7 @@ class TestTimestampedBehavior:
         """Verify timestamped summary file exists."""
         summary_path = RHYME_BENCH_DIR / "summary.json"
         if not summary_path.exists():
-            pytest.skip("data/rhyme_bench/summary.json not present")
+            pytest.skip("data/rhyme_bench/studies/baseline_default/summary.json not present")
 
         with open(summary_path) as f:
             summary = json.load(f)
@@ -165,7 +166,7 @@ class TestDiagnosticReportData:
     def test_diagnostic_structure_if_exists(self, diagnostic_path):
         """Validate diagnostic report structure."""
         if not diagnostic_path.exists():
-            pytest.skip("data/rhyme_bench/diagnostic_report.json not present")
+            pytest.skip("data/rhyme_bench/studies/baseline_default/diagnostic_report.json not present")
 
         with open(diagnostic_path) as f:
             diag = json.load(f)
@@ -208,7 +209,7 @@ class TestDiagnosticReportData:
     def test_severity_scores_valid(self, diagnostic_path):
         """Assert severity scores within bounds."""
         if not diagnostic_path.exists():
-            pytest.skip("data/rhyme_bench/diagnostic_report.json not present")
+            pytest.skip("data/rhyme_bench/studies/baseline_default/diagnostic_report.json not present")
 
         with open(diagnostic_path) as f:
             diag = json.load(f)
@@ -229,7 +230,7 @@ class TestDiagnosticReportData:
     def test_failure_categories_recognized(self, diagnostic_path):
         """All categories are recognized failure types."""
         if not diagnostic_path.exists():
-            pytest.skip("data/rhyme_bench/diagnostic_report.json not present")
+            pytest.skip("data/rhyme_bench/studies/baseline_default/diagnostic_report.json not present")
 
         with open(diagnostic_path) as f:
             diag = json.load(f)
@@ -250,7 +251,7 @@ class TestDiagnosticReportData:
     def test_insights_have_recommendations(self, diagnostic_path):
         """Insights include actionable recommendations."""
         if not diagnostic_path.exists():
-            pytest.skip("data/rhyme_bench/diagnostic_report.json not present")
+            pytest.skip("data/rhyme_bench/studies/baseline_default/diagnostic_report.json not present")
 
         with open(diagnostic_path) as f:
             diag = json.load(f)
@@ -273,7 +274,7 @@ class TestDiagnosticReportData:
     def test_diagnostic_summary_markdown_exists(self, diagnostic_path, diagnostic_summary_path):
         """Markdown summary exists when JSON exists."""
         if not diagnostic_path.exists():
-            pytest.skip("data/rhyme_bench/diagnostic_report.json not present")
+            pytest.skip("data/rhyme_bench/studies/baseline_default/diagnostic_report.json not present")
 
         # If JSON exists, markdown should too
         assert diagnostic_summary_path.exists(), "diagnostic_summary.md missing when diagnostic_report.json present"
@@ -286,3 +287,13 @@ class TestDiagnosticReportData:
         assert "## Failure Breakdown" in content or "Failure Breakdown" in content
         assert "## Performance by Form" in content or "Performance by Form" in content
         assert "## Actionable Insights" in content or "Actionable Insights" in content
+
+
+@pytest.mark.eval
+class TestRhymeBenchStudies:
+    """Study folders and info cards (ablation metadata)."""
+
+    def test_study_cards_exist(self):
+        for sid in ("baseline_default", "ablate_backward", "ablate_cmu_two_pass"):
+            card = STUDIES_DIR / sid / "CARD.yaml"
+            assert card.exists(), f"Missing study card: {card}"

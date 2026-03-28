@@ -1,0 +1,16 @@
+study_id: ablate_backward
+title: Ablate — backward construction prompt
+description: >
+  Same harness as baseline except poet_generation uses the backward template: instructs
+  the model to plan rhyme anchors from the closing lines / rhyme groups first, then draft
+  toward them (vs forward end-word planning).
+max_revisions: 0
+pipeline: PoetryPipeline.generate (poet-only branch, poet_generation_mode=backward)
+prompt_sources:
+  - models/prompts/inference/poet_generation.json (template backward)
+git_paths:
+  - models/prompts/inference/poet_generation.json
+  - scripts/inference/pipeline.py
+notes: >
+  Ground-truth expected_form and expected_variant from the benchmark tuple are used for
+  FORM CONTRACT / scheme when available.

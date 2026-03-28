@@ -1,0 +1,16 @@
+study_id: ablate_cmu_two_pass
+title: Ablate — CMU-guided second pass
+description: >
+  Pass 1: same generation as baseline. Pass 2: deterministic rhyme analysis
+  (CMU pronouncing dictionary via rhyme_analyzer) with ground-truth form/variant from
+  the benchmark; the poet revises using only that analysis (no educator critique).
+max_revisions: 0
+pipeline: PoetryPipeline.generate with cmu_second_pass=true
+prompt_sources:
+  - models/prompts/inference/poet_cmu_revision.json
+  - scripts/eval/rhyme_analyzer.py (analyze, format_analysis_for_prompt)
+git_paths:
+  - models/prompts/inference/poet_cmu_revision.json
+  - scripts/inference/pipeline.py
+notes: >
+  Run JSON includes pass1_poem and final_poem when this study is selected.

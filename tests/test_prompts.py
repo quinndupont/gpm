@@ -63,6 +63,8 @@ class TestPromptLoading:
         ("inference", "brief", "default"),
         ("inference", "critique", "default"),
         ("inference", "poet_generation", "default"),
+        ("inference", "poet_generation", "backward"),
+        ("inference", "poet_cmu_revision", "default"),
     ])
     def test_get_prompt_succeeds(self, category, prompt_id, template):
         tpl = get_prompt(category, prompt_id, template)
@@ -169,6 +171,21 @@ class TestTemplateRendering:
         out = render_prompt("inference", "poet_generation", "default",
             brief="Brief", scheme_reminder="")
         assert "Brief" in out
+
+    def test_render_inference_poet_generation_backward(self):
+        out = render_prompt("inference", "poet_generation", "backward",
+            brief="Brief", scheme_reminder="")
+        assert "Brief" in out
+        assert "backward" in out.lower() or "Work backward" in out
+
+    def test_render_inference_poet_cmu_revision(self):
+        out = render_prompt(
+            "inference", "poet_cmu_revision", "default",
+            brief="Brief", draft="Draft", rhyme_analysis="Expected scheme: ABAB",
+        )
+        assert "Brief" in out
+        assert "Draft" in out
+        assert "ABAB" in out
 
     def test_render_dialogue_student_revision(self):
         out = render_prompt("tuning", "dialogue", "student_revision",

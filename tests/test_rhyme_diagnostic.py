@@ -13,7 +13,7 @@ from scripts.benchmarks.rhyme_bench.diagnostic import (
 )
 
 ROOT = Path(__file__).resolve().parent.parent
-RHYME_BENCH_DIR = ROOT / "data" / "rhyme_bench"
+RHYME_BENCH_DIR = ROOT / "data" / "rhyme_bench" / "studies" / "baseline_default"
 
 
 @pytest.mark.eval
@@ -487,7 +487,7 @@ class TestDiagnosticData:
     def test_diagnostic_report_structure_if_exists(self, diagnostic_path):
         """Validate structure of diagnostic_report.json."""
         if not diagnostic_path.exists():
-            pytest.skip("data/rhyme_bench/diagnostic_report.json not present")
+            pytest.skip("data/rhyme_bench/studies/baseline_default/diagnostic_report.json not present")
 
         with open(diagnostic_path) as f:
             diag = json.load(f)
@@ -510,7 +510,7 @@ class TestDiagnosticData:
     def test_severity_bounds(self, diagnostic_path):
         """Assert severity scores within bounds."""
         if not diagnostic_path.exists():
-            pytest.skip("data/rhyme_bench/diagnostic_report.json not present")
+            pytest.skip("data/rhyme_bench/studies/baseline_default/diagnostic_report.json not present")
 
         with open(diagnostic_path) as f:
             diag = json.load(f)
@@ -526,7 +526,7 @@ class TestDiagnosticData:
     def test_failure_categories_valid(self, diagnostic_path):
         """All categories are recognized."""
         if not diagnostic_path.exists():
-            pytest.skip("data/rhyme_bench/diagnostic_report.json not present")
+            pytest.skip("data/rhyme_bench/studies/baseline_default/diagnostic_report.json not present")
 
         with open(diagnostic_path) as f:
             diag = json.load(f)
@@ -748,7 +748,7 @@ class TestByModelIntegration:
     def test_by_model_in_diagnostic_report(self, diagnostic_path):
         """Verify by_model section exists in diagnostic_report.json."""
         if not diagnostic_path.exists():
-            pytest.skip("data/rhyme_bench/diagnostic_report.json not present")
+            pytest.skip("data/rhyme_bench/studies/baseline_default/diagnostic_report.json not present")
 
         with open(diagnostic_path) as f:
             diag = json.load(f)
@@ -785,7 +785,7 @@ class TestByModelIntegration:
         """Verify diagnostic_summary.md includes model performance."""
         summary_path = RHYME_BENCH_DIR / "diagnostic_summary.md"
         if not summary_path.exists():
-            pytest.skip("data/rhyme_bench/diagnostic_summary.md not present")
+            pytest.skip("data/rhyme_bench/studies/baseline_default/diagnostic_summary.md not present")
 
         with open(summary_path) as f:
             content = f.read()
