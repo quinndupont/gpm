@@ -168,6 +168,113 @@ def plot_study_aggregate_bars(
     plt.close()
 
 
+# Canonical study dirs (see studies/*/CARD.yaml) for ablation vs baseline comparisons.
+_MODEL_BY_STUDY_ORDER: tuple[str, ...] = (
+    "baseline_default",
+    "ablate_backward",
+    "ablate_cmu_two_pass",
+)
+_MODEL_BY_STUDY_LABELS: dict[str, str] = {
+    "baseline_default": "baseline",
+    "ablate_backward": "ablate_backward",
+    "ablate_cmu_two_pass": "ablate_cmu_two_pass",
+}
+
+
+def plot_model_performance_by_study(
+    runs: list[dict],
+    out_path: Path,
+    title: str = "Model performance by study (baseline vs ablations)",
+) -> None:
+    """Grouped bars per model: matches_form rate and mean strict density, split by study."""
+    plt = _ensure_matplotlib()
+    import numpy as np
+    from collections import defaultdict
+
+    # (model_id, study_dir) -> strict densities list + match counts
+    by_ms: dict[tuple[str, str], list[float]] = defaultdict(list)
+    match_totals: dict[tuple[str, str], tuple[int, int]] = {}
+
+    for r in runs:
+        sid = r.get("study_id") or r.get("_study_dir") or ""
+        if sid not in _MODEL_BY_STUDY_ORDER:
+            continue
+        mid = r.get("model_id", "unknown")
+        if mid == "unknown":
+            continue
+        ra = r.get("rhyme_analysis", {})
+        d = ra.get("strict_rhyme_density")
+        if d is not None:
+            by_ms[(mid, sid)].append(float(d))
+        key = (mid, sid)
+        m0, t0 = match_totals.get(key, (0, 0))
+        match_totals[key] = (m0 + (1 if ra.get("matches_form") is True else 0), t0 + 1)
+
+    models = sorted(
+        {m for m, _ in by_ms.keys()} | {m for m, _ in match_totals.keys()},
+    )
+    if not models:
+        return
+
+    n_studies = len(_MODEL_BY_STUDY_ORDER)
+    x = np.arange(len(models))
+    width = min(0.28, 0.8 / n_studies)
+    colors = ("#3498db", "#e67e22", "#9b59b6")
+
+    def rates_for_study(study: str) -> list[float]:
+        out: list[float] = []
+        for m in models:
+            mt, tt = match_totals.get((m, study), (0, 0))
+            out.append(mt / tt if tt else 0.0)
+        return out
+
+    def mean_strict_for_study(study: str) -> list[float]:
+        out: list[float] = []
+        for m in models:
+            vals = by_ms.get((m, study), [])
+            out.append(sum(vals) / len(vals) if vals else 0.0)
+        return out
+
+    fig, (ax0, ax1) = plt.subplots(
+        2, 1, figsize=(max(10, len(models) * 0.85), 9), sharex=True,
+    )
+    for i, study in enumerate(_MODEL_BY_STUDY_ORDER):
+        label = _MODEL_BY_STUDY_LABELS.get(study, study)
+        offset = (i - (n_studies - 1) / 2) * width
+        ax0.bar(
+            x + offset,
+            rates_for_study(study),
+            width,
+            label=label,
+            color=colors[i % len(colors)],
+            alpha=0.88,
+        )
+        ax1.bar(
+            x + offset,
+            mean_strict_for_study(study),
+            width,
+            label=label,
+            color=colors[i % len(colors)],
+            alpha=0.88,
+        )
+
+    ax0.set_ylabel("Matches form rate (0–1)")
+    ax0.set_ylim(0, 1.05)
+    ax0.set_title(title)
+    ax0.legend(loc="upper right", fontsize=9, ncol=3)
+    ax0.grid(axis="y", alpha=0.25)
+
+    ax1.set_ylabel("Mean strict rhyme density (0–1)")
+    ax1.set_ylim(0, 1.05)
+    ax1.grid(axis="y", alpha=0.25)
+    ax1.set_xticks(x)
+    ax1.set_xticklabels(models, rotation=25, ha="right")
+
+    fig.tight_layout()
+    fig.savefig(out_path, dpi=150)
+    plt.close()
+
+
 def plot_failure_breakdown(
     diagnostic_report: dict,
     out_path: Path,
@@ -863,12 +970,18 @@ def main():
         "data_dir",
         type=Path,
         nargs="?",
-        default=ROOT / "data" / "rhyme_bench" / "studies" / "baseline_default",
-        help="Directory with rhyme bench output JSONs (ignored if --studies-root is set)",
+        default=None,
+        help=(
+            "Single study dir with rhyme_*.json. Omit to pool every study under "
+            "data/rhyme_bench/studies (same as --studies-root with default path)."
+        ),
     )
     parser.add_argument(
         "-o", "--output", type=Path, default=None,
-        help="Output directory (default: data_dir/plots or studies_root/plots)",
+        help=(
+            "Output directory (default: studies_root/plots when pooling; "
+            "single-study: data_dir/plots)"
+        ),
     )
     parser.add_argument("--title", type=str, default=None, help="Plot title prefix")
     parser.add_argument(
@@ -892,9 +1005,9 @@ def main():
         regenerate_all_study_summaries,
     )
 
-    studies_root = ROOT / "data" / "rhyme_bench" / "studies"
+    studies_root_default = ROOT / "data" / "rhyme_bench" / "studies"
     if args.regenerate_summaries:
-        root = args.studies_root if args.studies_root is not None else studies_root
+        root = args.studies_root if args.studies_root is not None else studies_root_default
         regenerate_all_study_summaries(root)
         print(f"Regenerated summaries under {root}", flush=True)
 
@@ -902,13 +1015,17 @@ def main():
         runs = load_tagged_runs_from_studies_root(args.studies_root)
         out_dir = args.output or (args.studies_root / "plots")
         diag_path = _find_diagnostic_report(args.studies_root)
-    else:
+    elif args.data_dir is not None:
         runs = _load_runs(args.data_dir)
         folder = args.data_dir.resolve().name
         for r in runs:
             r.setdefault("study_id", folder)
         out_dir = args.output or (args.data_dir / "plots")
         diag_path = _find_diagnostic_report(args.data_dir)
+    else:
+        runs = load_tagged_runs_from_studies_root(studies_root_default)
+        out_dir = args.output or (studies_root_default / "plots")
+        diag_path = _find_diagnostic_report(studies_root_default)
 
     if not runs:
         print("No run data found.", file=sys.stderr)
@@ -935,6 +1052,10 @@ def main():
     plot_study_aggregate_bars(
         runs, out_dir / "study_aggregate_metrics.png",
         title=prefix + "Mean strict density & form rate by study",
+    )
+    plot_model_performance_by_study(
+        runs, out_dir / "model_performance_by_study.png",
+        title=prefix + "Model performance: baseline vs ablations",
     )
 
     # Scheme similarity analysis plots (always generate if we have runs)
@@ -989,6 +1110,7 @@ def main():
     print(f"\nScheme similarity analysis plots generated:")
     print(f"  - Scheme accuracy heatmap (model x form)")
     print(f"  - Form difficulty ranking")
+    print(f"  - Model × study (baseline / ablate_backward / ablate_cmu_two_pass)")
     print(f"\nSaved all plots to {out_dir}")
     return 0
 

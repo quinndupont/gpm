@@ -136,6 +136,7 @@ New charts when multiple studies have runs: **`study_strict_density_boxplot.png`
 ### Quick Start (visualizations)
 
 ```bash
+# Pooled: all studies → data/rhyme_bench/studies/plots/
 python scripts/benchmarks/rhyme_bench/visualize.py
 ```
 
@@ -494,7 +495,7 @@ python scripts/benchmarks/rhyme_bench/visualize.py /path/to/data/rhyme_bench/stu
 python scripts/benchmarks/rhyme_bench/visualize.py --title "Model v2.0"
 ```
 
-**Output**: All plots saved next to the run data (default: `data/rhyme_bench/studies/baseline_default/plots/`)
+**Output**: All plots saved under the pooled directory (default: `data/rhyme_bench/studies/plots/`). Pass a single study path as `data_dir` to write `plots/` next to that study only.
 
 ## Configuration
 
