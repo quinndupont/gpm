@@ -7,16 +7,14 @@ import re
 from pathlib import Path
 from collections import defaultdict
 from scripts.eval.rhyme_analyzer import analyze as analyze_rhyme
+from scripts.eval.rhyme_analyzer import strip_reasoning_blocks
 
 DATA_DIR = Path("data/rhyme_bench/studies/baseline_default")
 
 
 def extract_poem(text: str) -> str:
     """Extract the actual poem from text containing reasoning."""
-    # Remove <reasoning> tags and their content
-    text = re.sub(r'<reasoning>.*?</reasoning>', '', text, flags=re.DOTALL)
-    text = re.sub(r'<thinking>.*?</thinking>', '', text, flags=re.DOTALL)
-    text = re.sub(r'<analysis>.*?</analysis>', '', text, flags=re.DOTALL)
+    text = strip_reasoning_blocks(text)
 
     # Remove common prefix patterns
     text = re.sub(r'^(Here\'s|Let me write|I\'ll write|This (?:is|would be)|I need to write).*?:\s*\n', '', text, flags=re.MULTILINE | re.IGNORECASE)

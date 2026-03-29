@@ -15,8 +15,10 @@ from scripts.eval.form_registry import (
     parse_scheme,
 )
 from scripts.eval.meter_analyzer import analyze as analyze_meter
+from scripts.eval.rhyme_analyzer import _rhyme_type
 from scripts.eval.rhyme_analyzer import analyze as analyze_rhyme
 from scripts.eval.rhyme_analyzer import format_analysis_for_prompt
+from scripts.eval.rhyme_analyzer import strip_reasoning_blocks
 
 FIXTURES_DIR = Path(__file__).resolve().parent / "fixtures"
 
@@ -37,6 +39,20 @@ And never got up again."""
         assert "detected_scheme" in result
         assert result["strict_rhyme_density"] >= 0
         assert result["rhyme_density"] >= 0
+
+    def test_limerick_detected_scheme_flat_no_phantom_stanza(self):
+        """Single-stanza AABBA must not be split like ``AABB A`` (old 4-char chunking)."""
+        poem = (
+            "There once was a baker so fine,\n"
+            "Whose bread never rose with design.\n"
+            "The yeast was quite bright,\n"
+            "But the loaves weren't in sight,\n"
+            "And his customers left in decline."
+        )
+        r = analyze_rhyme(poem, expected_form="limerick")
+        assert r["matches_form"] is True
+        assert r["detected_scheme"] == "AABBA"
+        assert " " not in r["detected_scheme"]
 
     def test_analyze_quatrain_abab(self):
         poem = """The rain on the tin
@@ -74,6 +90,114 @@ we fill the old cup."""
         formatted = format_analysis_for_prompt(result)
         assert "Detected scheme" in formatted
         assert "Rhyme density" in formatted
+
+    def test_shakespearean_sonnet_stanza_boundaries_detected_scheme(self):
+        """Regression: cross-quatrain assonance must not collapse CDCD/EFEF."""
+        poem = """In yellow wood where paths diverge and split,
+A traveler stands at crossroads, unsure which way.
+The sun's last beams cast shadows on the bit
+Of road ahead, each turn inviting day.
+
+To leftward leads a lane well-trodden still,
+Where whispers of old tales have often rung;
+But rightward lures green fields under hill,
+With paths less trod and stories yet unsung.
+
+Two roads meet here at twilight's hush deep,
+Each leading to unknown destinies.
+The choice must be made, for time does sweep
+A traveler onward with no ease.
+
+Thus I choose, though the left is worn and tried,
+For novelty and chance await the ride."""
+        result = analyze_rhyme(poem, expected_form="sonnet", expected_variant="shakespearean")
+        flat = result["detected_scheme"].replace(" ", "")
+        assert flat == "ABABCDCDEFEFGG"
+        assert result["matches_form"] is True
+
+    def test_spenserian_cross_stanza_perfect_b_rhyme(self):
+        """B in Q2 must link to Q1 via perfect rhyme, not slant-only."""
+        poem = """The sky was dark as deepest night
+And morning brought a golden day
+When stars gave way to morning sight
+Along the road and winding way
+
+We rested in the heat of play
+And scanned the ridge for any look
+Then turned again upon the stray
+That led us where we quickly took"""
+        result = analyze_rhyme(poem)
+        assert result["detected_scheme"].replace(" ", "") == "ABABBCBC"
+
+    def test_slant_rhyme_tightening_time_mine_vs_deep_ease(self):
+        assert _rhyme_type("time", "mine") == "slant"
+        assert _rhyme_type("deep", "ease") == "none"
+        assert _rhyme_type("deep", "destinies") == "none"
+
+    def test_unicode_em_dash_on_end_word_does_not_break_rhyme(self):
+        """Em dash (U+2014) is not in string.punctuation; must still CMU-match."""
+        assert _rhyme_type("me", "free\u2014") == "perfect"
+        couplet = "The wood was wide, and both roads led to free\u2014\nThe air was clear, and peace returned to me."
+        r = analyze_rhyme(couplet)
+        assert r["end_words"] == ["free", "me"]
+        assert r["detected_scheme"].replace(" ", "") == "AA"
+
+    def test_strip_reasoning_blocks_before_rhyme_analysis(self):
+        """``<reasoning>`` prose must not count as poem lines."""
+        wrapped = (
+            "<reasoning>Line 1 (A): wood\nLine 2 (B): way\nPlanning rhymes…\n</reasoning>\n\n"
+            "The cat sat on the mat\nAnd looked up at the bat"
+        )
+        assert strip_reasoning_blocks(wrapped).strip().startswith("The cat")
+        r = analyze_rhyme(wrapped)
+        assert r["line_count"] == 2
+        assert r["end_words"] == ["mat", "bat"]
+
+    def test_reasoning_closed_with_wrong_think_tag_still_strips(self):
+        """Models sometimes close ``<reasoning>`` with ``</think>``."""
+        wrapped = (
+            "<reasoning>planning\n</think>\n\n"
+            "Rose red, violet blue\nSugar sweet, and so are you"
+        )
+        r = analyze_rhyme(wrapped)
+        assert r["line_count"] == 2
+        assert "planning" not in " ".join(r["end_words"]).lower()
+
+    def test_multi_pronunciation_on_matches_gone(self):
+        """CMU lists *on* as AA1 N and AO1 N; *gone* is AO1 N — must not use only first."""
+        assert _rhyme_type("on", "gone") == "perfect"
+        assert _rhyme_type("gone", "on") == "perfect"
+
+    def test_stress_insensitive_same_nucleus_grey_yesterday(self):
+        """Monosyllable primary vs polysyllable-final secondary stress (EY1 vs EY2)."""
+        assert _rhyme_type("grey", "yesterday") == "perfect"
+        assert _rhyme_type("gray", "yesterday") == "perfect"
+
+    def test_end_word_when_last_token_is_standalone_em_dash(self):
+        """``split()`` yields a final ``—`` token; rhyme end-word must still be *be*."""
+        from scripts.eval.rhyme_analyzer import _get_end_word
+
+        assert _get_end_word("To wander thus, though lonely, is to be \u2014  ") == "be"
+        couplet = (
+            "To wander thus, though lonely, is to be \u2014\n"
+            "A traveler bound by no but what's set free."
+        )
+        r = analyze_rhyme(couplet)
+        assert r["line_count"] == 2
+        assert r["end_words"] == ["be", "free"]
+        assert r["detected_scheme"].replace(" ", "") == "AA"
+
+    def test_quatrain_without_stanza_breaks_still_abab(self):
+        # End-words must be CMU ABAB (tin/din/up/cup phonetically reads as AABB).
+        poem = """I walked upon the ancient stone
+And took the long and winding way
+Then found another heavy bone
+That led me through the light of day"""
+        result = analyze_rhyme(poem, expected_form="quatrain")
+        assert result["line_count"] == 4
+        assert result["expected_scheme"] == "ABAB"
+        flat = result["detected_scheme"].replace(" ", "")
+        assert flat == "ABAB"
 
 
 @pytest.mark.eval

@@ -4,6 +4,7 @@ Poetry Generation Pipeline — llama.cpp Metal Backend. S4.3
 Requires: pip install llama-cpp-python
 """
 import argparse
+import os
 import re
 import sys
 from pathlib import Path
@@ -214,10 +215,24 @@ class PoetryPipeline:
         """Call AWS Bedrock. model_id is the Bedrock inference profile ID (e.g. us.anthropic.claude-3-5-sonnet-20241022-v2:0)."""
         try:
             import boto3
+            from botocore.config import Config as BotoConfig
         except ImportError:
             raise ImportError("pip install boto3")
 
-        bedrock = boto3.client("bedrock-runtime", region_name="us-east-1")
+        # Default boto3 read timeout is 60s; long forms (e.g. villanelle) + slow models
+        # often need more. Override with BEDROCK_READ_TIMEOUT (seconds).
+        _read = int(os.environ.get("BEDROCK_READ_TIMEOUT", "300"))
+        _conn = int(os.environ.get("BEDROCK_CONNECT_TIMEOUT", "60"))
+        _region = os.environ.get("AWS_DEFAULT_REGION", os.environ.get("AWS_REGION", "us-east-1"))
+        bedrock = boto3.client(
+            "bedrock-runtime",
+            region_name=_region,
+            config=BotoConfig(
+                read_timeout=_read,
+                connect_timeout=_conn,
+                retries={"max_attempts": 4, "mode": "standard"},
+            ),
+        )
 
         # Build Bedrock request based on model type
         import json

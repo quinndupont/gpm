@@ -6,7 +6,6 @@ Detects rhyme schemes, validates against expected forms, classifies rhyme qualit
 import argparse
 import json
 import re
-import string
 import sys
 from pathlib import Path
 
@@ -14,21 +13,102 @@ import pronouncing
 
 from scripts.eval.form_registry import detect_form, get_scheme, parse_scheme
 
+# Single-coda slant pairs (CMU tokens): same nucleus, one consonant differs by a
+# common near-rhyme relation (e.g. M/N). Not all different codas qualify (e.g. P/Z).
+_SLANT_SINGLE_CODA_PAIRS: frozenset[frozenset[str]] = frozenset(
+    frozenset(p) for p in (
+        ("M", "N"),
+        ("T", "D"),
+        ("K", "G"),
+        ("P", "B"),
+        ("F", "V"),
+        ("S", "Z"),
+        ("CH", "JH"),
+        ("SH", "ZH"),
+        ("DH", "TH"),
+    )
+)
+
+# Tags whose bodies are model chain-of-thought, not verse (closed and unclosed).
+_REASONING_TAGS = ("reasoning", "thinking", "analysis", "think")
+
+
+def strip_reasoning_blocks(text: str) -> str:
+    """Remove model CoT wrappers so rhyme analysis runs only on poem text.
+
+    Strips ``<reasoning>…</reasoning>``, `` <think>…</think>``, ``<thinking>…``, etc.
+    Unclosed opening tags remove the remainder of the string (no poem after tag).
+    """
+    if not text:
+        return text
+    t = text
+    # Tolerate opening <reasoning> closed with think end-tag instead of </reasoning>.
+    t = re.sub(
+        r"(?i)<reasoning>.*?(?:</reasoning>|</think>)",
+        "",
+        t,
+        flags=re.DOTALL,
+    )
+    for tag in _REASONING_TAGS:
+        t = re.sub(rf"(?i)<{tag}>.*?</{tag}>", "", t, flags=re.DOTALL)
+    for tag in _REASONING_TAGS:
+        t = re.sub(rf"(?i)<{tag}>.*", "", t, flags=re.DOTALL)
+    t = re.sub(r"(?i)^thinking:\s*.*?(?=\n\n|\Z)", "", t, flags=re.DOTALL | re.MULTILINE)
+    t = re.sub(r"\n\n\n+", "\n\n", t)
+    return t.strip()
+
+
 # ---------------------------------------------------------------------------
 # Phoneme helpers
 # ---------------------------------------------------------------------------
 
 def _clean_word(word: str) -> str:
-    """Strip punctuation and lowercase."""
-    return word.strip().strip(string.punctuation).lower()
+    """Strip surrounding punctuation and lowercase.
+
+    Uses Unicode-aware trimming so em dashes, curly quotes, and other marks
+    not in ``string.punctuation`` (e.g. ``\\u2014``) do not break CMU lookup.
+    """
+    w = word.strip().lower()
+    if not w:
+        return ""
+    while w and not w[0].isalpha():
+        w = w[1:]
+    while w and not w[-1].isalpha():
+        w = w[:-1]
+    return w
 
 
 def _get_end_word(line: str) -> str:
-    """Extract the last word from a line, handling trailing punctuation."""
+    """Extract the last word from a line, handling trailing punctuation.
+
+    Trailing stand-alone dashes or quotes (e.g. ``to be —``) become their own
+    tokens after split; skip backward until a token with alphabetic content.
+    """
     tokens = line.strip().split()
     if not tokens:
         return ""
-    return _clean_word(tokens[-1])
+    for tok in reversed(tokens):
+        w = _clean_word(tok)
+        if w:
+            return w
+    return ""
+
+
+def _stress_normalize_suffix_tokens(suffix: str) -> str:
+    """ARPAbet tokens with stress digits stripped, for rhyme equality.
+
+    CMU assigns different stress to the same nucleus across contexts (e.g. *grey*
+    ``EY1`` vs final syllable of *yesterday* ``EY2``). Those are still perfect
+    rhymes; comparing raw strings misses them.
+    """
+    parts = suffix.split()
+    out: list[str] = []
+    for p in parts:
+        if p and p[-1].isdigit():
+            out.append(p[:-1])
+        else:
+            out.append(p)
+    return " ".join(out)
 
 
 def _rhyme_suffix(phones: str) -> str:
@@ -48,12 +128,54 @@ def _rhyme_suffix(phones: str) -> str:
     return " ".join(parts[last_stressed:])
 
 
-def _get_rhyme_suffix(word: str) -> str | None:
-    """Get rhyme suffix for a word. Returns None if not in CMU dict."""
-    phones_list = pronouncing.phones_for_word(word)
+def _get_rhyme_suffixes(word: str) -> list[str]:
+    """Rhyme suffixes for all CMU pronunciations (deduped, order preserved).
+
+    Words like *on* have multiple entries (e.g. ``AA1 N`` vs ``AO1 N``); *gone*
+    may only match the second, so rhyme checks must consider every pair.
+    """
+    w = _clean_word(word)
+    if not w:
+        return []
+    phones_list = pronouncing.phones_for_word(w)
     if not phones_list:
-        return None
-    return _rhyme_suffix(phones_list[0])
+        return []
+    seen: set[str] = set()
+    out: list[str] = []
+    for phones in phones_list:
+        suf = _rhyme_suffix(phones)
+        if suf not in seen:
+            seen.add(suf)
+            out.append(suf)
+    return out
+
+
+def _get_rhyme_suffix(word: str) -> str | None:
+    """First CMU pronunciation's rhyme suffix, or None if unknown."""
+    suf = _get_rhyme_suffixes(word)
+    return suf[0] if suf else None
+
+
+def _cmu_slant_suffix_pair(suffix_a: str, suffix_b: str) -> bool:
+    """True if two rhyme-suffix strings form a slant rhyme (CMU rules)."""
+    parts_a = suffix_a.split()
+    parts_b = suffix_b.split()
+    vowel_a = re.sub(r"\d", "", parts_a[0]) if parts_a[0][-1].isdigit() else None
+    vowel_b = re.sub(r"\d", "", parts_b[0]) if parts_b[0][-1].isdigit() else None
+    if not (vowel_a and vowel_b and vowel_a == vowel_b):
+        return False
+    tail_a = parts_a[1:]
+    tail_b = parts_b[1:]
+    if not tail_a or not tail_b:
+        return False
+    set_a = set(tail_a)
+    set_b = set(tail_b)
+    if set_a & set_b:
+        return True
+    if len(tail_a) == 1 and len(tail_b) == 1 and tail_a[0] != tail_b[0]:
+        if frozenset((tail_a[0], tail_b[0])) in _SLANT_SINGLE_CODA_PAIRS:
+            return True
+    return False
 
 
 def _suffix_fallback(word: str) -> str:
@@ -65,42 +187,34 @@ def _suffix_fallback(word: str) -> str:
 def _rhyme_type(word_a: str, word_b: str, strict: bool = False) -> str:
     """Classify rhyme between two words: 'perfect', 'slant', or 'none'.
 
-    Perfect: identical rhyme suffix (stressed vowel onward).
-    Slant: shared final consonant cluster with different vowel, OR same vowel
-           with a single consonant difference (e.g. "time"/"mine").
+    Perfect: identical rhyme suffix for some CMU pronunciation pair.
+    Slant (CMU path): same nucleus vowel and either overlapping post-vowel
+    consonants, or a single-coda minimal pair (e.g. M/N as in "time"/"mine").
+    Pure assonance (same vowel, unrelated codas) is not slant.
     strict=True: only CMU-verified perfect/identical count; no fallback, no slant.
     """
-    if word_a == word_b:
+    wa = _clean_word(word_a)
+    wb = _clean_word(word_b)
+    if not wa or not wb:
+        return "none"
+    if wa == wb:
         return "identical"
 
-    suffix_a = _get_rhyme_suffix(word_a)
-    suffix_b = _get_rhyme_suffix(word_b)
+    suffixes_a = _get_rhyme_suffixes(wa)
+    suffixes_b = _get_rhyme_suffixes(wb)
 
-    # Both in CMU dict — compare phoneme suffixes
-    if suffix_a is not None and suffix_b is not None:
-        if suffix_a == suffix_b:
-            return "perfect"
+    # Both in CMU dict — compare all pronunciation pairs
+    if suffixes_a and suffixes_b:
+        for sa in suffixes_a:
+            for sb in suffixes_b:
+                if sa == sb or _stress_normalize_suffix_tokens(sa) == _stress_normalize_suffix_tokens(sb):
+                    return "perfect"
         if strict:
             return "none"
-        parts_a = suffix_a.split()
-        parts_b = suffix_b.split()
-
-        # Slant: same vowel + different final consonant(s), OR same vowel + same
-        # trailing consonant(s) but different stress. E.g. "time" (AY1 M) / "mine" (AY1 N).
-        #
-        # IMPORTANT: Pure consonance (same final consonant, different vowels) is NOT
-        # a slant rhyme. "coded" (IH0 D) and "deployed" (OY1 D) share final /D/ but
-        # have completely different vowels — they do not rhyme at all.
-        vowel_a = re.sub(r"\d", "", parts_a[0]) if parts_a[0][-1].isdigit() else None
-        vowel_b = re.sub(r"\d", "", parts_b[0]) if parts_b[0][-1].isdigit() else None
-
-        # Must share the same vowel for slant rhyme
-        if vowel_a and vowel_b and vowel_a == vowel_b:
-            # Same vowel — this is a slant rhyme (assonance)
-            # E.g. "time" (AY1 M) / "mine" (AY1 N) — same vowel, different consonant
-            # This is the classic definition of slant/near rhyme
-            if abs(len(parts_a) - len(parts_b)) <= 1:
-                return "slant"
+        for sa in suffixes_a:
+            for sb in suffixes_b:
+                if _cmu_slant_suffix_pair(sa, sb):
+                    return "slant"
 
         return "none"
 
@@ -112,8 +226,8 @@ def _rhyme_type(word_a: str, word_b: str, strict: bool = False) -> str:
     # Common suffixes that DON'T indicate rhyme (grammatical endings)
     FALSE_RHYME_SUFFIXES = {"ed", "ing", "ly", "er", "est", "ness", "ment", "tion", "sion"}
 
-    fa = _suffix_fallback(word_a)
-    fb = _suffix_fallback(word_b)
+    fa = _suffix_fallback(wa)
+    fb = _suffix_fallback(wb)
 
     # Don't count matches on common grammatical suffixes — they're false positives
     if fa[-2:] in FALSE_RHYME_SUFFIXES or fb[-2:] in FALSE_RHYME_SUFFIXES:
@@ -135,40 +249,106 @@ def _rhyme_type(word_a: str, word_b: str, strict: bool = False) -> str:
 # Line extraction
 # ---------------------------------------------------------------------------
 
-def _extract_lines(poem: str) -> list[str]:
-    """Extract non-empty, non-title lines from a poem."""
-    lines = []
-    for line in poem.split("\n"):
-        stripped = line.strip()
-        if not stripped:
+def _extract_lines(poem: str) -> tuple[list[str], list[int]]:
+    """Extract non-empty, non-title lines and stanza start indices.
+
+    Stanzas are separated by one or more blank lines (``\\n`` with optional
+    whitespace only between paragraph breaks). ``stanza_starts[k]`` is the
+    index in the returned ``lines`` list where stanza ``k`` begins; the first
+    stanza always starts at 0 when any lines exist.
+    """
+    lines: list[str] = []
+    stanza_starts: list[int] = []
+    # Paragraphs: robust blank-line separator (not a single \\n between lines)
+    blocks = re.split(r"\n\s*\n+", poem)
+    for block in blocks:
+        block_lines: list[str] = []
+        for raw in block.split("\n"):
+            stripped = raw.strip()
+            if not stripped:
+                continue
+            if stripped.startswith("#"):
+                continue
+            if all(c in "-—–=* " for c in stripped):
+                continue
+            block_lines.append(stripped)
+        if not block_lines:
             continue
-        # Skip markdown headers (titles)
-        if stripped.startswith("#"):
+        stanza_starts.append(len(lines))
+        lines.extend(block_lines)
+    if lines and not stanza_starts:
+        stanza_starts = [0]
+    elif lines and stanza_starts[0] != 0:
+        stanza_starts.insert(0, 0)
+    return lines, stanza_starts
+
+
+def _compress_stanza_starts_for_valid_words(
+    lines: list[str],
+    stanza_starts: list[int],
+) -> list[int]:
+    """Map stanza boundaries from full ``lines`` to indices in the list of non-empty end-words."""
+    if not lines:
+        return [0]
+    start_set = set(stanza_starts)
+    compressed: list[int] = []
+    out_idx = 0
+    for i, line in enumerate(lines):
+        w = _get_end_word(line)
+        if not w:
             continue
-        # Skip lines that are just punctuation/dashes (dividers)
-        if all(c in "-—–=* " for c in stripped):
-            continue
-        lines.append(stripped)
-    return lines
+        if i in start_set:
+            compressed.append(out_idx)
+        out_idx += 1
+    if not compressed:
+        return [0]
+    if compressed[0] != 0:
+        compressed.insert(0, 0)
+    return sorted(set(compressed))
 
 
 # ---------------------------------------------------------------------------
 # Scheme detection
 # ---------------------------------------------------------------------------
 
-def _detect_scheme(end_words: list[str], strict: bool = False) -> str:
-    """Detect the rhyme scheme from a list of end-words. Returns e.g. 'ABABCDCDEFEF'.
-    strict=True: only CMU-verified perfect/identical rhymes count."""
+def _stanza_index_for_line(line_idx: int, stanza_starts: list[int]) -> int:
+    """Which stanza (0-based) contains ``line_idx``."""
+    for k in range(len(stanza_starts) - 1, -1, -1):
+        if line_idx >= stanza_starts[k]:
+            return k
+    return 0
+
+
+def _detect_scheme(
+    end_words: list[str],
+    stanza_starts: list[int] | None = None,
+    strict: bool = False,
+) -> str:
+    """Detect the rhyme scheme from a list of end-words. Returns e.g. 'ABABCDCDEFEFGG'.
+
+    Scans **backwards** so the nearest rhyming line wins. Within a stanza, perfect,
+    slant, and identical matches count; across stanzas, only perfect and identical
+    (no slant) so quatrains keep independent rhyme letters unless strongly linked.
+
+    strict=True: only CMU-verified perfect/identical rhymes count everywhere.
+    """
     if not end_words:
         return ""
+    starts = stanza_starts if stanza_starts else [0]
     labels: list[str] = []
     next_label = 0
 
     for i, word in enumerate(end_words):
         matched_label = None
-        for j in range(i):
+        for j in range(i - 1, -1, -1):
+            same_stanza = _stanza_index_for_line(i, starts) == _stanza_index_for_line(j, starts)
             rt = _rhyme_type(word, end_words[j], strict=strict)
-            ok = ("perfect", "slant", "identical") if not strict else ("perfect", "identical")
+            if strict:
+                ok = ("perfect", "identical")
+            elif same_stanza:
+                ok = ("perfect", "slant", "identical")
+            else:
+                ok = ("perfect", "identical")
             if rt in ok:
                 matched_label = labels[j]
                 break
@@ -182,19 +362,29 @@ def _detect_scheme(end_words: list[str], strict: bool = False) -> str:
     return "".join(labels)
 
 
-def _format_scheme(scheme: str, line_count: int | None = None) -> str:
-    """Group scheme into stanza-like chunks for readability.
+def _format_scheme(scheme: str, stanza_starts: list[int] | None = None) -> str:
+    """Group scheme by detected stanzas; single stanza stays flat (matches registry).
 
-    If the poem has a known line count we just return it flat.
-    Otherwise, try groups of 4.
+    A single block of verse (no ``\\n\\n``) used to be split every four letters for
+    display (e.g. ``ABABABCC`` → ``ABAB ABCC``), which looked like a form mismatch
+    next to ``ABABABCC`` in :data:`~scripts.eval.form_registry.FORMS` even when
+    :func:`analyze` already set ``matches_form`` True.
     """
     if not scheme:
         return ""
-    if line_count and len(scheme) == line_count:
-        return scheme
-    # Group into fours
-    groups = [scheme[i:i + 4] for i in range(0, len(scheme), 4)]
-    return " ".join(groups)
+    n = len(scheme)
+    if stanza_starts and len(stanza_starts) > 1:
+        groups: list[str] = []
+        for k, start in enumerate(stanza_starts):
+            if start >= n:
+                break
+            end = stanza_starts[k + 1] if k + 1 < len(stanza_starts) else n
+            end = min(end, n)
+            if start < end:
+                groups.append(scheme[start:end])
+        if groups:
+            return " ".join(groups)
+    return scheme
 
 
 # ---------------------------------------------------------------------------
@@ -216,7 +406,9 @@ def analyze(
     Returns:
         Dict with scheme, rhyme pairs, deviations, etc.
     """
-    lines = _extract_lines(poem)
+    poem = strip_reasoning_blocks(poem)
+    lines, stanza_starts_lines = _extract_lines(poem)
+    scheme_stanza_starts = _compress_stanza_starts_for_valid_words(lines, stanza_starts_lines)
     end_words = [_get_end_word(line) for line in lines]
 
     # Filter out empty end words (blank lines that slipped through)
@@ -235,8 +427,8 @@ def analyze(
 
     indices, words = zip(*valid)
     words = list(words)
-    detected_raw = _detect_scheme(words)
-    strict_detected_raw = _detect_scheme(words, strict=True)
+    detected_raw = _detect_scheme(words, stanza_starts=scheme_stanza_starts)
+    strict_detected_raw = _detect_scheme(words, stanza_starts=scheme_stanza_starts, strict=True)
 
     # Build rhyme pairs (permissive: perfect, slant, fallback)
     rhyme_pairs = []
@@ -315,8 +507,10 @@ def analyze(
                             })
 
     result = {
-        "detected_scheme": _format_scheme(detected_raw),
-        "strict_detected_scheme": _format_scheme(strict_detected_raw),
+        "detected_scheme": _format_scheme(detected_raw, stanza_starts=scheme_stanza_starts),
+        "strict_detected_scheme": _format_scheme(
+            strict_detected_raw, stanza_starts=scheme_stanza_starts
+        ),
         "expected_scheme": expected_scheme,
         "matches_form": matches_form,
         "deviations": deviations,
@@ -374,15 +568,14 @@ def _rhyme_score(word_a: str, word_b: str) -> float:
     rt = _rhyme_type(word_a, word_b)
     if rt != "none":
         return RHYME_SCORE[rt]
-    suffix_a = _get_rhyme_suffix(word_a)
-    suffix_b = _get_rhyme_suffix(word_b)
-    if suffix_a is not None and suffix_b is not None:
-        tok_a = suffix_a.split()[0]
-        tok_b = suffix_b.split()[0]
-        vowel_a = re.sub(r"\d", "", tok_a) if tok_a[-1].isdigit() else None
-        vowel_b = re.sub(r"\d", "", tok_b) if tok_b[-1].isdigit() else None
-        if vowel_a and vowel_b and vowel_a == vowel_b:
-            return RHYME_SCORE["assonance"]
+    for sa in _get_rhyme_suffixes(word_a):
+        for sb in _get_rhyme_suffixes(word_b):
+            tok_a = sa.split()[0]
+            tok_b = sb.split()[0]
+            vowel_a = re.sub(r"\d", "", tok_a) if tok_a[-1].isdigit() else None
+            vowel_b = re.sub(r"\d", "", tok_b) if tok_b[-1].isdigit() else None
+            if vowel_a and vowel_b and vowel_a == vowel_b:
+                return RHYME_SCORE["assonance"]
     return RHYME_SCORE["none"]
 
 
