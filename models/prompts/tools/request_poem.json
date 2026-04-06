@@ -1,0 +1,21 @@
+{
+  "type": "function",
+  "function": {
+    "name": "request_poem",
+    "description": "Request the poet model to generate an example poem. Use when a student would benefit from seeing a concrete example of a technique, form, or approach you are teaching. Never use this to do the student's work — only to illustrate a point.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "brief": {
+          "type": "string",
+          "description": "Generation brief for the poet: form, subject, constraints, line count"
+        },
+        "purpose": {
+          "type": "string",
+          "description": "Why this example helps the student (e.g. 'demonstrate enjambment across stanza break')"
+        }
+      },
+      "required": ["brief", "purpose"]
+    }
+  }
+}

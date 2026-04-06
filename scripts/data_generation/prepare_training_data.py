@@ -177,6 +177,22 @@ def collect_educator_examples(system: str) -> list[dict]:
             user = f"{density_note} {scheme_note}\n\n{poem}"
             examples.append(to_educator_example(user, critique, system))
 
+    # Socratic examples with tool calls (multi-turn, pre-formatted)
+    examples.extend(collect_socratic_examples())
+
+    return examples
+
+
+def collect_socratic_examples() -> list[dict]:
+    """Load Socratic training examples (multi-turn with tool calls).
+
+    These are already in chat format: {"messages": [...]} with system/user/assistant/tool roles.
+    """
+    examples = []
+    for e in load_jsonl(EDUCATOR_TRAINING / "socratic_examples.jsonl"):
+        msgs = e.get("messages", [])
+        if len(msgs) >= 3:
+            examples.append({"messages": msgs})
     return examples
 
 

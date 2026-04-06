@@ -7,6 +7,47 @@
 #   poet: General/creative models often produce less formulaic verse; instruct works too
 
 models:
+  # Qwen3: native tool calling, thinking mode, 119-language support
+  - hf_id: Qwen/Qwen3-8B
+    short_name: qwen3-8b
+    param_b: 8
+    training_quant: nf4
+    inference_quants: [Q4_K_M, Q5_K_M]
+    recommended_inference_quant: Q4_K_M
+    stop_tokens: ["<|im_end|>", "<|endoftext|>"]
+    tool_calling: true
+    educator_fit: recommended
+    educator_note: Native tool calling; best fit for Socratic educator with request_poem
+    poet_fit: good
+    poet_note: Strong creative output with thinking mode
+
+  - hf_id: Qwen/Qwen3-32B
+    short_name: qwen3-32b
+    param_b: 32
+    training_quant: nf4
+    inference_quants: [Q4_K_M, Q3_K_M]
+    recommended_inference_quant: Q4_K_M
+    stop_tokens: ["<|im_end|>", "<|endoftext|>"]
+    tool_calling: true
+    educator_fit: recommended
+    educator_note: Highest quality Qwen3; native tool calling; swap needed for 24GB local
+    poet_fit: recommended
+    poet_note: Strong creative capacity at 32B
+
+  - hf_id: Qwen/Qwen3-30B-A3B
+    short_name: qwen3-30b-a3b
+    param_b: 30
+    training_quant: nf4
+    inference_quants: [Q4_K_M, Q5_K_M]
+    recommended_inference_quant: Q4_K_M
+    stop_tokens: ["<|im_end|>", "<|endoftext|>"]
+    tool_calling: true
+    architecture: moe
+    educator_fit: recommended
+    educator_note: MoE with 3B active params; fast inference with tool calling
+    poet_fit: good
+    poet_note: MoE diversity; efficient for Modal GPU serving
+
   # 7-9B: fit easily on A10G, two fit on M4 24GB at Q4/Q5
   - hf_id: Qwen/Qwen2.5-7B-Instruct
     short_name: qwen2.5-7b

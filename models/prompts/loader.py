@@ -1,10 +1,11 @@
-"""Load prompts and personas from JSON. Paths are relative to this module's directory."""
+"""Load prompts, personas, and tool schemas from JSON. Paths relative to this module's directory."""
 import json
 from pathlib import Path
 
 _PROMPTS_DIR = Path(__file__).resolve().parent
 _persona_cache: dict[str, str] = {}
 _prompt_cache: dict[tuple[str, str], dict] = {}
+_tool_cache: dict[str, dict] = {}
 
 
 def get_persona(persona_id: str) -> str:
@@ -45,6 +46,32 @@ def render_prompt(
     """Return template with variables filled via str.format(**kwargs)."""
     tpl = get_prompt(category, prompt_id, template)
     return tpl.format(**kwargs)
+
+
+def get_tool(tool_id: str) -> dict:
+    """Return tool schema dict by ID (e.g. 'request_poem'). Cached."""
+    if tool_id in _tool_cache:
+        return _tool_cache[tool_id]
+    path = _PROMPTS_DIR / "tools" / f"{tool_id}.json"
+    if not path.exists():
+        raise FileNotFoundError(f"Tool schema not found: {tool_id} ({path})")
+    data = json.loads(path.read_text())
+    _tool_cache[tool_id] = data
+    return data
+
+
+def list_tools() -> list[dict]:
+    """Return all tool schemas from the tools/ directory."""
+    tools_dir = _PROMPTS_DIR / "tools"
+    if not tools_dir.exists():
+        return []
+    schemas = []
+    for p in sorted(tools_dir.glob("*.json")):
+        try:
+            schemas.append(json.loads(p.read_text()))
+        except (json.JSONDecodeError, OSError):
+            continue
+    return schemas
 
 
 def get_prompt_config(category: str, prompt_id: str) -> dict:

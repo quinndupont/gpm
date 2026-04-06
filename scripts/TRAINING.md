@@ -107,6 +107,46 @@ python scripts/sagemaker/export_gguf_sagemaker.py --task educator
 python scripts/sagemaker/download_models.py
 ```
 
+## Socratic educator data
+
+The educator is trained with Socratic examples that include `request_poem` tool calls. Generate this data before `prepare_training_data.py`:
+
+```bash
+python scripts/data_generation/generate_socratic_examples.py --count 120 --model claude-sonnet-4-5
+```
+
+This produces `data/educator_training/socratic_examples.jsonl` with multi-turn conversations containing `<tool_call>` / tool-response pairs in Qwen3 chat format. `prepare_training_data.py` automatically includes these when building the educator split.
+
+Scenario types: form explanation, technique demonstration, Socratic critique, write-refusal with example, revision coaching.
+
+## Modal inference deployment
+
+Both models can be served on Modal via a FastAPI ASGI app:
+
+```bash
+# Deploy (creates a persistent web endpoint)
+modal deploy scripts/modal/serve_inference.py
+
+# Test
+curl -X POST https://<app-url>/v1/chat/completions \
+  -H 'Content-Type: application/json' \
+  -d '{"model":"educator","messages":[{"role":"user","content":"How does a villanelle work?"}],"tools":true}'
+```
+
+The serving layer handles `request_poem` tool calls automatically: when the educator emits a `<tool_call>` for `request_poem`, the server calls the poet model internally and feeds the result back before returning the final response.
+
+Use the `modal:` prefix in the inference pipeline to route through Modal:
+
+```bash
+python scripts/inference/pipeline.py --educator-model "modal:https://<app-url>" "Write a sonnet about rain"
+```
+
+## Educator tool calling
+
+The educator persona (`models/prompts/personas/educator_neutral.json`) is trained to use the `request_poem` tool (schema in `models/prompts/tools/request_poem.json`) to request example poems from the poet. The tool schema is loaded via `models.prompts.loader.get_tool("request_poem")`.
+
+At inference, tool calls are handled by the serving layer (Modal or local). The educator never writes complete poems itself.
+
 ## Data layout
 
 - **Educator/poet:** `data/educator_training/train.jsonl`, `valid.jsonl`; `data/poet_training/`; `data/rhyme_training/` (from `prepare_training_data.py`, `prepare_rhyme_training_data.py`). REINFORCE uses rhyme data.

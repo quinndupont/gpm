@@ -166,7 +166,8 @@ class PoetryPipeline:
             short = _infer_short_from_gguf_path(path)
             return stop_tokens_for(short_name=short) if short else DEFAULT_STOP_TOKENS
         if override and override.startswith("bedrock:"):
-            # Bedrock/Claude models handle stop sequences internally
+            return []
+        if override and override.startswith("modal:"):
             return []
         path = (
             self.config.educator_model_path
@@ -499,18 +500,57 @@ class PoetryPipeline:
         else:
             raise ValueError(f"Unsupported Bedrock model: {model_id}")
 
+    def _modal_chat(
+        self,
+        model: str,
+        system: str,
+        user: str,
+        temperature: float = 0.4,
+        max_tokens: int = 800,
+        top_p: float = 0.9,
+        tools: list | None = None,
+    ) -> str:
+        """Call a Modal-hosted inference endpoint. model is 'educator' or 'poet' or a URL."""
+        import json
+        import urllib.request
+
+        url = model if model.startswith("http") else model
+        body = {
+            "model": "educator" if "educator" in model else "poet",
+            "messages": [
+                {"role": "system", "content": system},
+                {"role": "user", "content": user},
+            ],
+            "temperature": temperature,
+            "max_tokens": max_tokens,
+            "top_p": top_p,
+        }
+        if tools:
+            body["tools"] = tools
+        data = json.dumps(body).encode()
+        endpoint = url.rstrip("/") + "/v1/chat/completions"
+        req = urllib.request.Request(
+            endpoint, data=data,
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        with urllib.request.urlopen(req, timeout=120) as resp:
+            result = json.loads(resp.read())
+        return result["choices"][0]["message"]["content"]
+
     def _load_models(self):
         try:
             from llama_cpp import Llama
         except ImportError:
             raise ImportError("pip install llama-cpp-python")
+        _REMOTE_PREFIXES = ("ollama:", "bedrock:", "modal:")
         use_edu_gguf = not (
             self.educator_model_override
-            and (self.educator_model_override.startswith("ollama:") or self.educator_model_override.startswith("bedrock:"))
+            and any(self.educator_model_override.startswith(p) for p in _REMOTE_PREFIXES)
         )
         use_poet_gguf = not (
             self.poet_model_override
-            and (self.poet_model_override.startswith("ollama:") or self.poet_model_override.startswith("bedrock:"))
+            and any(self.poet_model_override.startswith(p) for p in _REMOTE_PREFIXES)
         )
         edu_path = self.config.educator_model_path
         poet_path = self.config.poet_model_path
@@ -559,6 +599,12 @@ class PoetryPipeline:
             model_id = self.educator_model_override[8:]  # strip "bedrock:"
             return self._bedrock_chat(
                 model_id, self.educator_system, prompt,
+                temperature=params["temperature"], max_tokens=params["max_tokens"],
+            )
+        if self.educator_model_override and self.educator_model_override.startswith("modal:"):
+            url = self.educator_model_override[6:]  # strip "modal:"
+            return self._modal_chat(
+                url, self.educator_system, prompt,
                 temperature=params["temperature"], max_tokens=params["max_tokens"],
             )
         self._load_models()
@@ -783,6 +829,12 @@ class PoetryPipeline:
             model_id = self.poet_model_override[8:]
             output = self._bedrock_chat(
                 model_id, system, poet_prompt,
+                temperature=temperature, max_tokens=4096, top_p=0.95,
+            )
+        elif self.poet_model_override and self.poet_model_override.startswith("modal:"):
+            url = self.poet_model_override[6:]
+            output = self._modal_chat(
+                url, system, poet_prompt,
                 temperature=temperature, max_tokens=4096, top_p=0.95,
             )
         else:

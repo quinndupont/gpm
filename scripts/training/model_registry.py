@@ -94,6 +94,10 @@ def ollama_tag_to_short(tag: str) -> str | None:
             return short
     if "command" in tag_norm or "cohere" in tag_norm:
         return "command-r7b"
+    if "qwen3" in tag_norm:
+        if "30b" in tag_norm or "a3b" in tag_norm:
+            return "qwen3-30b-a3b"
+        return "qwen3-32b" if "32b" in tag_norm else "qwen3-8b"
     if "qwen" in tag_norm:
         return (
             "qwen2.5-7b" if "7b" in tag_norm
